@@ -53,8 +53,8 @@
         header {
             background: var(--nav-bg);
             border-bottom: 1px solid var(--border);
-            padding: 0 24px;
-            height: 64px;
+            padding: 0 16px;
+            height: 60px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -64,53 +64,55 @@
         }
 
         .logo {
-            font-size: 1.2rem;
+            font-size: 1.05rem;
             font-weight: 700;
             color: var(--text-main);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             cursor: pointer;
+            white-space: nowrap;
         }
 
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
         }
 
         .nav-links {
             display: flex;
-            gap: 8px;
+            gap: 4px;
         }
 
         .nav-btn {
             background: transparent;
             border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
+            padding: 6px 10px;
+            border-radius: 6px;
             font-family: inherit;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.82rem;
             color: var(--text-muted);
             cursor: pointer;
             transition: all 0.2s;
+            white-space: nowrap;
         }
 
         .nav-btn:hover { background: var(--border); color: var(--text-main); }
         .nav-btn.active { background: var(--primary); color: white; }
 
-        /* Theme Toggle Button */
         .theme-toggle-btn {
             background: var(--border);
             border: none;
-            width: 38px; height: 38px;
+            width: 34px; height: 34px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
+            font-size: 1rem;
+            flex-shrink: 0;
             transition: transform 0.2s, background 0.2s;
         }
         .theme-toggle-btn:hover { transform: scale(1.05); }
@@ -119,7 +121,7 @@
         .view-container {
             flex-grow: 1;
             position: relative;
-            height: calc(100vh - 64px);
+            height: calc(100vh - 60px);
             overflow: hidden;
         }
 
@@ -137,29 +139,29 @@
 
         /* --- 1. Magazin / Feed Ansicht --- */
         #magazineView {
-            padding: 40px 20px;
+            padding: 20px 16px;
             max-width: 900px;
             margin: 0 auto;
             flex-direction: column;
-            gap: 24px;
+            gap: 20px;
         }
 
         .hero-banner {
             background: linear-gradient(135deg, #1e293b, #0f172a);
             color: white;
-            padding: 40px;
-            border-radius: 16px;
+            padding: 24px 16px;
+            border-radius: 12px;
             text-align: center;
             border: 1px solid var(--border);
         }
 
-        .hero-banner h1 { margin: 0 0 10px 0; font-size: 2rem; }
-        .hero-banner p { margin: 0; color: #94a3b8; font-size: 1rem; }
+        .hero-banner h1 { margin: 0 0 8px 0; font-size: 1.5rem; }
+        .hero-banner p { margin: 0; color: #94a3b8; font-size: 0.9rem; }
 
         .magazine-grid {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
             padding-bottom: 40px;
         }
 
@@ -171,7 +173,6 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.02);
             display: flex;
             flex-direction: column;
-            transition: background 0.3s, border-color 0.3s;
         }
 
         @media (min-width: 640px) {
@@ -179,11 +180,11 @@
             .mag-card img { width: 320px; height: 220px; object-fit: cover; }
         }
 
-        .mag-card img { width: 100%; height: 200px; object-fit: cover; }
-        .mag-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .mag-spot-name { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 10px; }
-        .mag-story { font-size: 0.95rem; line-height: 1.5; color: var(--text-main); margin-bottom: 15px; white-space: pre-line; }
-        .mag-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 12px; font-size: 0.8rem; color: var(--text-muted); }
+        .mag-card img { width: 100%; height: 180px; object-fit: cover; }
+        .mag-content { padding: 16px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .mag-spot-name { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+        .mag-story { font-size: 0.9rem; line-height: 1.5; color: var(--text-main); margin-bottom: 12px; white-space: pre-line; }
+        .mag-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 10px; font-size: 0.75rem; color: var(--text-muted); flex-wrap: wrap; gap: 8px; }
 
 
         /* --- 2. Karten Ansicht --- */
@@ -197,16 +198,16 @@
         #map { height: 100%; flex-grow: 1; transition: margin-left 0.3s ease; }
 
         .sidebar {
-            width: 400px; height: 100%; 
+            width: 380px; height: 100%; 
             background: var(--bg-sidebar); 
-            padding: 24px;
+            padding: 16px;
             box-shadow: 4px 0 24px rgba(0, 0, 0, 0.06); 
             overflow-y: auto; 
             box-sizing: border-box;
             z-index: 1000; 
             display: flex; 
             flex-direction: column; 
-            gap: 20px;
+            gap: 16px;
             transition: transform 0.3s ease, background 0.3s;
             position: relative;
         }
@@ -233,69 +234,61 @@
             align-items: center;
             justify-content: center;
             font-size: 0.9rem;
-            transition: all 0.2s;
         }
-        .collapse-btn:hover { opacity: 0.8; }
 
         .pc-open-btn {
             display: none;
             position: fixed;
-            top: 84px;
-            left: 20px;
+            top: 72px;
+            left: 12px;
             background: var(--bg-card);
             border: 1px solid var(--border);
             color: var(--text-main);
-            padding: 10px 14px;
+            padding: 8px 12px;
             border-radius: 8px;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             z-index: 1500;
             cursor: pointer;
             align-items: center;
-            gap: 8px;
-            transition: background 0.2s;
+            gap: 6px;
         }
-        .pc-open-btn:hover { background: var(--border); }
 
         .section-box { 
-            background: var(--bg-card); padding: 18px; border-radius: 12px; 
-            border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.02); 
-            transition: background 0.3s, border-color 0.3s;
+            background: var(--bg-card); padding: 14px; border-radius: 12px; 
+            border: 1px solid var(--border); 
         }
-        .section-box h3 { font-size: 0.95rem; margin-top: 0; margin-bottom: 12px; font-weight: 600; color: var(--text-main); }
+        .section-box h3 { font-size: 0.9rem; margin-top: 0; margin-bottom: 10px; font-weight: 600; color: var(--text-main); }
 
         .spot-item { 
             display: flex; justify-content: space-between; align-items: flex-start; 
-            padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; 
+            padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; 
         }
         .spot-item:last-child { border-bottom: none; }
-        .spot-info { flex-grow: 1; cursor: pointer; padding-right: 10px; }
-        .spot-info:hover .spot-title { color: var(--primary-hover); }
+        .spot-info { flex-grow: 1; cursor: pointer; padding-right: 8px; }
         .spot-title { color: var(--primary); font-weight: 600; display: block; margin-bottom: 2px; }
-        .article-count { font-size: 0.75rem; color: var(--primary); font-weight: 600; background: rgba(37, 99, 235, 0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; }
+        .article-count { font-size: 0.7rem; color: var(--primary); font-weight: 600; background: rgba(37, 99, 235, 0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; }
 
         .map-style-toggle {
             position: absolute;
-            top: 20px; right: 20px;
+            top: 12px; right: 12px;
             background: var(--bg-card);
             color: var(--text-main);
             border: 1px solid var(--border);
-            padding: 8px 14px;
+            padding: 6px 12px;
             border-radius: 8px;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             z-index: 1500;
             cursor: pointer;
-            transition: background 0.2s;
         }
-        .map-style-toggle:hover { background: var(--border); }
 
 
         /* --- 3. Beitrag erstellen Ansicht --- */
         #createView {
-            padding: 40px 20px;
+            padding: 20px 16px;
             max-width: 600px;
             margin: 0 auto;
             flex-direction: column;
@@ -303,72 +296,94 @@
 
         .form-card {
             background: var(--bg-card);
-            padding: 30px;
+            padding: 20px 16px;
             border-radius: 16px;
             border: 1px solid var(--border);
             box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            transition: background 0.3s, border-color 0.3s;
         }
 
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 0.85rem; margin-bottom: 6px; font-weight: 600; color: var(--text-muted); }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 0.8rem; margin-bottom: 5px; font-weight: 600; color: var(--text-muted); }
         .form-group input, .form-group textarea, .form-group select { 
-            width: 100%; padding: 12px; box-sizing: border-box; 
+            width: 100%; padding: 10px; box-sizing: border-box; 
             border: 1px solid var(--border); border-radius: 8px; 
-            font-size: 0.95rem; font-family: inherit; background: var(--bg-main); color: var(--text-main);
+            font-size: 0.9rem; font-family: inherit; background: var(--bg-main); color: var(--text-main);
         }
-        .form-group input[type="file"] { padding: 8px; cursor: pointer; }
+        .form-group input[type="file"] { padding: 6px; cursor: pointer; }
 
         button.primary-btn { 
             background: var(--primary); color: white; border: none; 
-            padding: 12px 20px; width: 100%; border-radius: 8px; 
-            cursor: pointer; font-weight: 600; font-size: 1rem;
-            transition: background 0.2s;
+            padding: 12px; width: 100%; border-radius: 8px; 
+            cursor: pointer; font-weight: 600; font-size: 0.95rem;
         }
-        button.primary-btn:hover { background: var(--primary-hover); }
 
-        .hint { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.4; }
+        .hint { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.4; }
 
 
-        /* Modal für Berichte eines Spots */
+        /* Modal */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); z-index: 3000; justify-content: center; align-items: center;
+            padding: 16px; box-sizing: border-box;
         }
         .modal.active { display: flex; }
         .modal-content {
-            background: var(--bg-card); color: var(--text-main); padding: 30px; border-radius: 16px;
-            width: 90%; max-width: 650px; max-height: 85vh; overflow-y: auto;
-            position: relative; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border);
+            background: var(--bg-card); color: var(--text-main); padding: 20px; border-radius: 16px;
+            width: 100%; max-width: 600px; max-height: 85vh; overflow-y: auto;
+            position: relative; border: 1px solid var(--border); box-sizing: border-box;
         }
         .close-modal {
-            position: absolute; top: 20px; right: 20px;
-            background: var(--border); color: var(--text-main); border: none; width: 32px; height: 32px;
+            position: absolute; top: 16px; right: 16px;
+            background: var(--border); color: var(--text-main); border: none; width: 30px; height: 30px;
             border-radius: 50%; font-weight: bold; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
         }
         .article-card {
             background: var(--bg-main); border: 1px solid var(--border); border-radius: 10px;
-            padding: 16px; margin-bottom: 16px;
+            padding: 14px; margin-bottom: 12px;
         }
-        .article-author { font-size: 0.8rem; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
-        .article-story { font-size: 0.9rem; line-height: 1.5; color: var(--text-main); white-space: pre-line; margin-top: 8px; }
-        .article-card img { width: 100%; max-height: 220px; object-fit: cover; border-radius: 8px; margin-top: 10px; }
+        .article-author { font-size: 0.75rem; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+        .article-story { font-size: 0.85rem; line-height: 1.4; color: var(--text-main); white-space: pre-line; margin-top: 6px; }
+        .article-card img { width: 100%; max-height: 180px; object-fit: cover; border-radius: 6px; margin-top: 8px; }
 
         .tag { 
             display: inline-block; background: rgba(37, 99, 235, 0.1); color: var(--primary); 
-            padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; 
+            padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; 
             margin-right: 4px; margin-top: 4px; font-weight: 600; 
         }
 
-        .action-btn { background: var(--border); color: var(--text-main); border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600; }
-        .delete-btn { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600; }
-        .delete-btn:hover { background: var(--danger); color: white; }
+        .action-btn { background: var(--border); color: var(--text-main); border: none; padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: 600; }
+        .delete-btn { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: none; padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: 600; }
 
         .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--bg-card) !important; color: var(--text-main) !important; }
         .leaflet-popup-content b { color: var(--text-main); }
-        .popup-link { color: var(--primary); font-weight: 600; cursor: pointer; text-decoration: underline; font-size: 0.85rem; margin-right: 10px; }
+        .popup-link { color: var(--primary); font-weight: 600; cursor: pointer; text-decoration: underline; font-size: 0.8rem; margin-right: 8px; }
+
+
+        /* --- RESPONSIVE OPTIMIERUNG FÜR SMARTPHONES (MAX 768px) --- */
+        @media (max-width: 768px) {
+            header { padding: 0 10px; height: 56px; }
+            .logo { font-size: 0.95rem; gap: 4px; }
+            .nav-btn { padding: 5px 8px; font-size: 0.75rem; }
+            .theme-toggle-btn { width: 30px; height: 30px; font-size: 0.85rem; }
+
+            .view-container { height: calc(100vh - 56px); }
+
+            /* Auf Mobile: Karte & Sidebar untereinander umschaltbar machen */
+            #mapView { flex-direction: column; }
+            .sidebar {
+                width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+                z-index: 1200; transform: translateY(0); padding: 16px;
+            }
+            .sidebar.collapsed { transform: translateY(-100%); position: absolute; }
+            .collapse-btn { display: none; /* Am Handy nutzen wir die Nav oben oder einen Toggle */ }
+            
+            .pc-open-btn {
+                top: auto; bottom: 20px; left: 50%; transform: translateX(-50%);
+                padding: 12px 20px; border-radius: 30px; font-size: 0.9rem;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            }
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -376,13 +391,13 @@
     <!-- Header / Navigation -->
     <header>
         <div class="logo" onclick="switchView('magazine')">
-            <span>📸</span> Alpin-Adria Magazin
+            <span>📸</span> <span>Alpin-Adria</span>
         </div>
         <div class="nav-right">
             <div class="nav-links">
                 <button class="nav-btn active" id="navMag" onclick="switchView('magazine')">📖 Magazin</button>
                 <button class="nav-btn" id="navMap" onclick="switchView('map')">🗺️ Karte</button>
-                <button class="nav-btn" id="navCreate" onclick="switchView('create')">✍️ Schreiben</button>
+                <button class="nav-btn" id="navCreate" onclick="switchView('create')">✍️ Neu</button>
             </div>
             <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Design umschalten">🌙</button>
         </div>
@@ -395,20 +410,20 @@
         <div class="view-section active" id="magazineView">
             <div class="hero-banner">
                 <h1>Alpin-Adria Fotomagazin</h1>
-                <p>Entdecke die besten Fotospots, Lichtstimmungen und Erfahrungsberichte der Community.</p>
+                <p>Entdecke die besten Fotospots und Berichte.</p>
             </div>
             <div class="magazine-grid" id="magazineFeed"></div>
         </div>
 
         <!-- 2. Karten & Sidebar Ansicht -->
         <div class="view-section" id="mapView">
-            <button class="pc-open-btn" id="pcOpenBtn" onclick="toggleSidebarPC()">📂 Menü öffnen</button>
+            <button class="pc-open-btn" id="pcOpenBtn" onclick="toggleSidebarMobile()">📝 Liste & Filter anzeigen</button>
             <button class="map-style-toggle" id="mapStyleBtn" onclick="toggleMapStyle()">🛰️ Satellit</button>
 
             <div class="sidebar" id="sidebar">
                 <div class="sidebar-header">
                     <h3 style="margin:0;">Spot-Filter & Liste</h3>
-                    <button class="collapse-btn" onclick="toggleSidebarPC()" title="Menü einklappen">◀</button>
+                    <button class="collapse-btn" onclick="toggleSidebarMobile()" title="Menü einklappen">✕</button>
                 </div>
                 <div class="section-box">
                     <h3 style="margin-top:0;">Kategorien</h3>
@@ -425,8 +440,8 @@
         <!-- 3. Beitrag Verfassen Ansicht -->
         <div class="view-section" id="createView">
             <div class="form-card">
-                <h2 style="margin-top:0;">Neuen Beitrag erstellen</h2>
-                <p class="hint">Teile deine Erfahrung zu einem bestehenden Spot oder lege einen ganz neuen Spot samt GPS-Koordinaten an.</p>
+                <h2 style="margin-top:0; font-size: 1.2rem;">Neuen Beitrag erstellen</h2>
+                <p class="hint">Teile deine Erfahrung zu einem bestehenden Spot oder lege einen neuen an.</p>
                 
                 <form id="spotForm">
                     <div class="form-group">
@@ -448,12 +463,12 @@
 
                     <div class="form-group">
                         <label for="blogStory">Reisebericht & Fotoprozess</label>
-                        <textarea id="blogStory" rows="5" required placeholder="Wie war das Licht? Welche Blende, Verschlusszeit oder Ausrüstung hast du genutzt?"></textarea>
+                        <textarea id="blogStory" rows="4" required placeholder="Wie war das Licht? Einstellungen?"></textarea>
                     </div>
 
                     <div class="form-group" id="newSpotTagsGroup">
                         <label for="tags">Tags (kommagetrennt)</label>
-                        <input type="text" id="tags" placeholder="Wasserfall, Natur, Langzeitbelichtung">
+                        <input type="text" id="tags" placeholder="Wasserfall, Natur">
                     </div>
 
                     <div class="form-group">
@@ -483,8 +498,8 @@
     <div class="modal" id="blogModal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeBlogModal()">×</button>
-            <h2 id="modalSpotTitle">Titel</h2>
-            <div id="modalSpotTags" style="margin-bottom: 15px;"></div>
+            <h2 id="modalSpotTitle" style="font-size: 1.2rem;">Titel</h2>
+            <div id="modalSpotTags" style="margin-bottom: 12px;"></div>
             <div id="modalArticlesContainer"></div>
         </div>
     </div>
@@ -515,16 +530,18 @@
         }
 
         var isSidebarCollapsedPC = false;
-        function toggleSidebarPC() {
+        function toggleSidebarMobile() {
             var sidebar = document.getElementById('sidebar');
             var openBtn = document.getElementById('pcOpenBtn');
             isSidebarCollapsedPC = !isSidebarCollapsedPC;
             if (isSidebarCollapsedPC) {
                 sidebar.classList.add('collapsed');
                 openBtn.style.display = 'flex';
+                openBtn.textContent = "📝 Liste & Filter anzeigen";
             } else {
                 sidebar.classList.remove('collapsed');
-                openBtn.style.display = 'none';
+                openBtn.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+                openBtn.textContent = "🗺️ Karte anzeigen";
             }
             setTimeout(function() { map.invalidateSize(); }, 300);
         }
@@ -582,7 +599,13 @@
             } else if (viewName === 'map') {
                 document.getElementById('mapView').classList.add('active');
                 document.getElementById('navMap').classList.add('active');
-                setTimeout(() => map.invalidateSize(), 200);
+                setTimeout(() => {
+                    map.invalidateSize();
+                    // Am Handy standardmäßig Sidebar einklappen, damit man direkt die Karte sieht
+                    if (window.innerWidth <= 768 && !isSidebarCollapsedPC) {
+                        toggleSidebarMobile();
+                    }
+                }, 200);
             } else if (viewName === 'create') {
                 document.getElementById('createView').classList.add('active');
                 document.getElementById('navCreate').classList.add('active');
@@ -630,6 +653,10 @@
 
         function jumpToSpot(spotIndex) {
             switchView('map');
+            // Am Handy Sidebar zuklappen, wenn man zu einem Spot springt
+            if (window.innerWidth <= 768 && !isSidebarCollapsedPC) {
+                toggleSidebarMobile();
+            }
             var spot = spots[spotIndex];
             map.setView([spot.lat, spot.lng], 14);
             if (markers[spotIndex]) {
@@ -729,9 +756,9 @@
                         <span class='spot-title'>${spot.title}</span>
                         <div class='spot-desc'><span class='article-count'>📖 ${artCount} Bericht(e)</span></div>
                     </div>
-                    <div style="display:flex; gap:5px; align-items:center;">
+                    <div style="display:flex; gap:4px; align-items:center;">
                         <button class='action-btn' onclick='openBlogModal(${originalIndex})'>📖</button>
-                        <button class='delete-btn' onclick='deleteSpot(${originalIndex})'>Löschen</button>
+                        <button class='delete-btn' onclick='deleteSpot(${originalIndex})'>X</button>
                     </div>
                 `;
                 listContainer.appendChild(item);
@@ -789,7 +816,7 @@
             var imageFile = document.getElementById('imageFile').files[0];
 
             function save(imageUrl) {
-                var targetVal = document.getElementById('spotTarget').value;
+                var targetVal = document.getElementById('spotTarget.value') || document.getElementById('spotTarget').value;
                 var author = document.getElementById('author').value;
                 var story = document.getElementById('blogStory').value;
 
