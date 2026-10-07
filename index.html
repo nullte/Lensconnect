@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpin-Adria Fotospots</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --bg-sidebar: #ffffff;
+            --bg-main: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body { 
+            margin: 0; padding: 0; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            display: flex; 
+            background-color: var(--bg-main);
+            color: var(--text-main);
+        }
+
+        #map { height: 100vh; flex-grow: 1; }
+
+        .sidebar {
+            width: 400px; height: 100vh; 
+            background: var(--bg-sidebar); 
+            padding: 24px;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.06); 
+            overflow-y: auto; 
+            box-sizing: border-box;
+            z-index: 1000; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px;
+        }
+
+        .sidebar h2 { 
+            font-size: 1.4rem; 
+            margin: 0; 
+            color: var(--text-main); 
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section { 
+            background: #ffffff; 
+            padding: 18px; 
+            border-radius: 12px; 
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02); 
+        }
+
+        .section h3 {
+            font-size: 0.95rem; 
+            margin-top: 0; 
+            margin-bottom: 12px; 
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.8rem; margin-bottom: 5px; font-weight: 600; color: var(--text-muted); }
+        .form-group input, .form-group textarea { 
+            width: 100%; padding: 10px 12px; box-sizing: border-box; 
+            border: 1px solid var(--border); border-radius: 8px; 
+            font-size: 0.9rem; font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        button.primary-btn { 
+            background: var(--primary); color: white; border: none; 
+            padding: 10px 16px; width: 100%; border-radius: 8px; 
+            cursor: pointer; font-weight: 600; font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        button.primary-btn:hover { background: var(--primary-hover); }
+
+        .hint { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4; }
+        
+        /* Filter-Buttons */
+        .filter-container { display: flex; gap: 6px; flex-wrap: wrap; }
+        .filter-btn { 
+            background: #f1f5f9; color: var(--text-muted); border: none; 
+            padding: 6px 12px; border-radius: 20px; cursor: pointer; 
+            font-size: 0.75rem; font-weight: 600; transition: all 0.2s;
+        }
+        .filter-btn:hover { background: #e2e8f0; color: var(--text-main); }
+        .filter-btn.active { background: var(--primary); color: white; }
+
+        /* Tag-Badges */
+        .tag { 
+            display: inline-block; background: #eff6ff; color: var(--primary); 
+            padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; 
+            margin-right: 4px; margin-top: 4px; font-weight: 600; 
+        }
+        
+        /* Spot-Liste */
+        .spot-item { 
+            display: flex; justify-content: space-between; align-items: flex-start; 
+            padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; 
+            transition: background 0.2s;
+        }
+        .spot-item:last-child { border-bottom: none; }
+        .spot-info { flex-grow: 1; cursor: pointer; padding-right: 10px; }
+        .spot-info:hover .spot-title { color: var(--primary-hover); }
+        .spot-title { color: var(--primary); font-weight: 600; display: block; margin-bottom: 2px; }
+        .spot-desc { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        .delete-btn { 
+            background: #ffeeef; color: var(--danger); border: none; 
+            padding: 6px 10px; border-radius: 6px; cursor: pointer; 
+            font-size: 0.75rem; font-weight: 600; transition: all 0.2s;
+        }
+        .delete-btn:hover { background: var(--danger); color: white; }
+        
+        .spot-list-container { max-height: 240px; overflow-y: auto; padding-right: 4px; }
+
+        /* Schöneres Leaflet Popup Design */
+        .leaflet-popup-content-wrapper { border-radius: 12px; padding: 4px; }
+        .leaflet-popup-content { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem; line-height: 1.4; color: var(--text-main); }
+        .leaflet-popup-content b { font-size: 1rem; color: var(--text-main); display: block; margin-bottom: 4px; }
+        .leaflet-popup-content img { width: 100%; max-height: 160px; object-fit: cover; border-radius: 8px; margin-top: 8px; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2><span>📸</span> Alpin-Adria Spots</h2>
+
+        <!-- Filter Bereich -->
+        <div class="section">
+            <h3>Kategorien</h3>
+            <div class="filter-container" id="filterButtons">
+                <button class="filter-btn active" onclick="filterSpots('Alle')">Alle</button>
+            </div>
+        </div>
+
+        <!-- Formular Bereich -->
+        <div class="section">
+            <h3>Neuen Spot eintragen</h3>
+            <p class="hint">Klicke irgendwo auf die Karte, um die exakten GPS-Koordinaten automatisch zu übernehmen.</p>
+            
+            <form id="spotForm">
+                <div class="form-group">
+                    <label for="title">Titel des Spots</label>
+                    <input type="text" id="title" required placeholder="z.B. Raibl-See">
+                </div>
+                <div class="form-group">
+                    <label for="desc">Beschreibung & Tipps</label>
+                    <textarea id="desc" rows="2" required placeholder="Beste Tageszeit, Ausrüstung..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="tags">Tags (kommagetrennt)</label>
+                    <input type="text" id="tags" placeholder="Wasserfall, Natur, Drohne">
+                </div>
+                <div class="form-group">
+                    <label for="image">Bild-URL (Vorschau)</label>
+                    <input type="text" id="image" placeholder="https://beispiel.de/bild.jpg">
+                </div>
+                <div class="form-group" style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label for="lat">Breitengrad</label>
+                        <input type="text" id="lat" required placeholder="46.558">
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="lng">Längengrad</label>
+                        <input type="text" id="lng" required placeholder="13.712">
+                    </div>
+                </div>
+                <button type="submit" class="primary-btn">Spot auf Karte speichern</button>
+            </form>
+        </div>
+
+        <!-- Liste aller Spots -->
+        <div class="section">
+            <h3>Entdeckte Spots (<span id="spotCount">0</span>)</h3>
+            <div class="spot-list-container" id="spotList">
+                <!-- Wird per JavaScript gefüllt -->
+            </div>
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map', { zoomControl: false }).setView([46.555, 13.710], 11);
+        L.control.zoom({ position: 'topright' }).addTo(map);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        var defaultSpots = [
+            { 
+                lat: 46.5580, lng: 13.7120, 
+                title: "Arnoldsteiner Wasserfall", 
+                desc: "Geheimtipp im Graben. Perfekt für Langzeitbelichtungen!",
+                tags: ["Wasserfall", "Natur"],
+                image: "https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=600"
+            },
+            { 
+                lat: 46.5300, lng: 13.6800, 
+                title: "Ausblick am Dobratsch", 
+                desc: "Toller Blick ins Gailtal zum Sonnenuntergang.",
+                tags: ["Berg", "Sonnenuntergang", "Natur"],
+                image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600"
+            }
+        ];
+
+        var savedSpots = localStorage.getItem('fotospots');
+        var spots = savedSpots ? JSON.parse(savedSpots) : defaultSpots;
+        var markers = [];
+        var currentFilter = 'Alle';
+
+        function renderFilters() {
+            var allTags = [];
+            spots.forEach(function(spot) {
+                if (spot.tags) {
+                    spot.tags.forEach(function(tag) {
+                        if (!allTags.includes(tag)) {
+                            allTags.push(tag);
+                        }
+                    });
+                }
+            });
+
+            var filterContainer = document.getElementById('filterButtons');
+            var html = '<button class="filter-btn ' + (currentFilter === 'Alle' ? 'active' : '') + '" onclick="filterSpots(\'Alle\')">Alle</button>';
+
+            allTags.forEach(function(tag) {
+                var activeClass = currentFilter === tag ? 'active' : '';
+                html += '<button class="filter-btn ' + activeClass + '" onclick="filterSpots(\'' + tag + '\')">' + tag + '</button>';
+            });
+
+            filterContainer.innerHTML = html;
+        }
+
+        function filterSpots(tag) {
+            currentFilter = tag;
+            renderApp();
+        }
+
+        function renderApp() {
+            markers.forEach(function(m) { map.removeLayer(m); });
+            markers = [];
+
+            var listContainer = document.getElementById('spotList');
+            listContainer.innerHTML = "";
+            
+            var filteredSpots = spots.filter(function(spot) {
+                if (currentFilter === 'Alle') return true;
+                return spot.tags && spot.tags.includes(currentFilter);
+            });
+
+            document.getElementById('spotCount').textContent = filteredSpots.length;
+
+            filteredSpots.forEach(function(spot) {
+                var content = "<b>" + spot.title + "</b>" + spot.desc;
+                if (spot.tags && spot.tags.length > 0) {
+                    content += "<br>";
+                    spot.tags.forEach(function(t) {
+                        content += "<span class='tag'>" + t + "</span>";
+                    });
+                }
+                if (spot.image) {
+                    content += "<br><img src='" + spot.image + "' alt='Spot Bild'>";
+                }
+                
+                var marker = L.marker([spot.lat, spot.lng]).addTo(map);
+                marker.bindPopup(content);
+                markers.push(marker);
+
+                var item = document.createElement('div');
+                item.className = 'spot-item';
+                
+                var infoDiv = document.createElement('div');
+                infoDiv.className = 'spot-info';
+                
+                var tagsHtml = "";
+                if (spot.tags) {
+                    spot.tags.forEach(function(t) {
+                        tagsHtml += "<span class='tag'>" + t + "</span>";
+                    });
+                }
+                
+                infoDiv.innerHTML = "<span class='spot-title'>" + spot.title + "</span><div class='spot-desc'>" + spot.desc + "</div>" + tagsHtml;
+                
+                infoDiv.onclick = function() {
+                    map.setView([spot.lat, spot.lng], 14);
+                    var markerIndex = filteredSpots.indexOf(spot);
+                    if (markers[markerIndex]) {
+                        markers[markerIndex].openPopup();
+                    }
+                };
+
+                var deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.textContent = 'Löschen';
+                deleteBtn.onclick = function(e) {
+                    e.stopPropagation();
+                    if (confirm("Möchtest du den Spot '" + spot.title + "' wirklich löschen?")) {
+                        var originalIndex = spots.indexOf(spot);
+                        if (originalIndex > -1) {
+                            spots.splice(originalIndex, 1);
+                            localStorage.setItem('fotospots', JSON.stringify(spots));
+                            renderApp();
+                        }
+                    }
+                };
+
+                item.appendChild(infoDiv);
+                item.appendChild(deleteBtn);
+                listContainer.appendChild(item);
+            });
+
+            renderFilters();
+        }
+
+        renderApp();
+
+        map.on('click', function(e) {
+            document.getElementById('lat').value = e.latlng.lat.toFixed(4);
+            document.getElementById('lng').value = e.latlng.lng.toFixed(4);
+        });
+
+        document.getElementById('spotForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            var rawTags = document.getElementById('tags').value;
+            var tagsArray = rawTags ? rawTags.split(',').map(function(tag) { return tag.trim(); }).filter(function(tag) { return tag.length > 0; }) : [];
+
+            var newSpot = {
+                lat: parseFloat(document.getElementById('lat').value),
+                lng: parseFloat(document.getElementById('lng').value),
+                title: document.getElementById('title').value,
+                desc: document.getElementById('desc').value,
+                tags: tagsArray,
+                image: document.getElementById('image').value
+            };
+
+            spots.push(newSpot);
+            localStorage.setItem('fotospots', JSON.stringify(spots));
+
+            currentFilter = 'Alle';
+            renderApp();
+            document.getElementById('spotForm').reset();
+        });
+    </script>
+
+</body>
+</html>
