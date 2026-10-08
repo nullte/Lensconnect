@@ -13,6 +13,7 @@
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
             --danger: #ef4444;
+            --light-badge: #d97706; /* Goldton für Lichtstimmungen */
             --bg-sidebar: #ffffff;
             --bg-main: #f8fafc;
             --bg-card: #ffffff;
@@ -26,6 +27,7 @@
             --primary: #3b82f6;
             --primary-hover: #60a5fa;
             --danger: #f87171;
+            --light-badge: #fbbf24;
             --bg-sidebar: #1e293b;
             --bg-main: #0f172a;
             --bg-card: #1e293b;
@@ -83,7 +85,7 @@
             display: flex;
             gap: 4px;
             overflow-x: auto;
-            max-width: 50vw;
+            max-width: 45vw;
         }
 
         .nav-btn {
@@ -221,6 +223,14 @@
             font-size: 0.7rem;
             font-weight: 600;
         }
+        .light-badge {
+            background: rgba(217, 119, 6, 0.15);
+            color: var(--light-badge);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
 
         .mag-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 10px; font-size: 0.75rem; color: var(--text-muted); flex-wrap: wrap; gap: 8px; }
 
@@ -302,7 +312,6 @@
             gap: 6px;
         }
 
-        /* GPS & Satellit Buttons auf der Karte */
         .map-controls-top-right {
             position: absolute;
             top: 12px; right: 12px;
@@ -343,7 +352,7 @@
         .article-count { font-size: 0.7rem; color: var(--primary); font-weight: 600; background: rgba(37, 99, 235, 0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; }
 
 
-        /* --- 3. Beitrag erstellen Ansicht --- */
+        /* --- 3. JSON Backup & Einstellungen --- */
         #createView {
             padding: 20px 16px 80px 16px;
             max-width: 600px;
@@ -358,6 +367,7 @@
             border-radius: 16px;
             border: 1px solid var(--border);
             box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            margin-bottom: 20px;
         }
 
         .form-group { margin-bottom: 12px; }
@@ -375,6 +385,24 @@
             cursor: pointer; font-weight: 600; font-size: 0.9rem;
         }
         button.primary-btn:hover { background: var(--primary-hover); }
+
+        .backup-btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        .backup-btn {
+            flex: 1;
+            background: var(--border);
+            color: var(--text-main);
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .backup-btn:hover { opacity: 0.8; }
 
         .hint { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.4; }
 
@@ -398,7 +426,7 @@
         }
         .popup-form-group { margin-bottom: 8px; }
         .popup-form-group label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 2px; }
-        .popup-form-group input, .popup-form-group textarea {
+        .popup-form-group input, .popup-form-group textarea, .popup-form-group select {
             width: 100%; padding: 6px 8px; box-sizing: border-box;
             border: 1px solid var(--border); border-radius: 6px;
             font-size: 0.8rem; font-family: inherit; background: var(--bg-main); color: var(--text-main);
@@ -424,7 +452,6 @@
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* Lightbox für Großansicht */
         .lightbox-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
             background: rgba(0,0,0,0.9); z-index: 4000; justify-content: center; align-items: center;
@@ -452,6 +479,8 @@
         .popup-link { color: var(--primary); font-weight: 600; cursor: pointer; text-decoration: underline; font-size: 0.8rem; margin-right: 8px; }
 
         .coord-hint { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; font-family: monospace; }
+        .gpx-link { display: inline-block; margin-top: 6px; font-size: 0.75rem; color: var(--primary); font-weight: 600; text-decoration: none; }
+        .gpx-link:hover { text-decoration: underline; }
 
 
         /* --- RESPONSIVE OPTIMIERUNG FÜR SMARTPHONES (MAX 768px) --- */
@@ -491,7 +520,7 @@
                 <button class="nav-btn active" id="navMag" onclick="switchView('magazine')">📖 Magazin</button>
                 <button class="nav-btn" id="navFav" onclick="switchView('favorites')">⭐ Merkzettel</button>
                 <button class="nav-btn" id="navMap" onclick="switchView('map')">🗺️ Karte</button>
-                <button class="nav-btn" id="navCreate" onclick="switchView('create')">✍️ Neu</button>
+                <button class="nav-btn" id="navCreate" onclick="switchView('create')">⚙️ Daten</button>
             </div>
             <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Design umschalten">🌙</button>
         </div>
@@ -504,10 +533,10 @@
         <div class="view-section active" id="magazineView">
             <div class="hero-banner">
                 <h1>Alpin-Adria Fotomagazin</h1>
-                <p>Entdecke die besten Fotospots und Berichte.</p>
+                <p>Entdecke die besten Fotospots, Lichtstimmungen und Routen.</p>
             </div>
             <div class="search-bar-container">
-                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Nach Spot, Autor oder Stichwort suchen..." oninput="handleSearchInput()">
+                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Nach Spot, Lichtstimmung, Autor suchen..." oninput="handleSearchInput()">
             </div>
             <div class="magazine-grid" id="magazineFeed"></div>
         </div>
@@ -548,35 +577,23 @@
             <div id="map"></div>
         </div>
 
-        <!-- 3. Beitrag Verfassen Ansicht (Fallback/Menü) -->
+        <!-- 3. Backup & Daten Verwaltung (JSON Export / Import) -->
         <div class="view-section" id="createView">
             <div class="form-card" style="width: 100%; max-width: 500px; margin: 0 auto;">
-                <h2 style="margin-top:0; font-size: 1.2rem;">Neuen Beitrag erstellen</h2>
-                <p class="hint">Tipp: Du kannst auch direkt auf die Karte klicken, um dort im Popup einen Spot anzulegen!</p>
+                <h2 style="margin-top:0; font-size: 1.2rem;">Daten & Backup (JSON)</h2>
+                <p class="hint">Sichere alle deine Fotospots und Berichte als Datei oder spiele ein bestehendes Backup auf ein anderes Gerät auf.</p>
                 
-                <form id="standaloneForm" onsubmit="handleStandaloneSubmit(event)">
-                    <div class="form-group">
-                        <label for="standTitle">Spot-Titel</label>
-                        <input type="text" id="standTitle" required placeholder="z.B. Predil-See">
-                    </div>
-                    <div class="form-group">
-                        <label for="standAuthor">Dein Name</label>
-                        <input type="text" id="standAuthor" required placeholder="z.B. Anna Fotografie">
-                    </div>
-                    <div class="form-group">
-                        <label for="standStory">Reisebericht</label>
-                        <textarea id="standStory" rows="3" required placeholder="Wie war dein Erlebnis?"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="standTags">Tags (kommagetrennt)</label>
-                        <input type="text" id="standTags" placeholder="See, Natur">
-                    </div>
-                    <div class="form-group" style="display: flex; gap: 10px;">
-                        <div style="flex: 1;"><label>Lat</label><input type="text" id="standLat" value="46.558" required></div>
-                        <div style="flex: 1;"><label>Lng</label><input type="text" id="standLng" value="13.712" required></div>
-                    </div>
-                    <button type="submit" class="primary-btn">Spot erstellen</button>
-                </form>
+                <div class="backup-btn-group" style="margin-bottom: 24px;">
+                    <button type="button" class="backup-btn" onclick="exportJSON()">📥 Backup herunterladen</button>
+                    <label class="backup-btn" style="text-align:center; display:inline-block; cursor:pointer;">
+                        📤 Backup laden <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importJSON(event)">
+                    </label>
+                </div>
+
+                <hr style="border:0; border-top:1px solid var(--border); margin-bottom:20px;">
+
+                <h3 style="font-size: 1rem; margin-top:0;">Tipp für neue Spots</h3>
+                <p class="hint">Klicke einfach unten in der Navigation auf <strong>🗺️ Karte</strong> und tippe an eine beliebige Stelle in der Karte, um dort direkt im Popup einen neuen Spot samt Lichtstimmung und GPX-Link anzulegen!</p>
             </div>
         </div>
 
@@ -639,6 +656,40 @@
             } else {
                 alert("Dein Browser unterstützt keine Geolokalisierung.");
             }
+        }
+
+        // JSON Backup Export & Import (Schritt 4)
+        function exportJSON() {
+            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(spots, null, 2));
+            var downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "alpin_adria_fotospots_backup.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importJSON(event) {
+            var file = event.target.files[0];
+            if (!file) return;
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    var importedSpots = JSON.parse(e.target.result);
+                    if (Array.isArray(importedSpots)) {
+                        spots = importedSpots;
+                        localStorage.setItem('fotospots_v10', JSON.stringify(spots));
+                        renderApp();
+                        alert("Backup erfolgreich geladen! 🚀");
+                        switchView('magazine');
+                    } else {
+                        alert("Ungültiges Datei-Format.");
+                    }
+                } catch(err) {
+                    alert("Fehler beim Lesen der JSON-Datei.");
+                }
+            };
+            reader.readAsText(file);
         }
 
         // Lightbox für Bilder öffnen
@@ -712,6 +763,8 @@
                     {
                         author: "Markus K.",
                         story: "Morgendliches Weichlicht im schattigen Canyon.",
+                        lightMood: "🌅 Morgenlicht",
+                        gpxUrl: "https://www.komoot.de",
                         aperture: "f/11", shutter: "15s", iso: "ISO 64",
                         image: "https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=600"
                     }
@@ -719,7 +772,7 @@
             }
         ];
 
-        var savedSpots = localStorage.getItem('fotospots_v9');
+        var savedSpots = localStorage.getItem('fotospots_v10');
         var spots = savedSpots ? JSON.parse(savedSpots) : defaultSpots;
         
         var savedFavs = localStorage.getItem('fotospots_favs');
@@ -786,6 +839,7 @@
                             spot.title.toLowerCase().includes(query) || 
                             (art.author && art.author.toLowerCase().includes(query)) || 
                             art.story.toLowerCase().includes(query) ||
+                            (art.lightMood && art.lightMood.toLowerCase().includes(query)) ||
                             (spot.tags && spot.tags.some(t => t.toLowerCase().includes(query)));
 
                         if (searchMatch) {
@@ -797,14 +851,15 @@
                             var tagsHtml = spot.tags ? spot.tags.map(t => `<span class="tag">${t}</span>`).join('') : '';
                             var isFav = favorites.includes(spotIdx);
 
-                            var exifHtml = '';
-                            if (art.aperture || art.shutter || art.iso) {
-                                exifHtml = `<div class="exif-badges">`;
-                                if (art.aperture) exifHtml += `<span class="exif-badge">📷 ${art.aperture}</span>`;
-                                if (art.shutter) exifHtml += `<span class="exif-badge">⏱️ ${art.shutter}</span>`;
-                                if (art.iso) exifHtml += `<span class="exif-badge">🔆 ${art.iso}</span>`;
-                                exifHtml += `</div>`;
-                            }
+                            // Lichtstimmung & EXIF Badges
+                            var badgesHtml = '<div class="exif-badges">';
+                            if (art.lightMood) badgesHtml += `<span class="light-badge">${art.lightMood}</span>`;
+                            if (art.aperture) badgesHtml += `<span class="exif-badge">📷 ${art.aperture}</span>`;
+                            if (art.shutter) badgesHtml += `<span class="exif-badge">⏱️ ${art.shutter}</span>`;
+                            if (art.iso) badgesHtml += `<span class="exif-badge">🔆 ${art.iso}</span>`;
+                            badgesHtml += '</div>';
+
+                            var gpxHtml = art.gpxUrl ? `<a href="${art.gpxUrl}" target="_blank" class="gpx-link">🗺️ Route / Wanderung öffnen</a>` : '';
 
                             card.innerHTML = `
                                 <img src="${imgSrc}" alt="Foto" onclick="openLightbox('${imgSrc}')">
@@ -818,8 +873,9 @@
                                             </div>
                                         </div>
                                         <div class="mag-story">${art.story}</div>
-                                        ${exifHtml}
-                                        <div>${tagsHtml}</div>
+                                        ${badgesHtml}
+                                        ${gpxHtml}
+                                        <div style="margin-top:6px;">${tagsHtml}</div>
                                     </div>
                                     <div class="mag-footer">
                                         <span>✍️ von <strong>${art.author || 'Unbekannt'}</strong></span>
@@ -908,8 +964,11 @@
                 var card = document.createElement('div');
                 card.className = 'article-card';
                 var imgSrc = art.image ? art.image : '';
+                var gpxHtml = art.gpxUrl ? `<a href="${art.gpxUrl}" target="_blank" class="gpx-link">🗺️ Route / Wanderung öffnen</a>` : '';
+                
                 card.innerHTML = `<div class='article-author'>✍️ von ${art.author || 'Unbekannt'}</div>` +
                                  `<div class='article-story'>${art.story}</div>` +
+                                 gpxHtml +
                                  (imgSrc ? `<img src='${imgSrc}' alt='Foto' onclick="openLightbox('${imgSrc}')">` : '');
                 container.appendChild(card);
             });
@@ -972,7 +1031,7 @@
         function deleteSpot(index) {
             if (confirm("Möchtest du diesen Spot wirklich löschen?")) {
                 spots.splice(index, 1);
-                localStorage.setItem('fotospots_v9', JSON.stringify(spots));
+                localStorage.setItem('fotospots_v10', JSON.stringify(spots));
                 renderApp();
             }
         }
@@ -996,7 +1055,7 @@
             renderApp();
         }
 
-        // Klick auf Karte öffnet direkt ein Popup-Formular zum Hinzufügen
+        // Klick auf Karte öffnet direkt das erweiterte Popup-Formular
         map.on('click', function(e) {
             var lat = e.latlng.lat;
             var lng = e.latlng.lng;
@@ -1018,6 +1077,20 @@
                         <textarea id="popStory" rows="2" placeholder="Erlebnis..."></textarea>
                     </div>
                     <div class="popup-form-group">
+                        <label>Lichtstimmung</label>
+                        <select id="popLight">
+                            <option value="🌅 Morgenlicht">🌅 Morgenlicht</option>
+                            <option value="🌇 Abendlicht">🌇 Abendlicht</option>
+                            <option value="✨ Blaue Stunde / Nacht">✨ Blaue Stunde / Nacht</option>
+                            <option value="☀️ Tageslicht">☀️ Tageslicht</option>
+                            <option value="☁️ Nebel / Wetter">☁️ Nebel / Wetter</option>
+                        </select>
+                    </div>
+                    <div class="popup-form-group">
+                        <label>GPX / Routen-Link (optional)</label>
+                        <input type="text" id="popGpx" placeholder="https://komoot.de/...">
+                    </div>
+                    <div class="popup-form-group">
                         <label>Tags (kommagetrennt)</label>
                         <input type="text" id="popTags" placeholder="Natur, See">
                     </div>
@@ -1035,11 +1108,13 @@
                 .openOn(map);
         });
 
-        // Direktes Auslesen und Speichern per Button-Klick im Popup
+        // Spot per Popup speichern
         function submitPopupSpot(lat, lng) {
             var title = document.getElementById('popTitle').value.trim();
             var author = document.getElementById('popAuthor').value.trim();
             var story = document.getElementById('popStory').value.trim();
+            var lightMood = document.getElementById('popLight').value;
+            var gpxUrl = document.getElementById('popGpx').value.trim();
             var rawTags = document.getElementById('popTags').value.trim();
             var fileInput = document.getElementById('popImage').files[0];
 
@@ -1056,10 +1131,10 @@
                     lng: lng,
                     title: title,
                     tags: tagsArray,
-                    articles: [{ author: author, story: story, image: imgUrl }]
+                    articles: [{ author: author, story: story, lightMood: lightMood, gpxUrl: gpxUrl, image: imgUrl }]
                 };
                 spots.push(newSpot);
-                localStorage.setItem('fotospots_v9', JSON.stringify(spots));
+                localStorage.setItem('fotospots_v10', JSON.stringify(spots));
                 map.closePopup();
                 renderApp();
             }
@@ -1073,31 +1148,6 @@
             } else {
                 saveSpot("");
             }
-        }
-
-        // Falls man über den Menüpunkt "Neu" geht
-        function handleStandaloneSubmit(event) {
-            event.preventDefault();
-            var title = document.getElementById('standTitle').value;
-            var author = document.getElementById('standAuthor').value;
-            var story = document.getElementById('standStory').value;
-            var rawTags = document.getElementById('standTags').value;
-            var tagsArray = rawTags ? rawTags.split(',').map(t => t.trim()).filter(t => t.length > 0) : [];
-            var lat = parseFloat(document.getElementById('standLat').value);
-            var lng = parseFloat(document.getElementById('standLng').value);
-
-            spots.push({
-                lat: lat,
-                lng: lng,
-                title: title,
-                tags: tagsArray,
-                articles: [{ author: author, story: story, image: "" }]
-            });
-
-            localStorage.setItem('fotospots_v9', JSON.stringify(spots));
-            document.getElementById('standaloneForm').reset();
-            switchView('map');
-            renderApp();
         }
 
         renderApp();
