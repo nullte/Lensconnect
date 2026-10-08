@@ -505,7 +505,7 @@
         .badge-offer { background: rgba(37, 99, 235, 0.1); color: var(--primary); padding: 2px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; }
         .badge-request { background: rgba(217, 119, 6, 0.15); color: var(--light-badge); padding: 2px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; }
         
-        /* Skill Level Badges */
+        /* Erfahrung & Anspruch Badges */
         .skill-pro { background: rgba(16, 185, 129, 0.15); color: #059669; padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; margin-left: 6px; border: 1px solid rgba(16, 185, 129, 0.3); }
         .skill-amateur { background: rgba(99, 102, 241, 0.15); color: #6366f1; padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; margin-left: 6px; border: 1px solid rgba(99, 102, 241, 0.3); }
 
@@ -712,28 +712,28 @@
     <!-- Hauptbereich -->
     <div class="view-container">
 
-        <!-- 0. LANDING PAGE (Neue Startseite) -->
+        <!-- 0. LANDING PAGE (Aktualisierte Startseite) -->
         <div class="view-section active" id="landingView">
             <div class="landing-hero">
                 <h1>Willkommen bei LensConnect</h1>
-                <p>Das globale Netzwerk für Fotografen, Amateure, Models und Familien. Entdecke die besten Fotospots, verbinde dich für Shootings und nutze praktische Tools für deine nächste Tour.</p>
+                <p>Das globale Netzwerk für Fotografen, Amateure, Models und Familien. Finde oder trage Fotospots ein, inseriere Shootings oder Heimstudios und nutze praktische Tools für deine Projekte.</p>
             </div>
 
             <div class="landing-grid">
                 <div class="landing-card" onclick="switchView('map')">
                     <div>
-                        <h3>🗺️ Spots & Karte</h3>
-                        <p>Finde geheime Outdoor-Spots, Wasserfälle, Parks und urbane Locations mit GPS, Wegbeschreibungen und Wetter-Check.</p>
+                        <h3>🗺️ Spots finden & eintragen</h3>
+                        <p>Entdecke geheime Outdoor-Spots, Wasserfälle und Locations auf der Karte oder trage deine eigenen Lieblingsplätze mit GPS und Beschreibungen ein.</p>
                     </div>
-                    <button class="primary-btn" style="pointer-events: none;">Karte öffnen →</button>
+                    <button class="primary-btn" style="pointer-events: none;">Zur Karte & Spots →</button>
                 </div>
 
                 <div class="landing-card" onclick="switchView('market')">
                     <div>
-                        <h3>🤝 Inserate & Shooting-Börse</h3>
-                        <p>Biete Shootings an oder suche als Privatperson/Paar nach Fotografen (inkl. Skill-Meter für Profis & Amateure).</p>
+                        <h3>🤝 Shootings & Studios Inserieren</h3>
+                        <p>Erstelle Inserate oder suche nach Angeboten: Egal ob Fotoshootings, Events, Hochzeiten oder Heimstudios zum Mieten/Anbieten.</p>
                     </div>
-                    <button class="primary-btn" style="pointer-events: none;">Zur Börse →</button>
+                    <button class="primary-btn" style="pointer-events: none;">Zur Inserate-Börse →</button>
                 </div>
 
                 <div class="landing-card" onclick="switchView('magazine')">
@@ -819,11 +819,11 @@
             <div id="map"></div>
         </div>
 
-        <!-- 3. Inserate & Shooting-Börse mit Skill Meter -->
+        <!-- 3. Inserate & Shooting-Börse (inkl. Studio & Erfahrungs-Level) -->
         <div class="view-section" id="marketView">
             <div class="hero-banner" style="background: linear-gradient(135deg, #0284c7, #0369a1);">
-                <h1>🤝 LensConnect Inserate & Shootings</h1>
-                <p>Profis & Amateure (Portfolio-Aufbau) bieten Shootings an oder suchen Begleitung.</p>
+                <h1>🤝 LensConnect Inserate</h1>
+                <p>Inseriere oder suche Shootings, Events und Heimstudios nach deinen Bedürfnissen und Erfahrungen.</p>
             </div>
 
             <div class="form-card">
@@ -831,12 +831,20 @@
                 <div class="popup-form-group">
                     <label>Art des Inserats</label>
                     <select id="marketType">
-                        <option value="offer">📸 Ich biete (Shooting / Minisession)</option>
-                        <option value="request">🔍 Ich suche (z.B. Fotograf für Hochzeit/Event)</option>
+                        <option value="offer">📸 Ich biete (Shooting, Minisession oder Studio)</option>
+                        <option value="request">🔍 Ich suche (Fotograf, Event-Begleitung oder Studio)</option>
                     </select>
                 </div>
                 <div class="popup-form-group">
-                    <label>Erfahrung / Skill Level</label>
+                    <label>Kategorie</label>
+                    <select id="marketCategory">
+                        <option value="Shooting / Outdoor">📸 Shooting / Outdoor</option>
+                        <option value="Heimstudio / Mietstudio">🏠 Heimstudio / Mietstudio</option>
+                        <option value="Hochzeit / Event">💍 Hochzeit / Event</option>
+                    </select>
+                </div>
+                <div class="popup-form-group">
+                    <label>Erfahrungs- & Anspruchs-Level</label>
                     <select id="marketSkill">
                         <option value="amateur">🌱 Amateur / Portfolio-Aufbau (Gratis oder TFP)</option>
                         <option value="pro">⭐ Professioneller Fotograf / Gewerblich</option>
@@ -844,11 +852,11 @@
                 </div>
                 <div class="popup-form-group">
                     <label>Titel des Inserats</label>
-                    <input type="text" id="marketTitle" placeholder="z.B. Kostenloses Porträtspecial für Portfolio">
+                    <input type="text" id="marketTitle" placeholder="z.B. Heimstudio für Portraits zu vermieten">
                 </div>
                 <div class="popup-form-group">
                     <label>Dein Name / Studio</label>
-                    <input type="text" id="marketAuthor" placeholder="z.B. Alex Photo (Hobby)">
+                    <input type="text" id="marketAuthor" placeholder="z.B. Alex Photo">
                 </div>
                 <div class="popup-form-group">
                     <label>Location / Region</label>
@@ -856,27 +864,27 @@
                 </div>
                 <div class="popup-form-group">
                     <label>Wann / Zeitraum</label>
-                    <input type="text" id="marketTime" placeholder="z.B. Nächstes Wochenende">
+                    <input type="text" id="marketTime" placeholder="z.B. Nach Vereinbarung">
                 </div>
                 <div class="popup-form-group">
                     <label>Preis / Konditionen</label>
-                    <input type="text" id="marketPrice" placeholder="z.B. Gratis (TFP) oder 120€">
+                    <input type="text" id="marketPrice" placeholder="z.B. 25€ / Stunde oder TFP">
                 </div>
                 <div class="popup-form-group">
                     <label>Beschreibung & Details</label>
-                    <textarea id="marketDesc" rows="2" placeholder="Erweitere mein Portfolio im Bereich Outdoor-Portrait..."></textarea>
+                    <textarea id="marketDesc" rows="2" placeholder="Ausgestattet mit Blitzanlage, Hintergründen..."></textarea>
                 </div>
                 <div class="popup-form-group">
                     <label>Kontakt (Instagram, E-Mail oder Telefon)</label>
-                    <input type="text" id="marketContact" placeholder="z.B. @alex.photo.hobby">
+                    <input type="text" id="marketContact" placeholder="z.B. @alex.photo">
                 </div>
                 <button type="button" class="primary-btn" onclick="submitMarketItem()">Inserat veröffentlichen</button>
             </div>
 
             <!-- Tabs zum Umschalten zwischen Angeboten und Gesuchen -->
             <div class="market-type-tabs">
-                <button class="market-tab active" id="tabOffer" onclick="switchMarketTab('offer')">📸 Angebote (Fotografen)</button>
-                <button class="market-tab" id="tabRequest" onclick="switchMarketTab('request')">🔍 Gesuche (Suche Fotograf)</button>
+                <button class="market-tab active" id="tabOffer" onclick="switchMarketTab('offer')">📸 Angebote</button>
+                <button class="market-tab" id="tabRequest" onclick="switchMarketTab('request')">🔍 Gesuche</button>
             </div>
 
             <div id="marketFeed" style="margin-top: 6px;"></div>
@@ -1006,44 +1014,47 @@
             `;
         }
 
-        // --- Inserate Verwaltung (inkl. Skill Meter) ---
+        // --- Inserate Verwaltung (inkl. Studio & Erfahrungs-Level) ---
         var defaultMarket = [
             {
                 type: "offer",
+                category: "Heimstudio / Mietstudio",
+                skill: "pro",
+                title: "Heimstudio mit Blitzanlage & Hintergründen zu vermieten",
+                author: "Studio Villach",
+                location: "Villach",
+                time: "Nach Vereinbarung",
+                price: "20€ / Stunde",
+                desc: "Voll ausgestattetes Heimstudio für Portrait- und Produktfotografie.",
+                contact: "@studio.villach"
+            },
+            {
+                type: "offer",
+                category: "Shooting / Outdoor",
                 skill: "amateur",
                 title: "Kostenloses Portrait-Shooting für Portfolio",
                 author: "Julian H. (Hobby)",
                 location: "Villach & Umgebung",
                 time: "Nächstes Wochenende",
                 price: "Gratis (TFP)",
-                desc: "Ich bin ambitionierter Hobbyfotograf und möchte mein Portfolio erweitern. Du bekommst alle gelungenen Bilder bearbeitet!",
+                desc: "Ich bin ambitionierter Hobbyfotograf und möchte mein Portfolio erweitern.",
                 contact: "@julian.hobby.photo"
             },
             {
-                type: "offer",
-                skill: "pro",
-                title: "Familien-Minisessions im Herbst",
-                author: "Anna Bauer Fotografie",
-                location: "Faaker See (Ostufer)",
-                time: "Samstag, 15:00 Uhr",
-                price: "99€ inkl. 3 Bilder",
-                desc: "Professionelles Familienshooting mit tollem Steg und weichem Nachmittagslicht.",
-                contact: "@anna.bauer.photo"
-            },
-            {
                 type: "request",
+                category: "Heimstudio / Mietstudio",
                 skill: "amateur",
-                title: "Suche Fotograf für Standesamtliche Hochzeit",
-                author: "Laura & Michael",
-                location: "Villach Stadt",
-                time: "Juni 2027",
-                price: "Nach Vereinbarung",
-                desc: "Wir suchen einen entspannten Fotografen für ca. 2 Stunden Standesamt und Paarshooting.",
-                contact: "laura.m@mail.com"
+                title: "Suche Heimstudio für herbstliche Portraits",
+                author: "Sarah M.",
+                location: "Raum Villach / Arnoldstein",
+                time: "Unter der Woche abends",
+                price: "Kleines Budget / TFP",
+                desc: "Suche jemanden, der sein Studio für ein 2-stündiges Shooting zur Verfügung stellt.",
+                contact: "sarah.m@mail.com"
             }
         ];
 
-        var savedMarket = localStorage.getItem('lensconnect_market_v1');
+        var savedMarket = localStorage.getItem('lensconnect_market_v2');
         var marketItems = savedMarket ? JSON.parse(savedMarket) : defaultMarket;
         var currentMarketTab = 'offer';
 
@@ -1065,21 +1076,22 @@
                 var card = document.createElement('div');
                 card.className = 'market-card ' + (item.type || 'offer');
                 
-                var badgeHtml = (item.type === 'request') ? '<span class="badge-request">🔍 Suche Fotograf</span>' : '<span class="badge-offer">📸 Biete Shooting</span>';
+                var badgeHtml = (item.type === 'request') ? '<span class="badge-request">🔍 Suche Inserat</span>' : '<span class="badge-offer">📸 Biete Inserat</span>';
+                var catHtml = `<span style="background:var(--border); padding:2px 6px; border-radius:6px; font-size:0.65rem; font-weight:600; margin-right:4px;">🏷️ ${item.category || 'Shooting'}</span>`;
                 
                 var skillBadge = "";
                 if (item.skill === 'pro') {
-                    skillBadge = '<span class="skill-pro">⭐ Profi / Commercial</span>';
+                    skillBadge = '<span class="skill-pro">⭐ Profi / Gewerblich</span>';
                 } else {
                     skillBadge = '<span class="skill-amateur">🌱 Amateur / Portfolio</span>';
                 }
 
                 card.innerHTML = `
                     <div class="market-header">
-                        <div>${badgeHtml} ${item.title}</div>
+                        <div>${badgeHtml} ${catHtml} ${item.title}</div>
                         <button class="delete-btn" onclick="deleteMarketItem(${realIdx})">Löschen</button>
                     </div>
-                    <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-main); display:flex; align-items:center;">
+                    <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-main); display:flex; align-items:center; flex-wrap:wrap; gap:4px;">
                         Von: ${item.author} ${skillBadge}
                     </div>
                     <div class="market-details">
@@ -1101,6 +1113,7 @@
 
         function submitMarketItem() {
             var type = document.getElementById('marketType').value;
+            var category = document.getElementById('marketCategory').value;
             var skill = document.getElementById('marketSkill').value;
             var title = document.getElementById('marketTitle').value.trim();
             var author = document.getElementById('marketAuthor').value.trim();
@@ -1115,8 +1128,8 @@
                 return;
             }
 
-            marketItems.push({ type, skill, title, author, location, time, price, desc, contact });
-            localStorage.setItem('lensconnect_market_v1', JSON.stringify(marketItems));
+            marketItems.push({ type, category, skill, title, author, location, time, price, desc, contact });
+            localStorage.setItem('lensconnect_market_v2', JSON.stringify(marketItems));
             
             document.getElementById('marketTitle').value = "";
             document.getElementById('marketAuthor').value = "";
@@ -1133,7 +1146,7 @@
         function deleteMarketItem(idx) {
             if (confirm("Möchtest du dieses Inserat löschen?")) {
                 marketItems.splice(idx, 1);
-                localStorage.setItem('lensconnect_market_v1', JSON.stringify(marketItems));
+                localStorage.setItem('lensconnect_market_v2', JSON.stringify(marketItems));
                 renderMarketFeed();
             }
         }
@@ -1213,7 +1226,7 @@
                     }
                     if (imported.market && Array.isArray(imported.market)) {
                         marketItems = imported.market;
-                        localStorage.setItem('lensconnect_market_v1', JSON.stringify(marketItems));
+                        localStorage.setItem('lensconnect_market_v2', JSON.stringify(marketItems));
                     }
                     renderApp();
                     renderMarketFeed();
