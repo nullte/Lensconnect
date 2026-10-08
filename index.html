@@ -384,10 +384,17 @@
         .checklist-item {
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: space-between;
             padding: 8px 0;
             border-bottom: 1px solid var(--border);
             font-size: 0.9rem;
+        }
+        .checklist-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-grow: 1;
+            cursor: pointer;
         }
         .checklist-item input[type="checkbox"] {
             width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary);
@@ -567,7 +574,7 @@
                 <p>Entdecke die besten Fotospots, Lichtstimmungen und Routen.</p>
             </div>
             
-            <!-- Sonnenstand & Goldene Stunde Rechner (Feature 1) -->
+            <!-- Sonnenstand & Goldene Stunde Rechner -->
             <div class="sun-calc-box">
                 <h3>☀️ Licht- & Sonnenstand heute</h3>
                 <div id="sunCalcText" style="font-size:0.85rem; color:var(--text-main);">Berechne Sonnenstand...</div>
@@ -627,16 +634,16 @@
             <div id="map"></div>
         </div>
 
-        <!-- 3. Foto-Packliste & Checkliste (Feature 2) -->
+        <!-- 3. Foto-Packliste & Checkliste (bearbeitbar & löschbar) -->
         <div class="view-section" id="toolsView">
             <div class="form-card" style="width: 100%; max-width: 600px; margin: 0 auto;">
                 <h2 style="margin-top:0; font-size: 1.2rem;">🎒 Foto-Touren Packliste</h2>
-                <p class="hint">Hake vor jeder Bergtour im Alpin-Adria-Raum deine Ausrüstung ab, damit nichts im Rucksack fehlt.</p>
+                <p class="hint">Hake Gegenstände ab oder lösche Einträge, um die Liste perfekt an dich anzupassen.</p>
                 
                 <div id="checklistContainer"></div>
 
                 <div style="margin-top: 16px; display: flex; gap: 8px;">
-                    <input type="text" id="newCheckItem" class="search-input" placeholder="Eigenen Gegenstand hinzufügen...">
+                    <input type="text" id="newCheckItem" class="search-input" placeholder="Gegenstand hinzufügen..." onkeydown="if(event.key==='Enter') addChecklistItem()">
                     <button type="button" class="primary-btn" style="width: 120px;" onclick="addChecklistItem()">Hinzufügen</button>
                 </div>
             </div>
@@ -704,7 +711,6 @@
             }
         }
 
-        // Feature 1 & 3: GPS Standort, Entfernungs- und Kompass-Berechnung
         var userLat = null;
         var userLng = null;
 
@@ -727,9 +733,8 @@
             }
         }
 
-        // Berechnung der Luftlinie in km und Himmelsrichtung
         function calculateDistanceAndBearing(lat1, lon1, lat2, lon2) {
-            var R = 6371; // Erdradius in km
+            var R = 6371;
             var dLat = (lat2 - lat1) * Math.PI / 180;
             var dLon = (lon2 - lon1) * Math.PI / 180;
             var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
@@ -738,7 +743,6 @@
             var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
             var dist = R * c;
 
-            // Himmelsrichtung (Bearing)
             var y = Math.sin(dLon) * Math.cos(lat2 * Math.PI / 180);
             var x = Math.cos(lat1 * Math.PI / 180) * Math.sin(lat2 * Math.PI / 180) -
                     Math.sin(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.cos(dLon);
@@ -752,13 +756,11 @@
             return { dist: dist.toFixed(1), dir: dir };
         }
 
-        // Feature 1: Sonnenstands-Rechner (Goldene Stunde)
         function initSunCalculator() {
             var now = new Date();
             var hours = now.getHours();
             var minutes = now.getMinutes();
             
-            // Ungefähre Berechnug für Outdoor-Planung
             document.getElementById('sunCalcText').innerHTML = "Aktuelle Uhrzeit: <strong>" + String(hours).padStart(2,'0') + ":" + String(minutes).padStart(2,'0') + " Uhr</strong>. Nutze das weiche Licht des frühen Morgens oder späten Nachmittags!";
             
             document.getElementById('sunTimesContainer').innerHTML = `
@@ -767,18 +769,18 @@
             `;
         }
 
-        // Feature 2: Packlisten Management via localStorage
+        // Packlisten Verwaltung (Hinzufügen, Abhaken, Löschen)
         var defaultChecklist = [
             { text: "Kamera-Gehäuse & Ersatzakkus", checked: true },
             { text: "Weitwinkel- & Teleobjektiv", checked: true },
             { text: "Stabdreibein (Stativ) & L-Winkel", checked: false },
             { text: "Polfilter & ND-Filter (Graufilter)", checked: false },
             { text: "Fernauslöser / Intervalltimer", checked: false },
-            { text: "Stirnlatte (für Nacht/Blaue Stunde)", checked: false },
+            { text: "Stirnlampe (für Nacht/Blaue Stunde)", checked: false },
             { text: "Wanderstiefel & Regenschutz", checked: true }
         ];
 
-        var savedChecklist = localStorage.getItem('fotospots_checklist');
+        var savedChecklist = localStorage.getItem('fotospots_checklist_v2');
         var checklist = savedChecklist ? JSON.parse(savedChecklist) : defaultChecklist;
 
         function renderChecklist() {
@@ -788,8 +790,11 @@
                 var div = document.createElement('div');
                 div.className = 'checklist-item' + (item.checked ? ' checked' : '');
                 div.innerHTML = `
-                    <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleChecklistItem(${idx})">
-                    <span>${item.text}</span>
+                    <div class="checklist-left" onclick="toggleChecklistItem(${idx})">
+                        <input type="checkbox" ${item.checked ? 'checked' : ''} onclick="event.stopPropagation(); toggleChecklistItem(${idx})">
+                        <span>${item.text}</span>
+                    </div>
+                    <button class="delete-btn" onclick="deleteChecklistItem(${idx})">X</button>
                 `;
                 container.appendChild(div);
             });
@@ -797,7 +802,13 @@
 
         function toggleChecklistItem(idx) {
             checklist[idx].checked = !checklist[idx].checked;
-            localStorage.setItem('fotospots_checklist', JSON.stringify(checklist));
+            localStorage.setItem('fotospots_checklist_v2', JSON.stringify(checklist));
+            renderChecklist();
+        }
+
+        function deleteChecklistItem(idx) {
+            checklist.splice(idx, 1);
+            localStorage.setItem('fotospots_checklist_v2', JSON.stringify(checklist));
             renderChecklist();
         }
 
@@ -806,7 +817,7 @@
             var val = input.value.trim();
             if (val) {
                 checklist.push({ text: val, checked: false });
-                localStorage.setItem('fotospots_checklist', JSON.stringify(checklist));
+                localStorage.setItem('fotospots_checklist_v2', JSON.stringify(checklist));
                 input.value = "";
                 renderChecklist();
             }
@@ -933,7 +944,6 @@
         var currentFilter = 'Alle';
         var currentLightFilter = 'Alle';
 
-        // Ansichten umschalten mit Unterstützung für die Zurück-Taste des Smartphones
         function switchView(viewName, pushHistory = true) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
@@ -1181,7 +1191,6 @@
                 var originalIndex = spots.indexOf(spot);
                 var artCount = spot.articles ? spot.articles.length : 0;
 
-                // Entfernungs- und Kompass-Berechnung wenn GPS aktiv
                 var distHtml = "";
                 if (userLat !== null && userLng !== null) {
                     var calc = calculateDistanceAndBearing(userLat, userLng, spot.lat, spot.lng);
@@ -1262,7 +1271,6 @@
             renderApp();
         }
 
-        // Klick auf Karte öffnet direkt das erweiterte Popup-Formular
         map.on('click', function(e) {
             var lat = e.latlng.lat;
             var lng = e.latlng.lng;
@@ -1356,7 +1364,6 @@
             }
         }
 
-        // Initiale History, Licht-Rechner und App-Start
         history.replaceState({ view: 'magazine' }, "", "#magazine");
         initSunCalculator();
         renderApp();
