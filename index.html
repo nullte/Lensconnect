@@ -343,7 +343,7 @@
         .sun-times { display: flex; justify-content: space-around; font-size: 0.85rem; font-weight: 600; margin-top: 8px; }
 
         /* Ansichten */
-        #magazineView, #favoritesView, #toolsView, #marketView, #createView {
+        #magazineView, #favoritesView, #toolsView, #marketView, #profilesView, #createView {
             padding: 20px 16px 80px 16px;
             max-width: 900px;
             margin: 0 auto;
@@ -595,6 +595,38 @@
         .market-details { font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 16px; flex-wrap: wrap; margin: 4px 0; }
         .market-price { font-weight: 700; color: var(--light-badge); }
 
+        .contact-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: background 0.2s;
+        }
+        .contact-btn:hover { background: var(--primary-hover); }
+
+        /* Profilkarten Grid */
+        .profile-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .profile-role-photographer { background: rgba(37, 99, 235, 0.1); color: var(--primary); padding: 2px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; display: inline-block; }
+        .profile-role-model { background: rgba(217, 119, 6, 0.15); color: var(--light-badge); padding: 2px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; display: inline-block; }
+
         /* Packliste */
         .checklist-item {
             display: flex;
@@ -784,6 +816,7 @@
                 <button class="nav-btn" id="navMag" onclick="switchView('magazine')">📖 Magazin & Tipps</button>
                 <button class="nav-btn" id="navMap" onclick="switchView('map')">🗺️ Karte & Spots</button>
                 <button class="nav-btn" id="navMarket" onclick="switchView('market')">🤝 Inserate</button>
+                <button class="nav-btn" id="navProfiles" onclick="switchView('profiles')">👥 Community-Profile</button>
                 <button class="nav-btn" id="navTools" onclick="switchView('tools')">🎒 Tools & Helfer</button>
                 <button class="nav-btn" id="navAbout" onclick="switchView('about')">ℹ️ Über mich</button>
                 <button class="nav-btn" id="navContact" onclick="switchView('contact')">📬 Kontakt</button>
@@ -796,6 +829,7 @@
                 <option value="magazine">📖 Magazin & Tipps</option>
                 <option value="map">🗺️ Karte & Spots</option>
                 <option value="market">🤝 Inserate & Shootings</option>
+                <option value="profiles">👥 Community-Profile</option>
                 <option value="tools">🎒 Tools & Helfer</option>
                 <option value="about">ℹ️ Über mich</option>
                 <option value="contact">📬 Kontakt</option>
@@ -813,7 +847,7 @@
         <div class="view-section active" id="landingView">
             <div class="landing-hero">
                 <h1>Willkommen bei LensConnect</h1>
-                <p>Die Plattform für Fotografen, Amateure, Models und Familien in der Region. Finde oder trage Fotospots ein, inseriere Shootings oder exklusive Locations und nutze praktische Tools.</p>
+                <p>Die Plattform für Fotografen, Amateure, Models und Familien in der Region. Finde oder trage Fotospots ein, vernetze dich über Profile oder Inserate und nutze praktische Tools.</p>
             </div>
 
             <div class="dev-notice-box">
@@ -838,12 +872,12 @@
                     <button class="primary-btn" style="pointer-events: none;">Zur Inserate-Börse →</button>
                 </div>
 
-                <div class="landing-card" onclick="switchView('magazine')">
+                <div class="landing-card" onclick="switchView('profiles')">
                     <div>
-                        <h3>📖 Magazin & Tipps</h3>
-                        <p>Lies Spot-Berichte mit EXIF-Daten oder entdecke allgemeine Fototipps und Guides (z.B. für Heimstudios).</p>
+                        <h3>👥 Community-Profile</h3>
+                        <p>Finde lokale Fotografen, Models oder Gewerbliche (Architektur, Immobilien, Werbung) und kontaktiere sie direkt.</p>
                     </div>
-                    <button class="primary-btn" style="pointer-events: none;">Magazin lesen →</button>
+                    <button class="primary-btn" style="pointer-events: none;">Profile ansehen →</button>
                 </div>
 
                 <div class="landing-card" onclick="switchView('tools')">
@@ -1083,8 +1117,8 @@
                     <textarea id="marketDesc" rows="2" placeholder="Beschreibe kurz die Location, Ausstattung oder Besonderheiten..."></textarea>
                 </div>
                 <div class="popup-form-group">
-                    <label>Kontakt (Instagram, E-Mail oder Telefon)</label>
-                    <input type="text" id="marketContact" placeholder="z.B. @nullte oder E-Mail">
+                    <label>Kontakt (E-Mail oder Instagram)</label>
+                    <input type="text" id="marketContact" placeholder="z.B. christian@mail.com oder @nullte">
                 </div>
                 <button type="button" class="primary-btn" onclick="submitMarketItem()">Inserat veröffentlichen</button>
             </div>
@@ -1096,6 +1130,52 @@
             </div>
 
             <div id="marketFeed" style="margin-top: 6px;"></div>
+        </div>
+
+        <!-- 3b. Community-Profile Ansicht -->
+        <div class="view-section" id="profilesView">
+            <div class="hero-banner" style="background: linear-gradient(135deg, #4f46e5, #3730a3);">
+                <h1>👥 Community-Profile (Fotografen & Models)</h1>
+                <p>Finde lokale Kreative nach Schwerpunkten wie Familie, Portrait, Mode, Boudoir, Architektur oder Werbung.</p>
+            </div>
+
+            <div class="form-card">
+                <h3 style="margin-top:0; font-size:1.05rem;">Eigenes Profil erstellen / eintragen</h3>
+                <div class="popup-form-group">
+                    <label>Rolle</label>
+                    <select id="profileRole">
+                        <option value="Fotograf / Gewerblich">📸 Fotograf / Gewerblich</option>
+                        <option value="Model">👤 Model (TFP & Commercial)</option>
+                    </select>
+                </div>
+                <div class="popup-form-group">
+                    <label>Dein Name / Künstlername</label>
+                    <input type="text" id="profileName" placeholder="z.B. Anna P. Photography">
+                </div>
+                <div class="popup-form-group">
+                    <label>Region / Ort</label>
+                    <input type="text" id="profileLocation" placeholder="z.B. Villach / Kärnten">
+                </div>
+                <div class="popup-form-group">
+                    <label>Schwerpunkte & Fotografie-Arten (kommagetrennt)</label>
+                    <input type="text" id="profileSpecialties" placeholder="z.B. Familie, Portrait, Mode, Architektur, Immobilien">
+                </div>
+                <div class="popup-form-group">
+                    <label>Kurzbeschreibung & Bio</label>
+                    <textarea id="profileBio" rows="2" placeholder="Erzähle kurz etwas über dich, deine Erfahrung oder was du suchst..."></textarea>
+                </div>
+                <div class="popup-form-group">
+                    <label>Kontakt (E-Mail oder Instagram)</label>
+                    <input type="text" id="profileContact" placeholder="z.B. anna@mail.com oder @annaphoto">
+                </div>
+                <button type="button" class="primary-btn" onclick="submitProfile()">Profil veröffentlichen</button>
+            </div>
+
+            <div class="search-bar-container">
+                <input type="text" id="profileSearchInput" class="search-input" placeholder="🔍 Suche nach Name, Schwerpunkten (z.B. Familie, Architektur)..." oninput="renderProfilesFeed()">
+            </div>
+
+            <div id="profilesFeed"></div>
         </div>
 
         <!-- 4. Erweiterte Tools & Helfer Ansicht -->
@@ -1338,6 +1418,113 @@
             }
         }
 
+        // --- Community-Profile Verwaltung ---
+        var defaultProfiles = [
+            {
+                role: "Fotograf / Gewerblich",
+                name: "Christian Arnold",
+                location: "Arnoldstein / Villach",
+                specialties: ["Familie", "Portrait", "Landschaft", "Architektur"],
+                bio: "Gründer von LensConnect. Fotografiere leidenschaftlich Menschen, Natur und lokale Architektur.",
+                contact: "Christian.arnold10@gmail.com"
+            },
+            {
+                role: "Model",
+                name: "Sarah M.",
+                location: "Raum Kärnten",
+                specialties: ["Portrait", "Mode", "Boudoir", "Teil-Akt"],
+                bio: "Erfahrenes Model für TFP-Shootings und kreative Fotoprojekte in der Region.",
+                contact: "@sarah.model.insta"
+            }
+        ];
+
+        var savedProfiles = localStorage.getItem('lensconnect_profiles_v1');
+        var profileItems = savedProfiles ? JSON.parse(savedProfiles) : defaultProfiles;
+
+        function renderProfilesFeed() {
+            var feed = document.getElementById('profilesFeed');
+            feed.innerHTML = "";
+            var query = document.getElementById('profileSearchInput') ? document.getElementById('profileSearchInput').value.toLowerCase() : "";
+
+            var filtered = profileItems.filter(p => !query || 
+                p.name.toLowerCase().includes(query) || 
+                p.location.toLowerCase().includes(query) || 
+                p.bio.toLowerCase().includes(query) || 
+                p.specialties.some(s => s.toLowerCase().includes(query))
+            );
+
+            filtered.forEach(function(item, idx) {
+                var realIdx = profileItems.indexOf(item);
+                var card = document.createElement('div');
+                card.className = 'profile-card';
+
+                var roleBadge = (item.role.includes('Model')) ? '<span class="profile-role-model">👤 Model</span>' : '<span class="profile-role-photographer">📸 Fotograf / Gewerblich</span>';
+                var specHtml = item.specialties.map(s => `<span class="tag">#${s.trim()}</span>`).join('');
+
+                var contactLink = "";
+                if (item.contact.includes('@') && !item.contact.startsWith('@')) {
+                    contactLink = `<a href="mailto:${item.contact}?subject=Anfrage%20über%20LensConnect" class="contact-btn">✉️ Nachricht senden</a>`;
+                } else {
+                    contactLink = `<a href="https://instagram.com/${item.contact.replace('@','')}" target="_blank" class="contact-btn">📸 Instagram öffnen</a>`;
+                }
+
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>${roleBadge} <strong style="font-size:1.05rem; margin-left:6px;">${item.name}</strong></div>
+                        <button class="delete-btn" onclick="deleteProfile(${realIdx})">Löschen</button>
+                    </div>
+                    <div style="font-size:0.8rem; color:var(--text-muted);">📍 ${item.location}</div>
+                    <div style="font-size:0.9rem; line-height:1.4;">${item.bio}</div>
+                    <div>${specHtml}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                        <span style="font-size:0.8rem; font-weight:600; color:var(--primary);">Kontakt: ${item.contact}</span>
+                        ${contactLink}
+                    </div>
+                `;
+                feed.appendChild(card);
+            });
+
+            if (filtered.length === 0) {
+                feed.innerHTML = "<p style='text-align:center; color:var(--text-muted); padding:20px;'>Keine Profile gefunden.</p>";
+            }
+        }
+
+        function submitProfile() {
+            var role = document.getElementById('profileRole').value;
+            var name = document.getElementById('profileName').value.trim();
+            var location = document.getElementById('profileLocation').value.trim();
+            var rawSpecs = document.getElementById('profileSpecialties').value.trim();
+            var bio = document.getElementById('profileBio').value.trim();
+            var contact = document.getElementById('profileContact').value.trim();
+
+            if (!name || !contact) {
+                alert("Bitte fülle zumindest Name und Kontakt aus!");
+                return;
+            }
+
+            var specialties = rawSpecs ? rawSpecs.split(',').map(s => s.trim()).filter(s => s.length > 0) : ["Portrait"];
+
+            profileItems.push({ role, name, location, specialties, bio, contact });
+            localStorage.setItem('lensconnect_profiles_v1', JSON.stringify(profileItems));
+
+            document.getElementById('profileName').value = "";
+            document.getElementById('profileLocation').value = "";
+            document.getElementById('profileSpecialties').value = "";
+            document.getElementById('profileBio').value = "";
+            document.getElementById('profileContact').value = "";
+
+            renderProfilesFeed();
+            alert("Profil erfolgreich veröffentlicht! 🚀");
+        }
+
+        function deleteProfile(idx) {
+            if (confirm("Möchtest du dieses Profil löschen?")) {
+                profileItems.splice(idx, 1);
+                localStorage.setItem('lensconnect_profiles_v1', JSON.stringify(profileItems));
+                renderProfilesFeed();
+            }
+        }
+
         // --- Tipps & Blog Artikel Verwaltung ---
         var defaultTips = [
             {
@@ -1350,7 +1537,7 @@
                 title: "5 Tipps für entspannte Familienshootings mit Kindern",
                 author: "Sarah M.",
                 category: "📸 Shooting-Tipps",
-                story: "Kinder wollen nicht stundenlang in die Kamera lächeln. Der Schlüssel zu natürlichen Fotos ist Spiel und Spaß. Lass die Kinder erst ankommen, halte Spielzeug bereit und fotografiere aus ihrer Perspektive (auf Augenhöhe gehen!). So entstehen emotionale Moente statt gestellter Posen."
+                story: "Kinder wollen nicht stundenlang in die Kamera lächeln. Der Schlüssel zu natürlichen Fotos ist Spiel und Spaß. Lass die Kinder erst ankommen, halte Spielzeug bereit und fotografiere aus ihrer Perspektive (auf Augenhöhe gehen!). So entstehen emotionale Momente statt gestellter Posen."
             }
         ];
 
@@ -1409,7 +1596,7 @@
                 time: "Nach Vereinbarung",
                 price: "35€ / Stunde",
                 desc: "Hensel Blitzanlage, verschiedene Papierhintergründe und Makeup-Bereich vorhanden.",
-                contact: "@studio.villach"
+                contact: "studio.villach@mail.com"
             },
             {
                 type: "offer",
@@ -1476,6 +1663,13 @@
                     skillBadge = '<span class="skill-amateur">🌱 Amateur / Portfolio</span>';
                 }
 
+                var contactAction = "";
+                if (item.contact.includes('@') && !item.contact.startsWith('@')) {
+                    contactAction = `<a href="mailto:${item.contact}?subject=Anfrage%20zu%20Inserat:%20${encodeURIComponent(item.title)}" class="contact-btn">✉️ E-Mail senden</a>`;
+                } else {
+                    contactAction = `<a href="https://instagram.com/${item.contact.replace('@','')}" target="_blank" class="contact-btn">📸 Instagram öffnen</a>`;
+                }
+
                 card.innerHTML = `
                     <div class="market-header">
                         <div>${badgeHtml} ${catHtml} ${item.title}</div>
@@ -1490,7 +1684,10 @@
                         <span class="market-price">💰 ${item.price}</span>
                     </div>
                     <div style="font-size: 0.85rem; line-height: 1.4;">${item.desc}</div>
-                    <div style="font-size: 0.8rem; font-weight: 600; color: var(--primary); margin-top: 4px;">📬 Kontakt: ${item.contact}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 4px;">
+                        <span style="font-size: 0.8rem; font-weight: 600; color: var(--primary);">Kontakt: ${item.contact}</span>
+                        ${contactAction}
+                    </div>
                 `;
                 feed.appendChild(card);
             });
@@ -1594,7 +1791,7 @@
         }
 
         function exportJSON() {
-            var allData = { spots: spots, market: marketItems, tips: tipItems };
+            var allData = { spots: spots, market: marketItems, tips: tipItems, profiles: profileItems };
             var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allData, null, 2));
             var downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
@@ -1623,9 +1820,14 @@
                         tipItems = imported.tips;
                         localStorage.setItem('lensconnect_tips_v1', JSON.stringify(tipItems));
                     }
+                    if (imported.profiles && Array.isArray(imported.profiles)) {
+                        profileItems = imported.profiles;
+                        localStorage.setItem('lensconnect_profiles_v1', JSON.stringify(profileItems));
+                    }
                     renderApp();
                     renderMarketFeed();
                     renderMagazineFeed();
+                    renderProfilesFeed();
                     alert("Backup erfolgreich geladen! 🚀");
                     switchView('landing');
                 } catch(err) {
@@ -1775,6 +1977,10 @@
                 document.getElementById('marketView').classList.add('active');
                 var btn = document.getElementById('navMarket'); if(btn) btn.classList.add('active');
                 renderMarketFeed();
+            } else if (viewName === 'profiles') {
+                document.getElementById('profilesView').classList.add('active');
+                var btn = document.getElementById('navProfiles'); if(btn) btn.classList.add('active');
+                renderProfilesFeed();
             } else if (viewName === 'tools') {
                 document.getElementById('toolsView').classList.add('active');
                 var btn = document.getElementById('navTools'); if(btn) btn.classList.add('active');
@@ -2221,6 +2427,7 @@
         initSunCalculator();
         renderChecklist();
         renderMarketFeed();
+        renderProfilesFeed();
         renderApp();
     </script>
 
