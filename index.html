@@ -696,7 +696,7 @@
                     var importedSpots = JSON.parse(e.target.result);
                     if (Array.isArray(importedSpots)) {
                         spots = importedSpots;
-                        localStorage.setItem('fotospots_v11', JSON.stringify(spots));
+                        localStorage.setItem('fotospots_v12', JSON.stringify(spots));
                         renderApp();
                         alert("Backup erfolgreich geladen! 🚀");
                         switchView('magazine');
@@ -788,7 +788,7 @@
             }
         ];
 
-        var savedSpots = localStorage.getItem('fotospots_v11');
+        var savedSpots = localStorage.getItem('fotospots_v12');
         var spots = savedSpots ? JSON.parse(savedSpots) : defaultSpots;
         
         var savedFavs = localStorage.getItem('fotospots_favs');
@@ -798,7 +798,8 @@
         var currentFilter = 'Alle';
         var currentLightFilter = 'Alle';
 
-        function switchView(viewName) {
+        // Ansichten umschalten mit Unterstützung für die Zurück-Taste des Smartphones
+        function switchView(viewName, pushHistory = true) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
 
@@ -823,7 +824,20 @@
                 document.getElementById('createView').classList.add('active');
                 document.getElementById('navCreate').classList.add('active');
             }
+
+            if (pushHistory) {
+                history.pushState({ view: viewName }, "", "#" + viewName);
+            }
         }
+
+        // Lauscht auf den "Zurück"-Button des Browsers / Smartphones
+        window.addEventListener('popstate', function(event) {
+            if (event.state && event.state.view) {
+                switchView(event.state.view, false);
+            } else {
+                switchView('magazine', false);
+            }
+        });
 
         function toggleFavorite(spotIndex) {
             var idx = favorites.indexOf(spotIndex);
@@ -1017,7 +1031,6 @@
             var filteredSpots = spots.filter(function(spot) {
                 var matchesSearch = !mapSearchQuery || spot.title.toLowerCase().includes(mapSearchQuery);
                 var matchesFilter = currentFilter === 'Alle' || (spot.tags && spot.tags.includes(currentFilter));
-                
                 var matchesLight = currentLightFilter === 'Alle' || (spot.articles && spot.articles.some(a => a.lightMood === currentLightFilter));
 
                 return matchesSearch && matchesFilter && matchesLight;
@@ -1060,7 +1073,7 @@
         function deleteSpot(index) {
             if (confirm("Möchtest du diesen Spot wirklich löschen?")) {
                 spots.splice(index, 1);
-                localStorage.setItem('fotospots_v11', JSON.stringify(spots));
+                localStorage.setItem('fotospots_v12', JSON.stringify(spots));
                 renderApp();
             }
         }
@@ -1177,7 +1190,7 @@
                     articles: [{ author: author, story: story, lightMood: lightMood, gpxUrl: gpxUrl, image: imgUrl }]
                 };
                 spots.push(newSpot);
-                localStorage.setItem('fotospots_v11', JSON.stringify(spots));
+                localStorage.setItem('fotospots_v12', JSON.stringify(spots));
                 map.closePopup();
                 renderApp();
             }
@@ -1193,6 +1206,8 @@
             }
         }
 
+        // Initiale History und App-Start
+        history.replaceState({ view: 'magazine' }, "", "#magazine");
         renderApp();
     </script>
 
