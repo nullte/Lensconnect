@@ -85,17 +85,17 @@
             display: flex;
             gap: 4px;
             overflow-x: auto;
-            max-width: 45vw;
+            max-width: 40vw;
         }
 
         .nav-btn {
             background: transparent;
             border: none;
-            padding: 6px 10px;
+            padding: 6px 8px;
             border-radius: 6px;
             font-family: inherit;
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
             cursor: pointer;
             transition: all 0.2s;
@@ -158,11 +158,11 @@
             font-family: inherit;
         }
 
-        /* Statistiken Banner */
+        /* Statistiken & Licht-Rechner Banner */
         .stats-badge-bar {
             display: flex;
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             font-size: 0.8rem;
             color: var(--text-muted);
             background: var(--bg-card);
@@ -174,8 +174,19 @@
         }
         .stats-badge-bar strong { color: var(--primary); }
 
+        .sun-calc-box {
+            background: linear-gradient(135deg, rgba(217, 119, 6, 0.1), rgba(37, 99, 235, 0.1));
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .sun-calc-box h3 { margin: 0 0 8px 0; font-size: 1rem; color: var(--light-badge); }
+        .sun-times { display: flex; justify-content: space-around; font-size: 0.85rem; font-weight: 600; margin-top: 8px; }
+
         /* --- 1. Magazin & Favoriten Ansicht --- */
-        #magazineView, #favoritesView {
+        #magazineView, #favoritesView, #toolsView, #createView {
             padding: 20px 16px 80px 16px;
             max-width: 900px;
             margin: 0 auto;
@@ -260,7 +271,7 @@
         .fav-btn:hover, .share-btn:hover { transform: scale(1.2); }
 
 
-        /* --- 2. Karten Ansicht --- */
+        /* --- 2. Karten Ansicht & Kompass --- */
         #mapView {
             display: none;
             flex-direction: row;
@@ -366,17 +377,28 @@
         .spot-info { flex-grow: 1; cursor: pointer; padding-right: 8px; }
         .spot-title { color: var(--primary); font-weight: 600; display: block; margin-bottom: 2px; }
         .article-count { font-size: 0.7rem; color: var(--primary); font-weight: 600; background: rgba(37, 99, 235, 0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; }
+        .distance-info { font-size: 0.7rem; color: var(--light-badge); font-weight: 700; margin-top: 2px; }
 
 
-        /* --- 3. Backup & Daten Verwaltung --- */
-        #createView {
-            padding: 20px 16px 80px 16px;
-            max-width: 600px;
-            margin: 0 auto;
-            flex-direction: column;
-            box-sizing: border-box;
+        /* --- 3. Tools & Packliste Ansicht --- */
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        .checklist-item input[type="checkbox"] {
+            width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary);
+        }
+        .checklist-item.checked span {
+            text-decoration: line-through;
+            color: var(--text-muted);
         }
 
+
+        /* --- Backup & Daten Verwaltung --- */
         .form-card {
             background: var(--bg-card);
             padding: 20px 16px;
@@ -495,7 +517,7 @@
         @media (max-width: 768px) {
             header { padding: 0 10px; height: 56px; }
             .logo { font-size: 0.95rem; gap: 4px; }
-            .nav-btn { padding: 5px 8px; font-size: 0.75rem; }
+            .nav-btn { padding: 5px 6px; font-size: 0.7rem; }
             .theme-toggle-btn { width: 30px; height: 30px; font-size: 0.85rem; }
 
             .view-container { height: calc(100dvh - 56px); }
@@ -528,7 +550,8 @@
                 <button class="nav-btn active" id="navMag" onclick="switchView('magazine')">📖 Magazin</button>
                 <button class="nav-btn" id="navFav" onclick="switchView('favorites')">⭐ Merkzettel</button>
                 <button class="nav-btn" id="navMap" onclick="switchView('map')">🗺️ Karte</button>
-                <button class="nav-btn" id="navCreate" onclick="switchView('create')">⚙️ Daten</button>
+                <button class="nav-btn" id="navTools" onclick="switchView('tools')">🎒 Packliste</button>
+                <button class="nav-btn" id="navCreate" onclick="switchView('create')">⚙️ Backup</button>
             </div>
             <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Design umschalten">🌙</button>
         </div>
@@ -537,13 +560,20 @@
     <!-- Hauptbereich -->
     <div class="view-container">
 
-        <!-- 1. Magazin / Feed Ansicht mit Suche & Statistik -->
+        <!-- 1. Magazin / Feed Ansicht mit Live-Sonnenstandsrechner & Statistik -->
         <div class="view-section active" id="magazineView">
             <div class="hero-banner">
                 <h1>Alpin-Adria Fotomagazin</h1>
                 <p>Entdecke die besten Fotospots, Lichtstimmungen und Routen.</p>
             </div>
             
+            <!-- Sonnenstand & Goldene Stunde Rechner (Feature 1) -->
+            <div class="sun-calc-box">
+                <h3>☀️ Licht- & Sonnenstand heute</h3>
+                <div id="sunCalcText" style="font-size:0.85rem; color:var(--text-main);">Berechne Sonnenstand...</div>
+                <div class="sun-times" id="sunTimesContainer"></div>
+            </div>
+
             <!-- Live Statistik-Badge Bar -->
             <div class="stats-badge-bar" id="statsBar">
                 <span>📍 Spots: <strong id="statSpotsCount">0</strong></span>
@@ -566,12 +596,12 @@
             <div class="magazine-grid" id="favoritesFeed"></div>
         </div>
 
-        <!-- 2. Karten & Sidebar Ansicht mit Lichtstimmungs-Filtern -->
+        <!-- 2. Karten & Sidebar Ansicht mit Kompass & Entfernungen -->
         <div class="view-section" id="mapView">
             <button class="pc-open-btn" id="pcOpenBtn" onclick="toggleSidebarMobile()">📝 Liste & Filter anzeigen</button>
             
             <div class="map-controls-top-right">
-                <button class="map-control-btn" onclick="panToUserGPS()" title="Meinen GPS-Standort anzeigen">📍 GPS</button>
+                <button class="map-control-btn" onclick="panToUserGPS()" title="Meinen GPS-Standort anzeigen">📍 GPS & Kompass</button>
                 <button class="map-control-btn" id="mapStyleBtn" onclick="toggleMapStyle()" title="Kartenstil wechseln">🛰️ Satellit</button>
             </div>
 
@@ -597,7 +627,22 @@
             <div id="map"></div>
         </div>
 
-        <!-- 3. Backup & Daten Verwaltung -->
+        <!-- 3. Foto-Packliste & Checkliste (Feature 2) -->
+        <div class="view-section" id="toolsView">
+            <div class="form-card" style="width: 100%; max-width: 600px; margin: 0 auto;">
+                <h2 style="margin-top:0; font-size: 1.2rem;">🎒 Foto-Touren Packliste</h2>
+                <p class="hint">Hake vor jeder Bergtour im Alpin-Adria-Raum deine Ausrüstung ab, damit nichts im Rucksack fehlt.</p>
+                
+                <div id="checklistContainer"></div>
+
+                <div style="margin-top: 16px; display: flex; gap: 8px;">
+                    <input type="text" id="newCheckItem" class="search-input" placeholder="Eigenen Gegenstand hinzufügen...">
+                    <button type="button" class="primary-btn" style="width: 120px;" onclick="addChecklistItem()">Hinzufügen</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Backup & Daten Verwaltung -->
         <div class="view-section" id="createView">
             <div class="form-card" style="width: 100%; max-width: 500px; margin: 0 auto;">
                 <h2 style="margin-top:0; font-size: 1.2rem;">Daten & Backup (JSON)</h2>
@@ -659,21 +704,111 @@
             }
         }
 
+        // Feature 1 & 3: GPS Standort, Entfernungs- und Kompass-Berechnung
+        var userLat = null;
+        var userLng = null;
+
         function panToUserGPS() {
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(function(position) {
-                    var lat = position.coords.latitude;
-                    var lng = position.coords.longitude;
-                    map.setView([lat, lng], 15);
+                    userLat = position.coords.latitude;
+                    userLng = position.coords.longitude;
+                    map.setView([userLat, userLng], 14);
                     L.popup()
-                        .setLatLng([lat, lng])
-                        .setContent("<b>📍 Du bist hier!</b><br>Klicke in die Karte, um einen Spot anzulegen.")
+                        .setLatLng([userLat, userLng])
+                        .setContent("<b>📍 Dein GPS-Standort</b><br>Entfernungen zu Spots werden aktualisiert!")
                         .openOn(map);
+                    renderApp();
                 }, function(error) {
                     alert("Standort konnte nicht ermittelt werden. Bitte GPS-Berechtigung prüfen.");
                 });
             } else {
                 alert("Dein Browser unterstützt keine Geolokalisierung.");
+            }
+        }
+
+        // Berechnung der Luftlinie in km und Himmelsrichtung
+        function calculateDistanceAndBearing(lat1, lon1, lat2, lon2) {
+            var R = 6371; // Erdradius in km
+            var dLat = (lat2 - lat1) * Math.PI / 180;
+            var dLon = (lon2 - lon1) * Math.PI / 180;
+            var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            var dist = R * c;
+
+            // Himmelsrichtung (Bearing)
+            var y = Math.sin(dLon) * Math.cos(lat2 * Math.PI / 180);
+            var x = Math.cos(lat1 * Math.PI / 180) * Math.sin(lat2 * Math.PI / 180) -
+                    Math.sin(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.cos(dLon);
+            var brng = Math.atan2(y, x) * 180 / Math.PI;
+            brng = (brng + 360) % 360;
+
+            var compassDirections = ["N", "NNO", "NO", "ONO", "O", "OSO", "SO", "SSW", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+            var index = Math.round(brng / 22.5) % 16;
+            var dir = compassDirections[index];
+
+            return { dist: dist.toFixed(1), dir: dir };
+        }
+
+        // Feature 1: Sonnenstands-Rechner (Goldene Stunde)
+        function initSunCalculator() {
+            var now = new Date();
+            var hours = now.getHours();
+            var minutes = now.getMinutes();
+            
+            // Ungefähre Berechnug für Outdoor-Planung
+            document.getElementById('sunCalcText').innerHTML = "Aktuelle Uhrzeit: <strong>" + String(hours).padStart(2,'0') + ":" + String(minutes).padStart(2,'0') + " Uhr</strong>. Nutze das weiche Licht des frühen Morgens oder späten Nachmittags!";
+            
+            document.getElementById('sunTimesContainer').innerHTML = `
+                <span>🌅 Morgenlicht: ca. 06:30 - 08:00</span>
+                <span>🌇 Abendlicht: ca. 18:00 - 19:30</span>
+            `;
+        }
+
+        // Feature 2: Packlisten Management via localStorage
+        var defaultChecklist = [
+            { text: "Kamera-Gehäuse & Ersatzakkus", checked: true },
+            { text: "Weitwinkel- & Teleobjektiv", checked: true },
+            { text: "Stabdreibein (Stativ) & L-Winkel", checked: false },
+            { text: "Polfilter & ND-Filter (Graufilter)", checked: false },
+            { text: "Fernauslöser / Intervalltimer", checked: false },
+            { text: "Stirnlatte (für Nacht/Blaue Stunde)", checked: false },
+            { text: "Wanderstiefel & Regenschutz", checked: true }
+        ];
+
+        var savedChecklist = localStorage.getItem('fotospots_checklist');
+        var checklist = savedChecklist ? JSON.parse(savedChecklist) : defaultChecklist;
+
+        function renderChecklist() {
+            var container = document.getElementById('checklistContainer');
+            container.innerHTML = "";
+            checklist.forEach(function(item, idx) {
+                var div = document.createElement('div');
+                div.className = 'checklist-item' + (item.checked ? ' checked' : '');
+                div.innerHTML = `
+                    <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleChecklistItem(${idx})">
+                    <span>${item.text}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function toggleChecklistItem(idx) {
+            checklist[idx].checked = !checklist[idx].checked;
+            localStorage.setItem('fotospots_checklist', JSON.stringify(checklist));
+            renderChecklist();
+        }
+
+        function addChecklistItem() {
+            var input = document.getElementById('newCheckItem');
+            var val = input.value.trim();
+            if (val) {
+                checklist.push({ text: val, checked: false });
+                localStorage.setItem('fotospots_checklist', JSON.stringify(checklist));
+                input.value = "";
+                renderChecklist();
             }
         }
 
@@ -696,7 +831,7 @@
                     var importedSpots = JSON.parse(e.target.result);
                     if (Array.isArray(importedSpots)) {
                         spots = importedSpots;
-                        localStorage.setItem('fotospots_v12', JSON.stringify(spots));
+                        localStorage.setItem('fotospots_v13', JSON.stringify(spots));
                         renderApp();
                         alert("Backup erfolgreich geladen! 🚀");
                         switchView('magazine');
@@ -788,7 +923,7 @@
             }
         ];
 
-        var savedSpots = localStorage.getItem('fotospots_v12');
+        var savedSpots = localStorage.getItem('fotospots_v13');
         var spots = savedSpots ? JSON.parse(savedSpots) : defaultSpots;
         
         var savedFavs = localStorage.getItem('fotospots_favs');
@@ -807,6 +942,7 @@
                 document.getElementById('magazineView').classList.add('active');
                 document.getElementById('navMag').classList.add('active');
                 renderMagazineFeed();
+                initSunCalculator();
             } else if (viewName === 'favorites') {
                 document.getElementById('favoritesView').classList.add('active');
                 document.getElementById('navFav').classList.add('active');
@@ -820,6 +956,10 @@
                         toggleSidebarMobile();
                     }
                 }, 200);
+            } else if (viewName === 'tools') {
+                document.getElementById('toolsView').classList.add('active');
+                document.getElementById('navTools').classList.add('active');
+                renderChecklist();
             } else if (viewName === 'create') {
                 document.getElementById('createView').classList.add('active');
                 document.getElementById('navCreate').classList.add('active');
@@ -830,7 +970,6 @@
             }
         }
 
-        // Lauscht auf den "Zurück"-Button des Browsers / Smartphones
         window.addEventListener('popstate', function(event) {
             if (event.state && event.state.view) {
                 switchView(event.state.view, false);
@@ -1042,7 +1181,15 @@
                 var originalIndex = spots.indexOf(spot);
                 var artCount = spot.articles ? spot.articles.length : 0;
 
+                // Entfernungs- und Kompass-Berechnung wenn GPS aktiv
+                var distHtml = "";
+                if (userLat !== null && userLng !== null) {
+                    var calc = calculateDistanceAndBearing(userLat, userLng, spot.lat, spot.lng);
+                    distHtml = `<div class='distance-info'>📍 ${calc.dist} km Luftlinie (${calc.dir})</div>`;
+                }
+
                 var content = `<b>${spot.title}</b><br><span class='article-count'>📖 ${artCount} Bericht(e)</span><br>` +
+                              distHtml +
                               `<div class='coord-hint'>Lat: ${spot.lat.toFixed(4)}, Lng: ${spot.lng.toFixed(4)}</div>` +
                               `<span class='popup-link' onclick='openBlogModal(${originalIndex})'>Berichte lesen</span>`;
                 
@@ -1055,7 +1202,10 @@
                 item.innerHTML = `
                     <div class='spot-info' onclick='jumpToSpot(${originalIndex})'>
                         <span class='spot-title'>${spot.title}</span>
-                        <div class='spot-desc'><span class='article-count'>📖 ${artCount} Bericht(e)</span></div>
+                        <div class='spot-desc'>
+                            <span class='article-count'>📖 ${artCount} Bericht(e)</span>
+                            ${distHtml}
+                        </div>
                     </div>
                     <div style="display:flex; gap:4px; align-items:center;">
                         <button class='action-btn' onclick='openBlogModal(${originalIndex})'>📖</button>
@@ -1073,7 +1223,7 @@
         function deleteSpot(index) {
             if (confirm("Möchtest du diesen Spot wirklich löschen?")) {
                 spots.splice(index, 1);
-                localStorage.setItem('fotospots_v12', JSON.stringify(spots));
+                localStorage.setItem('fotospots_v13', JSON.stringify(spots));
                 renderApp();
             }
         }
@@ -1190,7 +1340,7 @@
                     articles: [{ author: author, story: story, lightMood: lightMood, gpxUrl: gpxUrl, image: imgUrl }]
                 };
                 spots.push(newSpot);
-                localStorage.setItem('fotospots_v12', JSON.stringify(spots));
+                localStorage.setItem('fotospots_v13', JSON.stringify(spots));
                 map.closePopup();
                 renderApp();
             }
@@ -1206,8 +1356,9 @@
             }
         }
 
-        // Initiale History und App-Start
+        // Initiale History, Licht-Rechner und App-Start
         history.replaceState({ view: 'magazine' }, "", "#magazine");
+        initSunCalculator();
         renderApp();
     </script>
 
