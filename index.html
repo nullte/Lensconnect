@@ -226,8 +226,8 @@
         .landing-card h3 { margin: 0 0 8px 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
         .landing-card p { margin: 0 0 16px 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
 
-        /* Über mich & Kontakt Seiten Styling */
-        #aboutView, #contactView {
+        /* Über mich, Kontakt & Impressum Seiten Styling */
+        #aboutView, #contactView, #imprintView {
             padding: 30px 16px 80px 16px;
             max-width: 700px;
             margin: 0 auto;
@@ -246,6 +246,7 @@
             font-size: 0.95rem;
         }
         .content-card h2 { margin-top: 0; color: var(--primary); font-size: 1.3rem; }
+        .content-card h3 { margin-top: 20px; color: var(--text-main); font-size: 1.05rem; }
         .content-card p { margin-bottom: 14px; color: var(--text-main); }
         
         .contact-info-list {
@@ -750,6 +751,7 @@
                 <button class="nav-btn" id="navTools" onclick="switchView('tools')">🎒 Packliste</button>
                 <button class="nav-btn" id="navAbout" onclick="switchView('about')">ℹ️ Über mich</button>
                 <button class="nav-btn" id="navContact" onclick="switchView('contact')">📬 Kontakt</button>
+                <button class="nav-btn" id="navImprint" onclick="switchView('imprint')">⚖️ Impressum & Datenschutz</button>
             </div>
 
             <!-- Mobile Dropdown-Menü -->
@@ -761,6 +763,7 @@
                 <option value="tools">🎒 Packliste & Tools</option>
                 <option value="about">ℹ️ Über mich</option>
                 <option value="contact">📬 Kontakt</option>
+                <option value="imprint">⚖️ Impressum & Datenschutz</option>
             </select>
 
             <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Design umschalten">🌙</button>
@@ -848,6 +851,31 @@
                         <a href="https://www.instagram.com/nullte?stkn=M2tnYXlydnRmd2Z2" target="_blank">@nullte (Instagram Profil)</a>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- IMPRESSUM & DATENSCHUTZ SEITE -->
+        <div class="view-section" id="imprintView">
+            <div class="content-card">
+                <h2>Impressum & Datenschutz</h2>
+                
+                <h3>Impressum</h3>
+                <p>
+                    <strong>Medieninhaber & Betreiber:</strong> Christian Arnold<br>
+                    <strong>Wohnort / Region:</strong> Arnoldstein, Kärnten, Österreich<br>
+                    <strong>E-Mail:</strong> Christian.arnold10@gmail.com<br>
+                    <strong>Telefon:</strong> 0660 4969289
+                </p>
+
+                <h3>Datenschutzhinweise (Testphase)</h3>
+                <p><strong>1. Speicherung von Daten im Browser (LocalStorage):</strong><br>
+                Diese Website verwendet keine Tracking-Tools (wie Google Analytics oder Werbe-Cookies). Alle von Nutzern eingegebenen Daten wie Merklisten, selbst eingetragene Fotospots, Inserate oder Packlisten werden ausschließlich lokal im Speicher deines eigenen Browsers (LocalStorage) hinterlegt und nicht an fremde Server übermittelt.</p>
+
+                <p><strong>2. Inserate und Kontaktdaten:</strong><br>
+                Wenn du ein Inserat in der Shooting-Börse oder einen Fotospot erstellst, sind die von dir angegebenen Namen und Kontaktdaten für andere Nutzer auf der Plattform sichtbar, um die Kontaktaufnahme für gemeinsame Shootings zu ermöglichen. Mit dem Veröffentlichen erklärst du dich damit einverstanden.</p>
+
+                <p><strong>3. Recht auf Löschung:</strong><br>
+                Du kannst deine selbst erstellten Inserate und Spots jederzeit direkt über die Plattform mit dem entsprechenden Löschen-Button wieder entfernen.</p>
             </div>
         </div>
 
@@ -1461,6 +1489,9 @@
             } else if (viewName === 'contact') {
                 document.getElementById('contactView').classList.add('active');
                 var btn = document.getElementById('navContact'); if(btn) btn.classList.add('active');
+            } else if (viewName === 'imprint') {
+                document.getElementById('imprintView').classList.add('active');
+                var btn = document.getElementById('navImprint'); if(btn) btn.classList.add('active');
             } else if (viewName === 'magazine') {
                 document.getElementById('magazineView').classList.add('active');
                 var btn = document.getElementById('navMag'); if(btn) btn.classList.add('active');
