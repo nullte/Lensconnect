@@ -357,17 +357,12 @@
         }
         .form-group input[type="file"] { padding: 6px; cursor: pointer; }
 
-        .exif-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-        }
-
         button.primary-btn { 
             background: var(--primary); color: white; border: none; 
             padding: 10px; width: 100%; border-radius: 8px; 
             cursor: pointer; font-weight: 600; font-size: 0.9rem;
         }
+        button.primary-btn:hover { background: var(--primary-hover); }
 
         .hint { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.4; }
 
@@ -529,7 +524,7 @@
         <div class="view-section" id="createView">
             <div class="form-card" style="width: 100%; max-width: 500px; margin: 0 auto;">
                 <h2 style="margin-top:0; font-size: 1.2rem;">Neuen Beitrag erstellen</h2>
-                <p class="hint">Tipp: Du kannst auch direkt auf die Karte klicken, um dort einen Spot anzulegen!</p>
+                <p class="hint">Tipp: Du kannst auch direkt auf die Karte klicken, um dort im Popup einen Spot anzulegen!</p>
                 
                 <form id="standaloneForm" onsubmit="handleStandaloneSubmit(event)">
                     <div class="form-group">
@@ -549,10 +544,10 @@
                         <input type="text" id="standTags" placeholder="See, Natur">
                     </div>
                     <div class="form-group" style="display: flex; gap: 10px;">
-                        <div style="flex: 1;"><label>Lat</label><input type="text" id="standLat" value="46.42" required></div>
-                        <div style="flex: 1;"><label>Lng</label><input type="text" id="standLng" value="13.56" required></div>
+                        <div style="flex: 1;"><label>Lat</label><input type="text" id="standLat" value="46.558" required></div>
+                        <div style="flex: 1;"><label>Lng</label><input type="text" id="standLng" value="13.712" required></div>
                     </div>
-                    <button type="submit" class="primary-btn">Spot auf Karte erstellen</button>
+                    <button type="submit" class="primary-btn">Spot erstellen</button>
                 </form>
             </div>
         </div>
@@ -924,19 +919,19 @@
             var lng = e.latlng.lng;
 
             var popupContent = `
-                <b>📍 Neuer Spot</b>
-                <form id="mapPopupForm" onsubmit="handlePopupSubmit(event, ${lat}, ${lng})">
+                <div style="width: 240px;">
+                    <b style="margin-bottom:6px; display:block;">📍 Neuer Spot</b>
                     <div class="popup-form-group">
                         <label>Spot-Titel</label>
-                        <input type="text" id="popTitle" required placeholder="z.B. Aussichtspunkt">
+                        <input type="text" id="popTitle" placeholder="z.B. Aussichtspunkt">
                     </div>
                     <div class="popup-form-group">
                         <label>Dein Name</label>
-                        <input type="text" id="popAuthor" required placeholder="z.B. Anna">
+                        <input type="text" id="popAuthor" placeholder="z.B. Anna">
                     </div>
                     <div class="popup-form-group">
                         <label>Reisebericht</label>
-                        <textarea id="popStory" rows="2" required placeholder="Erlebnis..."></textarea>
+                        <textarea id="popStory" rows="2" placeholder="Erlebnis..."></textarea>
                     </div>
                     <div class="popup-form-group">
                         <label>Tags (kommagetrennt)</label>
@@ -946,8 +941,8 @@
                         <label>Foto (optional)</label>
                         <input type="file" id="popImage" accept="image/*">
                     </div>
-                    <button type="submit" class="primary-btn" style="padding:6px; font-size:0.8rem; margin-top:4px;">Hinzufügen</button>
-                </form>
+                    <button type="button" class="primary-btn" style="padding:6px; font-size:0.8rem; margin-top:6px; width:100%;" onclick="submitPopupSpot(${lat}, ${lng})">Hinzufügen</button>
+                </div>
             `;
 
             L.popup()
@@ -956,15 +951,20 @@
                 .openOn(map);
         });
 
-        // Absenden direkt aus dem Karten-Popup
-        function handlePopupSubmit(event, lat, lng) {
-            event.preventDefault();
-            var title = document.getElementById('popTitle').value;
-            var author = document.getElementById('popAuthor').value;
-            var story = document.getElementById('popStory').value;
-            var rawTags = document.getElementById('popTags').value;
-            var tagsArray = rawTags ? rawTags.split(',').map(t => t.trim()).filter(t => t.length > 0) : [];
+        // Direktes Auslesen und Speichern per Button-Klick im Popup
+        function submitPopupSpot(lat, lng) {
+            var title = document.getElementById('popTitle').value.trim();
+            var author = document.getElementById('popAuthor').value.trim();
+            var story = document.getElementById('popStory').value.trim();
+            var rawTags = document.getElementById('popTags').value.trim();
             var fileInput = document.getElementById('popImage').files[0];
+
+            if (!title || !author || !story) {
+                alert("Bitte fülle zumindest Titel, Name und Reisebericht aus!");
+                return;
+            }
+
+            var tagsArray = rawTags ? rawTags.split(',').map(t => t.trim()).filter(t => t.length > 0) : [];
 
             function saveSpot(imgUrl) {
                 var newSpot = {
