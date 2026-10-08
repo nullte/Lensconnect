@@ -1432,6 +1432,63 @@
             }
         }
 
+        // --- Automatisches Bild-Resizing & Komprimierung (Punkt 2) ---
+        function compressImageFile(file, maxWidth = 1000, quality = 0.8, callback) {
+            if (!file) {
+                callback("");
+                return;
+            }
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(event) {
+                var img = new Image();
+                img.src = event.target.result;
+                img.onload = function() {
+                    var canvas = document.createElement('canvas');
+                    var width = img.width;
+                    var height = img.height;
+
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    var ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    var dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    callback(dataUrl);
+                };
+            };
+        }
+
+        // --- Natives Teilen per Web Share API (Punkt 3) ---
+        function shareSpot(spotTitle, lat, lng) {
+            var shareData = {
+                title: 'LensConnect Fotospot',
+                text: `Entdecke den Fotospot "${spotTitle}" auf LensConnect!`,
+                url: window.location.href
+            };
+
+            if (navigator.share) {
+                navigator.share(shareData).catch(function(err) {
+                    console.log("Sharing abgebrochen");
+                });
+            } else {
+                // Fallback in die Zwischenablage
+                var fallbackText = `Entdecke den Fotospot "${spotTitle}" im LensConnect Magazin!\nKoordinaten: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(fallbackText).then(function() {
+                        alert("Spot-Infos in die Zwischenablage kopiert! 📋");
+                    });
+                } else {
+                    alert(fallbackText);
+                }
+            }
+        }
+
         // --- Community-Profile Verwaltung ---
         var defaultProfiles = [
             {
@@ -1859,17 +1916,6 @@
 
         function closeLightbox() {
             document.getElementById('lightboxModal').classList.remove('active');
-        }
-
-        function shareSpot(spotTitle, lat, lng) {
-            var shareText = `Entdecke den Fotospot "${spotTitle}" im LensConnect Magazin!\nKoordinaten: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(shareText).then(function() {
-                    alert("Spot-Infos in die Zwischenablage kopiert! 📋");
-                });
-            } else {
-                alert(shareText);
-            }
         }
 
         var isSidebarCollapsedPC = false;
@@ -2429,9 +2475,9 @@
             }
 
             if (fileInput) {
-                var reader = new FileReader();
-                reader.onload = function(e) { saveSpot(e.target.result); };
-                reader.readAsDataURL(fileInput);
+                compressImageFile(fileInput, 1000, 0.8, function(compressedUrl) {
+                    saveSpot(compressedUrl);
+                });
             } else {
                 saveSpot("");
             }
