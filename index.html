@@ -202,6 +202,7 @@
             line-height: 1.5;
         }
         .dev-notice-box strong { color: var(--primary); }
+        .dev-notice-link { color: var(--primary); font-weight: 700; cursor: pointer; text-decoration: underline; }
 
         .landing-grid {
             display: grid;
@@ -224,6 +225,48 @@
         .landing-card:hover { transform: translateY(-3px); border-color: var(--primary); }
         .landing-card h3 { margin: 0 0 8px 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
         .landing-card p { margin: 0 0 16px 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
+
+        /* Über mich & Kontakt Seiten Styling */
+        #aboutView, #contactView {
+            padding: 30px 16px 80px 16px;
+            max-width: 700px;
+            margin: 0 auto;
+            flex-direction: column;
+            gap: 20px;
+            box-sizing: border-box;
+        }
+
+        .content-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        .content-card h2 { margin-top: 0; color: var(--primary); font-size: 1.3rem; }
+        .content-card p { margin-bottom: 14px; color: var(--text-main); }
+        
+        .contact-info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-main);
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .contact-item a { color: var(--primary); text-decoration: none; word-break: break-all; }
+        .contact-item a:hover { text-decoration: underline; }
 
         .search-bar-container {
             display: flex;
@@ -705,7 +748,8 @@
                 <button class="nav-btn" id="navMap" onclick="switchView('map')">🗺️ Karte & Spots</button>
                 <button class="nav-btn" id="navMarket" onclick="switchView('market')">🤝 Inserate</button>
                 <button class="nav-btn" id="navTools" onclick="switchView('tools')">🎒 Packliste</button>
-                <button class="nav-btn" id="navFav" onclick="switchView('favorites')">⭐ Merkzettel</button>
+                <button class="nav-btn" id="navAbout" onclick="switchView('about')">ℹ️ Über mich</button>
+                <button class="nav-btn" id="navContact" onclick="switchView('contact')">📬 Kontakt</button>
             </div>
 
             <!-- Mobile Dropdown-Menü -->
@@ -715,7 +759,8 @@
                 <option value="map">🗺️ Karte & Spots</option>
                 <option value="market">🤝 Inserate & Shootings</option>
                 <option value="tools">🎒 Packliste & Tools</option>
-                <option value="favorites">⭐ Merkzettel</option>
+                <option value="about">ℹ️ Über mich</option>
+                <option value="contact">📬 Kontakt</option>
             </select>
 
             <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Design umschalten">🌙</button>
@@ -725,7 +770,7 @@
     <!-- Hauptbereich -->
     <div class="view-container">
 
-        <!-- 0. LANDING PAGE (Angepasst für Testphase & Mitarbeit) -->
+        <!-- 0. LANDING PAGE -->
         <div class="view-section active" id="landingView">
             <div class="landing-hero">
                 <h1>Willkommen bei LensConnect</h1>
@@ -733,8 +778,8 @@
             </div>
 
             <div class="dev-notice-box">
-                🚧 <strong>Seite im Aufbau (Testphase):</strong> LensConnect wächst und entwickelt sich ständig weiter! Hast du Ideen, Feedback oder möchtest bei der Weiterentwicklung mitarbeiten? 
-                Melde dich gerne direkt bei mir!
+                🚧 <strong>Seite im Aufbau (Testphase):</strong> LensConnect wächst und entwickelt sich ständig weiter! Hast du Ideen, Feedback oder möchtest mitarbeiten? 
+                <span class="dev-notice-link" onclick="switchView('contact')">Schreib mir gerne direkt!</span>
             </div>
 
             <div class="landing-grid">
@@ -768,6 +813,40 @@
                         <p>Behalte den Überblick mit der interaktiven Foto-Packliste und verpasse dank Sonnenstands-Berechnung kein goldenes Licht mehr.</p>
                     </div>
                     <button class="primary-btn" style="pointer-events: none;">Tools öffnen →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÜBER MICH SEITE -->
+        <div class="view-section" id="aboutView">
+            <div class="content-card">
+                <h2>Über mich & die Idee hinter LensConnect</h2>
+                <p>Hi, ich bin <strong>Christian Arnold</strong> (geboren 1992). Meine große Liebe zur Fotografie habe ich 2017 mit der Geburt meiner Tochter entdeckt – plötzlich wollte man jeden unbezahlbaren Moment für die Ewigkeit festhalten.</p>
+                <p>Ich fotografiere sowohl leidenschaftlich mit modernen Digitalkameras als auch mit analogen Kameras, weil die Entschleunigung und der Zauber der analogen Fotografie etwas ganz Besonderes haben.</p>
+                <p><strong>Warum LensConnect?</strong> Ich habe diese Plattform ins Leben gerufen, weil mich zwei Dinge extrem gestört haben: Auf sozialen Medien gehen Fotografen und echte Beiträge immer mehr unter bezahlter Werbung unter. Gleichzeitig werden klassische Marktplätze immer unübersichtlicher. Und vor allem: Immer mehr lokale Fotografen finden kaum noch Aufträge oder wissen nicht, wo sie starten sollen.</p>
+                <p>Mit LensConnect möchte ich eine faire, übersichtliche Plattform schaffen, auf der jede und jeder die Chance hat, coole Locations kennenzulernen, sich für Shootings zu vernetzen und in der Welt der Fotografie echten Fuß zu fassen.</p>
+            </div>
+        </div>
+
+        <!-- KONTAKT SEITE -->
+        <div class="view-section" id="contactView">
+            <div class="content-card">
+                <h2>Kontakt & Mitwirken</h2>
+                <p>Du hast Fragen, Feedback, eigene Ideen oder möchtest bei der Weiterentwicklung von LensConnect mitarbeiten? Melde dich jederzeit gerne bei mir!</p>
+                
+                <div class="contact-info-list">
+                    <div class="contact-item">
+                        <span>📧 E-Mail:</span>
+                        <a href="mailto:Christian.arnold10@gmail.com">Christian.arnold10@gmail.com</a>
+                    </div>
+                    <div class="contact-item">
+                        <span>📞 Telefon:</span>
+                        <a href="tel:06604969289">0660 4969289</a>
+                    </div>
+                    <div class="contact-item">
+                        <span>📸 Instagram:</span>
+                        <a href="https://www.instagram.com/nullte?stkn=M2tnYXlydnRmd2Z2" target="_blank">@nullte (Instagram Profil)</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -837,7 +916,7 @@
             <div id="map"></div>
         </div>
 
-        <!-- 3. Inserate & Shooting-Börse (mit dynamischer Studio-Anpassung) -->
+        <!-- 3. Inserate & Shooting-Börse -->
         <div class="view-section" id="marketView">
             <div class="hero-banner" style="background: linear-gradient(135deg, #0284c7, #0369a1);">
                 <h1>🤝 LensConnect Inserate</h1>
@@ -861,7 +940,6 @@
                         <option value="Hochzeit / Event">💍 Hochzeit / Event</option>
                     </select>
                 </div>
-                <!-- Erfahrungs-Level wird bei Studio ausgeblendet -->
                 <div class="popup-form-group" id="marketSkillGroup">
                     <label>Erfahrungs- & Anspruchs-Level</label>
                     <select id="marketSkill">
@@ -1377,6 +1455,12 @@
             if (viewName === 'landing') {
                 document.getElementById('landingView').classList.add('active');
                 var btn = document.getElementById('navLanding'); if(btn) btn.classList.add('active');
+            } else if (viewName === 'about') {
+                document.getElementById('aboutView').classList.add('active');
+                var btn = document.getElementById('navAbout'); if(btn) btn.classList.add('active');
+            } else if (viewName === 'contact') {
+                document.getElementById('contactView').classList.add('active');
+                var btn = document.getElementById('navContact'); if(btn) btn.classList.add('active');
             } else if (viewName === 'magazine') {
                 document.getElementById('magazineView').classList.add('active');
                 var btn = document.getElementById('navMag'); if(btn) btn.classList.add('active');
