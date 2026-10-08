@@ -168,6 +168,50 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Landing Page / Start Ansicht */
+        #landingView {
+            padding: 30px 16px 80px 16px;
+            max-width: 900px;
+            margin: 0 auto;
+            flex-direction: column;
+            gap: 24px;
+            box-sizing: border-box;
+        }
+
+        .landing-hero {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: white;
+            padding: 36px 20px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        .landing-hero h1 { margin: 0 0 10px 0; font-size: 1.8rem; }
+        .landing-hero p { margin: 0 auto; color: #94a3b8; font-size: 1rem; max-width: 600px; line-height: 1.5; }
+
+        .landing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .landing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .landing-card:hover { transform: translateY(-3px); border-color: var(--primary); }
+        .landing-card h3 { margin: 0 0 8px 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+        .landing-card p { margin: 0 0 16px 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
+
         .search-bar-container {
             display: flex;
             gap: 10px;
@@ -637,28 +681,28 @@
 
     <!-- Header / Navigation -->
     <header>
-        <div class="logo" onclick="switchView('magazine')">
+        <div class="logo" onclick="switchView('landing')">
             <span>📷</span> <span>LensConnect</span>
         </div>
         <div class="nav-right">
             <!-- Desktop Button-Navigation -->
             <div class="nav-links">
-                <button class="nav-btn active" id="navMag" onclick="switchView('magazine')">📖 Magazin</button>
-                <button class="nav-btn" id="navFav" onclick="switchView('favorites')">⭐ Merkzettel</button>
-                <button class="nav-btn" id="navMap" onclick="switchView('map')">🗺️ Karte</button>
+                <button class="nav-btn active" id="navLanding" onclick="switchView('landing')">🏠 Start</button>
+                <button class="nav-btn" id="navMag" onclick="switchView('magazine')">📖 Magazin</button>
+                <button class="nav-btn" id="navMap" onclick="switchView('map')">🗺️ Karte & Spots</button>
                 <button class="nav-btn" id="navMarket" onclick="switchView('market')">🤝 Inserate</button>
                 <button class="nav-btn" id="navTools" onclick="switchView('tools')">🎒 Packliste</button>
-                <button class="nav-btn" id="navCreate" onclick="switchView('create')">⚙️ Backup</button>
+                <button class="nav-btn" id="navFav" onclick="switchView('favorites')">⭐ Merkzettel</button>
             </div>
 
             <!-- Mobile Dropdown-Menü -->
             <select class="mobile-nav-select" id="mobileNavSelect" onchange="switchView(this.value)">
-                <option value="magazine">📖 Magazin</option>
-                <option value="favorites">⭐ Merkzettel</option>
-                <option value="map">🗺️ Karte</option>
+                <option value="landing">🏠 Start (Übersicht)</option>
+                <option value="magazine">📖 Magazin & Berichte</option>
+                <option value="map">🗺️ Karte & Spots</option>
                 <option value="market">🤝 Inserate & Shootings</option>
-                <option value="tools">🎒 Packliste</option>
-                <option value="create">⚙️ Backup</option>
+                <option value="tools">🎒 Packliste & Tools</option>
+                <option value="favorites">⭐ Merkzettel</option>
             </select>
 
             <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Design umschalten">🌙</button>
@@ -668,8 +712,50 @@
     <!-- Hauptbereich -->
     <div class="view-container">
 
+        <!-- 0. LANDING PAGE (Neue Startseite) -->
+        <div class="view-section active" id="landingView">
+            <div class="landing-hero">
+                <h1>Willkommen bei LensConnect</h1>
+                <p>Das globale Netzwerk für Fotografen, Amateure, Models und Familien. Entdecke die besten Fotospots, verbinde dich für Shootings und nutze praktische Tools für deine nächste Tour.</p>
+            </div>
+
+            <div class="landing-grid">
+                <div class="landing-card" onclick="switchView('map')">
+                    <div>
+                        <h3>🗺️ Spots & Karte</h3>
+                        <p>Finde geheime Outdoor-Spots, Wasserfälle, Parks und urbane Locations mit GPS, Wegbeschreibungen und Wetter-Check.</p>
+                    </div>
+                    <button class="primary-btn" style="pointer-events: none;">Karte öffnen →</button>
+                </div>
+
+                <div class="landing-card" onclick="switchView('market')">
+                    <div>
+                        <h3>🤝 Inserate & Shooting-Börse</h3>
+                        <p>Biete Shootings an oder suche als Privatperson/Paar nach Fotografen (inkl. Skill-Meter für Profis & Amateure).</p>
+                    </div>
+                    <button class="primary-btn" style="pointer-events: none;">Zur Börse →</button>
+                </div>
+
+                <div class="landing-card" onclick="switchView('magazine')">
+                    <div>
+                        <h3>📖 Magazin & Berichte</h3>
+                        <p>Lies Erfahrungsberichte, EXIF-Daten (Blende, ISO, Belichtungszeit) und Tipps zu perfekten Lichtstimmungen.</p>
+                    </div>
+                    <button class="primary-btn" style="pointer-events: none;">Magazin lesen →</button>
+                </div>
+
+                <div class="landing-card" onclick="switchView('tools')">
+                    <div>
+                        <h3>🎒 Packliste & Tools</h3>
+                        <p>Behalte den Überblick mit der interaktiven Foto-Packliste und verpasse dank Sonnenstands-Berechnung kein goldenes Licht mehr.</p>
+                    </div>
+                    <button class="primary-btn" style="pointer-events: none;">Tools öffnen →</button>
+                </div>
+            </div>
+        </div>
+
         <!-- 1. Magazin / Feed Ansicht -->
-        <div class="view-section active" id="magazineView">
+        <div class="view-section" id="magazineView">
             <div class="hero-banner">
                 <h1>LensConnect Fotomagazin</h1>
                 <p>Landschaft, Familie, Portrait & die besten Outdoor-Spots.</p>
@@ -1132,7 +1218,7 @@
                     renderApp();
                     renderMarketFeed();
                     alert("Backup erfolgreich geladen! 🚀");
-                    switchView('magazine');
+                    switchView('landing');
                 } catch(err) {
                     alert("Fehler beim Lesen der JSON-Datei.");
                 }
@@ -1246,7 +1332,10 @@
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
 
-            if (viewName === 'magazine') {
+            if (viewName === 'landing') {
+                document.getElementById('landingView').classList.add('active');
+                var btn = document.getElementById('navLanding'); if(btn) btn.classList.add('active');
+            } else if (viewName === 'magazine') {
                 document.getElementById('magazineView').classList.add('active');
                 var btn = document.getElementById('navMag'); if(btn) btn.classList.add('active');
                 renderMagazineFeed();
@@ -1272,9 +1361,6 @@
                 document.getElementById('toolsView').classList.add('active');
                 var btn = document.getElementById('navTools'); if(btn) btn.classList.add('active');
                 renderChecklist();
-            } else if (viewName === 'create') {
-                document.getElementById('createView').classList.add('active');
-                var btn = document.getElementById('navCreate'); if(btn) btn.classList.add('active');
             }
 
             var mobileSelect = document.getElementById('mobileNavSelect');
@@ -1289,7 +1375,7 @@
             if (event.state && event.state.view) {
                 switchView(event.state.view, false);
             } else {
-                switchView('magazine', false);
+                switchView('landing', false);
             }
         });
 
@@ -1670,7 +1756,7 @@
             }
         }
 
-        history.replaceState({ view: 'magazine' }, "", "#magazine");
+        history.replaceState({ view: 'landing' }, "", "#landing");
         initSunCalculator();
         renderChecklist();
         renderMarketFeed();
