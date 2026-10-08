@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alpin-Adria Community & Shootings</title>
+    <title>LensConnect – Community & Shootings</title>
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <!-- Google Fonts -->
@@ -638,7 +638,7 @@
     <!-- Header / Navigation -->
     <header>
         <div class="logo" onclick="switchView('magazine')">
-            <span>📸</span> <span>Alpin-Adria Community</span>
+            <span>📷</span> <span>LensConnect</span>
         </div>
         <div class="nav-right">
             <!-- Desktop Button-Navigation -->
@@ -671,7 +671,7 @@
         <!-- 1. Magazin / Feed Ansicht -->
         <div class="view-section active" id="magazineView">
             <div class="hero-banner">
-                <h1>Alpin-Adria Fotomagazin</h1>
+                <h1>LensConnect Fotomagazin</h1>
                 <p>Landschaft, Familie, Portrait & die besten Outdoor-Spots.</p>
             </div>
             
@@ -736,7 +736,7 @@
         <!-- 3. Inserate & Shooting-Börse mit Skill Meter -->
         <div class="view-section" id="marketView">
             <div class="hero-banner" style="background: linear-gradient(135deg, #0284c7, #0369a1);">
-                <h1>🤝 Community Inserate & Shootings</h1>
+                <h1>🤝 LensConnect Inserate & Shootings</h1>
                 <p>Profis & Amateure (Portfolio-Aufbau) bieten Shootings an oder suchen Begleitung.</p>
             </div>
 
@@ -957,7 +957,7 @@
             }
         ];
 
-        var savedMarket = localStorage.getItem('fotospots_market_v3');
+        var savedMarket = localStorage.getItem('lensconnect_market_v1');
         var marketItems = savedMarket ? JSON.parse(savedMarket) : defaultMarket;
         var currentMarketTab = 'offer';
 
@@ -1030,7 +1030,7 @@
             }
 
             marketItems.push({ type, skill, title, author, location, time, price, desc, contact });
-            localStorage.setItem('fotospots_market_v3', JSON.stringify(marketItems));
+            localStorage.setItem('lensconnect_market_v1', JSON.stringify(marketItems));
             
             document.getElementById('marketTitle').value = "";
             document.getElementById('marketAuthor').value = "";
@@ -1047,7 +1047,7 @@
         function deleteMarketItem(idx) {
             if (confirm("Möchtest du dieses Inserat löschen?")) {
                 marketItems.splice(idx, 1);
-                localStorage.setItem('fotospots_market_v3', JSON.stringify(marketItems));
+                localStorage.setItem('lensconnect_market_v1', JSON.stringify(marketItems));
                 renderMarketFeed();
             }
         }
@@ -1060,7 +1060,7 @@
             { text: "Stativ & Polfilter", checked: false }
         ];
 
-        var savedChecklist = localStorage.getItem('fotospots_checklist_v2');
+        var savedChecklist = localStorage.getItem('lensconnect_checklist_v1');
         var checklist = savedChecklist ? JSON.parse(savedChecklist) : defaultChecklist;
 
         function renderChecklist() {
@@ -1082,13 +1082,13 @@
 
         function toggleChecklistItem(idx) {
             checklist[idx].checked = !checklist[idx].checked;
-            localStorage.setItem('fotospots_checklist_v2', JSON.stringify(checklist));
+            localStorage.setItem('lensconnect_checklist_v1', JSON.stringify(checklist));
             renderChecklist();
         }
 
         function deleteChecklistItem(idx) {
             checklist.splice(idx, 1);
-            localStorage.setItem('fotospots_checklist_v2', JSON.stringify(checklist));
+            localStorage.setItem('lensconnect_checklist_v1', JSON.stringify(checklist));
             renderChecklist();
         }
 
@@ -1097,7 +1097,7 @@
             var val = input.value.trim();
             if (val) {
                 checklist.push({ text: val, checked: false });
-                localStorage.setItem('fotospots_checklist_v2', JSON.stringify(checklist));
+                localStorage.setItem('lensconnect_checklist_v1', JSON.stringify(checklist));
                 input.value = "";
                 renderChecklist();
             }
@@ -1108,7 +1108,7 @@
             var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allData, null, 2));
             var downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "alpin_adria_community_backup.json");
+            downloadAnchor.setAttribute("download", "lensconnect_backup.json");
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             downloadAnchor.remove();
@@ -1123,11 +1123,11 @@
                     var imported = JSON.parse(e.target.result);
                     if (imported.spots && Array.isArray(imported.spots)) {
                         spots = imported.spots;
-                        localStorage.setItem('fotospots_v16', JSON.stringify(spots));
+                        localStorage.setItem('lensconnect_spots_v1', JSON.stringify(spots));
                     }
                     if (imported.market && Array.isArray(imported.market)) {
                         marketItems = imported.market;
-                        localStorage.setItem('fotospots_market_v3', JSON.stringify(marketItems));
+                        localStorage.setItem('lensconnect_market_v1', JSON.stringify(marketItems));
                     }
                     renderApp();
                     renderMarketFeed();
@@ -1151,7 +1151,7 @@
         }
 
         function shareSpot(spotTitle, lat, lng) {
-            var shareText = `Entdecke den Fotospot "${spotTitle}" im Alpin-Adria Community Magazin!\nKoordinaten: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+            var shareText = `Entdecke den Fotospot "${spotTitle}" im LensConnect Magazin!\nKoordinaten: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(shareText).then(function() {
                     alert("Spot-Infos in die Zwischenablage kopiert! 📋");
@@ -1232,10 +1232,10 @@
             }
         ];
 
-        var savedSpots = localStorage.getItem('fotospots_v16');
+        var savedSpots = localStorage.getItem('lensconnect_spots_v1');
         var spots = savedSpots ? JSON.parse(savedSpots) : defaultSpots;
         
-        var savedFavs = localStorage.getItem('fotospots_favs');
+        var savedFavs = localStorage.getItem('lensconnect_favs');
         var favorites = savedFavs ? JSON.parse(savedFavs) : [];
 
         var markers = [];
@@ -1300,7 +1300,7 @@
             } else {
                 favorites.push(spotIndex);
             }
-            localStorage.setItem('fotospots_favs', JSON.stringify(favorites));
+            localStorage.setItem('lensconnect_favs', JSON.stringify(favorites));
             renderMagazineFeed();
             if (document.getElementById('favoritesView').classList.contains('active')) {
                 renderFavoritesFeed();
@@ -1545,7 +1545,7 @@
         function deleteSpot(index) {
             if (confirm("Möchtest du diesen Spot wirklich löschen?")) {
                 spots.splice(index, 1);
-                localStorage.setItem('fotospots_v16', JSON.stringify(spots));
+                localStorage.setItem('lensconnect_spots_v1', JSON.stringify(spots));
                 renderApp();
             }
         }
@@ -1656,7 +1656,7 @@
                     articles: [{ author: author, story: story, lightMood: lightMood, image: imgUrl }]
                 };
                 spots.push(newSpot);
-                localStorage.setItem('fotospots_v16', JSON.stringify(spots));
+                localStorage.setItem('lensconnect_spots_v1', JSON.stringify(spots));
                 map.closePopup();
                 renderApp();
             }
