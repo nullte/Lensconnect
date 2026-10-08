@@ -649,6 +649,16 @@
 
         .hint { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.4; }
 
+        /* Glossar / Lexikon Styling */
+        .glossary-item {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        .glossary-item:last-child { border-bottom: none; }
+        .glossary-term { font-weight: 700; color: var(--primary); display: inline-block; margin-right: 6px; }
+        .glossary-def { color: var(--text-main); line-height: 1.4; display: inline; }
+
         /* Leaflet Popup Styling */
         .leaflet-popup-content-wrapper {
             background: var(--bg-card) !important;
@@ -774,7 +784,7 @@
                 <button class="nav-btn" id="navMag" onclick="switchView('magazine')">📖 Magazin & Tipps</button>
                 <button class="nav-btn" id="navMap" onclick="switchView('map')">🗺️ Karte & Spots</button>
                 <button class="nav-btn" id="navMarket" onclick="switchView('market')">🤝 Inserate</button>
-                <button class="nav-btn" id="navTools" onclick="switchView('tools')">🎒 Packliste</button>
+                <button class="nav-btn" id="navTools" onclick="switchView('tools')">🎒 Tools & Helfer</button>
                 <button class="nav-btn" id="navAbout" onclick="switchView('about')">ℹ️ Über mich</button>
                 <button class="nav-btn" id="navContact" onclick="switchView('contact')">📬 Kontakt</button>
                 <button class="nav-btn" id="navImprint" onclick="switchView('imprint')">⚖️ Impressum & Datenschutz</button>
@@ -786,7 +796,7 @@
                 <option value="magazine">📖 Magazin & Tipps</option>
                 <option value="map">🗺️ Karte & Spots</option>
                 <option value="market">🤝 Inserate & Shootings</option>
-                <option value="tools">🎒 Packliste & Tools</option>
+                <option value="tools">🎒 Tools & Helfer</option>
                 <option value="about">ℹ️ Über mich</option>
                 <option value="contact">📬 Kontakt</option>
                 <option value="imprint">⚖️ Impressum & Datenschutz</option>
@@ -838,8 +848,8 @@
 
                 <div class="landing-card" onclick="switchView('tools')">
                     <div>
-                        <h3>🎒 Packliste & Tools</h3>
-                        <p>Behalte den Überblick mit der interaktiven Foto-Packliste und verpasse dank Sonnenstands-Berechnung kein goldenes Licht mehr.</p>
+                        <h3>🎒 Tools & Helfer</h3>
+                        <p>Nutze praktische Rechner, das Fotografie-Alphabet (Lexikon), die Licht-Infos und die interaktive Packliste.</p>
                     </div>
                     <button class="primary-btn" style="pointer-events: none;">Tools öffnen →</button>
                 </div>
@@ -1007,7 +1017,7 @@
             <div id="map"></div>
         </div>
 
-        <!-- 3. Inserate & Shooting-Börse (Mit zusammengefasster Location-Kategorie) -->
+        <!-- 3. Inserate & Shooting-Börse -->
         <div class="view-section" id="marketView">
             <div class="hero-banner" style="background: linear-gradient(135deg, #0284c7, #0369a1);">
                 <h1>🤝 LensConnect Inserate</h1>
@@ -1088,18 +1098,102 @@
             <div id="marketFeed" style="margin-top: 6px;"></div>
         </div>
 
-        <!-- 4. Foto-Packliste & Checkliste -->
+        <!-- 4. Erweiterte Tools & Helfer Ansicht -->
         <div class="view-section" id="toolsView">
-            <div class="form-card" style="width: 100%; max-width: 600px; margin: 0 auto;">
-                <h2 style="margin-top:0; font-size: 1.2rem;">🎒 Foto-Touren Packliste</h2>
-                <p class="hint">Hake Gegenstände ab oder lösche Einträge, um die Liste perfekt anzupassen.</p>
+            <div style="width: 100%; max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
                 
-                <div id="checklistContainer"></div>
-
-                <div style="margin-top: 16px; display: flex; gap: 8px;">
-                    <input type="text" id="newCheckItem" class="search-input" placeholder="Gegenstand hinzufügen..." onkeydown="if(event.key==='Enter') addChecklistItem()">
-                    <button type="button" class="primary-btn" style="width: 120px;" onclick="addChecklistItem()">Hinzufügen</button>
+                <!-- Tool 1: ND-Filter Langzeitbelichtungsrechner -->
+                <div class="form-card" style="margin-bottom:0;">
+                    <h2 style="margin-top:0; font-size: 1.1rem; color: var(--primary);">⏱️ ND-Filter Rechner (Langzeitbelichtung)</h2>
+                    <p class="hint">Perfekt für fließendes Wasser (Wasserfälle) oder verwischte Wolken.</p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div class="popup-form-group">
+                            <label>Gemessene Zeit (ohne Filter)</label>
+                            <select id="ndBaseTime" onchange="calculateND()">
+                                <option value="0.001">1/1000 s</option>
+                                <option value="0.002">1/500 s</option>
+                                <option value="0.004">1/250 s</option>
+                                <option value="0.008" selected>1/125 s</option>
+                                <option value="0.016">1/60 s</option>
+                                <option value="0.033">1/30 s</option>
+                                <option value="0.1">1/10 s</option>
+                                <option value="0.5">1/2 s</option>
+                                <option value="1">1 Sekunde</option>
+                            </select>
+                        </div>
+                        <div class="popup-form-group">
+                            <label>Verwendeter ND-Filter</label>
+                            <select id="ndFilterStrength" onchange="calculateND()">
+                                <option value="8">ND8 (3 Blenden)</option>
+                                <option value="64">ND64 (6 Blenden)</option>
+                                <option value="1000" selected>ND1000 (10 Blenden)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="background: var(--bg-main); padding: 12px; border-radius: 10px; border: 1px solid var(--border); text-align: center; margin-top: 10px;">
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Erforderliche Belichtungszeit mit Filter:</span>
+                        <div id="ndResultText" style="font-size: 1.2rem; font-weight: 700; color: var(--primary); margin-top: 4px;">8.0 Sekunden</div>
+                    </div>
                 </div>
+
+                <!-- Tool 2: Fotografie-Alphabet (Lexikon) -->
+                <div class="form-card" style="margin-bottom:0;">
+                    <h2 style="margin-top:0; font-size: 1.1rem; color: var(--light-badge);">📖 Das Fotografie-Alphabet (Lexikon)</h2>
+                    <p class="hint">Wichtige Fachbegriffe kurz & verständlich erklärt.</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <div class="glossary-item"><span class="glossary-term">A – APS-C:</span><div class="glossary-def">Ein gängiges Sensorformat bei digitalen Systemkameras, das kleiner ist als Vollformat (Crop-Faktor ca. 1.5x).</div></div>
+                        <div class="glossary-item"><span class="glossary-term">B – Blende:</span><div class="glossary-def">Die mechanische Öffnung im Objektiv, die steuert, wie viel Licht auf den Sensor fällt. Bestimmt auch die Schärfentiefe (kleine Blendenzahl f/1.4 = schöner unscharfer Hintergrund).</div></div>
+                        <div class="glossary-item"><span class="glossary-term">D – Bokeh:</span><div class="glossary-def">Die ästhetische Qualität der Unschärfe im Hintergrund eines Fotos, besonders bei Offenblende.</div></div>
+                        <div class="glossary-item"><span class="glossary-term">E – EXIF-Daten:</span><div class="glossary-def">Technische Zusatzdaten, die eine Digitalkamera bei der Aufnahme im Bild speichert (Blende, ISO, Belichtungszeit, Kameratyp).</div></div>
+                        <div class="glossary-item"><span class="glossary-term">G – Goldene Stunde:</span><div class="glossary-def">Die Zeit kurz nach Sonnenaufgang und vor Sonnenuntergang, in der das Licht besonders weich und warm ist.</div></div>
+                        <div class="glossary-item"><span class="glossary-term">H – Histogramm:</span><div class="glossary-def">Eine grafische Darstellung der Tonwerte im Bild, die hilft, Über- oder Unterbelichtung zu erkennen.</div></div>
+                        <div class="glossary-item"><span class="glossary-term">I – ISO:</span><div class="glossary-def">Die Empfindlichkeit des Kamerasensors gegenüber Licht. Ein hoher ISO-Wert (z. B. 3200) hellt dunkle Szenen auf, erzeugt aber Bildrauschen.</div></div>
+                        <div class="glossary-item"><span class="glossary-term">N – ND-Filter:</span><div class="glossary-def">Ein Graufilter vor dem Objektiv, der Licht schluckt, um am Tag extrem lange Belichtungszeiten (z. B. für Wasserfälle) zu ermöglichen.</div></div>
+                        <div class="glossary-item"><span class="glossary-term">R – RAW:</span><div class="glossary-def">Unkomprimiertes Rohdatenformat der Kamera, das maximale Reserven bei der nachträglichen Bildbearbeitung bietet.</div></div>
+                        <div class="glossary-item"><span class="glossary-term">T – TFP (Time for Prints / Photos):</span><div class="glossary-def">Eine beliebte Vereinbarung für Shootings zwischen Fotografen und Models: Es fließt kein Geld, stattdessen erhalten beide die Bilder honorarfrei für ihr Portfolio.</div></div>
+                        <div class="glossary-item"><span class="glossary-term">V – Vollformat (Full Frame):</span><div class="glossary-def">Ein Kamerasensor, der der Größe des klassischen Kleinbildfilms (36 x 24 mm) entspricht und exzellente Bildqualität liefert.</div></div>
+                    </div>
+                </div>
+
+                <!-- Tool 3: Goldene Stunde Info -->
+                <div class="form-card" style="margin-bottom:0;">
+                    <h2 style="margin-top:0; font-size: 1.1rem; color: var(--light-badge);">☀️ Licht- & Sonnenstand Info</h2>
+                    <p class="hint">Das weichste Licht für stimmungsvolle Portraits entsteht kurz nach Sonnenaufgang und vor Sonnenuntergang.</p>
+                    <div style="font-size: 0.9rem; line-height: 1.6;">
+                        <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                            <span>🌅 Morgen-Goldene Stunde:</span>
+                            <strong>ca. 06:30 – 08:00 Uhr</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                            <span>✨ Blaue Stunde (früh):</span>
+                            <strong>ca. 06:00 – 06:30 Uhr</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                            <span>🌇 Abend-Goldene Stunde:</span>
+                            <strong>ca. 18:00 – 19:30 Uhr</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 6px 0;">
+                            <span>✨ Blaue Stunde (spät):</span>
+                            <strong>ca. 19:30 – 20:00 Uhr</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tool 4: Foto-Touren Packliste -->
+                <div class="form-card" style="margin-bottom:20px;">
+                    <h2 style="margin-top:0; font-size: 1.1rem;">🎒 Foto-Touren Packliste</h2>
+                    <p class="hint">Hake Gegenstände ab oder füge neue hinzu.</p>
+                    
+                    <div id="checklistContainer"></div>
+
+                    <div style="margin-top: 16px; display: flex; gap: 8px;">
+                        <input type="text" id="newCheckItem" class="search-input" placeholder="Gegenstand hinzufügen..." onkeydown="if(event.key==='Enter') addChecklistItem()">
+                        <button type="button" class="primary-btn" style="width: 120px;" onclick="addChecklistItem()">Hinzufügen</button>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -1212,6 +1306,24 @@
             `;
         }
 
+        function calculateND() {
+            var baseTime = parseFloat(document.getElementById('ndBaseTime').value);
+            var factor = parseFloat(document.getElementById('ndFilterStrength').value);
+            var totalSeconds = baseTime * factor;
+
+            var resultText = "";
+            if (totalSeconds < 1) {
+                resultText = "ca. 1/" + Math.round(1 / totalSeconds) + " Sekunden";
+            } else if (totalSeconds < 60) {
+                resultText = totalSeconds.toFixed(1) + " Sekunden";
+            } else {
+                var mins = Math.floor(totalSeconds / 60);
+                var secs = Math.round(totalSeconds % 60);
+                resultText = mins + " Min. " + (secs > 0 ? secs + " Sek." : "");
+            }
+            document.getElementById('ndResultText').textContent = resultText;
+        }
+
         function toggleMarketSkillField() {
             var category = document.getElementById('marketCategory').value;
             var skillGroup = document.getElementById('marketSkillGroup');
@@ -1238,7 +1350,7 @@
                 title: "5 Tipps für entspannte Familienshootings mit Kindern",
                 author: "Sarah M.",
                 category: "📸 Shooting-Tipps",
-                story: "Kinder wollen nicht stundenlang in die Kamera lächeln. Der Schlüssel zu natürlichen Fotos ist Spiel und Spaß. Lass die Kinder erst ankommen, halte Spielzeug bereit und fotografiere aus ihrer Perspektive (auf Augenhöhe gehen!). So entstehen emotionale Momente statt gestellter Posen."
+                story: "Kinder wollen nicht stundenlang in die Kamera lächeln. Der Schlüssel zu natürlichen Fotos ist Spiel und Spaß. Lass die Kinder erst ankommen, halte Spielzeug bereit und fotografiere aus ihrer Perspektive (auf Augenhöhe gehen!). So entstehen emotionale Moente statt gestellter Posen."
             }
         ];
 
@@ -1667,6 +1779,7 @@
                 document.getElementById('toolsView').classList.add('active');
                 var btn = document.getElementById('navTools'); if(btn) btn.classList.add('active');
                 renderChecklist();
+                calculateND();
             }
 
             var mobileSelect = document.getElementById('mobileNavSelect');
