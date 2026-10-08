@@ -2,7 +2,7 @@
 <html lang="de" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Alpin-Adria Magazin & Fotospots</title>
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -13,7 +13,6 @@
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
             --danger: #ef4444;
-            --danger-hover: #dc2626;
             --bg-sidebar: #ffffff;
             --bg-main: #f8fafc;
             --bg-card: #ffffff;
@@ -27,7 +26,6 @@
             --primary: #3b82f6;
             --primary-hover: #60a5fa;
             --danger: #f87171;
-            --danger-hover: #ef4444;
             --bg-sidebar: #1e293b;
             --bg-main: #0f172a;
             --bg-card: #1e293b;
@@ -42,7 +40,7 @@
             font-family: 'Plus Jakarta Sans', sans-serif; 
             background-color: var(--bg-main);
             color: var(--text-main);
-            height: 100vh;
+            height: 100dvh; /* Nutzt die dynamische Ansichtsfenster-Höhe für Mobile */
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -60,6 +58,7 @@
             align-items: center;
             z-index: 2000;
             box-sizing: border-box;
+            flex-shrink: 0;
             transition: background 0.3s, border-color 0.3s;
         }
 
@@ -121,7 +120,7 @@
         .view-container {
             flex-grow: 1;
             position: relative;
-            height: calc(100vh - 60px);
+            height: calc(100dvh - 60px);
             overflow: hidden;
         }
 
@@ -131,6 +130,7 @@
             height: 100%;
             box-sizing: border-box;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch; /* Flüssiges Scrollen auf iOS */
         }
 
         .view-section.active {
@@ -139,11 +139,12 @@
 
         /* --- 1. Magazin / Feed Ansicht --- */
         #magazineView {
-            padding: 20px 16px;
+            padding: 20px 16px 80px 16px; /* Unten extra viel Luft (80px), damit nichts überdeckt wird */
             max-width: 900px;
             margin: 0 auto;
             flex-direction: column;
             gap: 20px;
+            box-sizing: border-box;
         }
 
         .hero-banner {
@@ -162,7 +163,6 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
-            padding-bottom: 40px;
         }
 
         .mag-card {
@@ -288,10 +288,11 @@
 
         /* --- 3. Beitrag erstellen Ansicht --- */
         #createView {
-            padding: 20px 16px;
+            padding: 20px 16px 80px 16px;
             max-width: 600px;
             margin: 0 auto;
             flex-direction: column;
+            box-sizing: border-box;
         }
 
         .form-card {
@@ -322,14 +323,14 @@
 
         /* Modal */
         .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
             background: rgba(0,0,0,0.6); z-index: 3000; justify-content: center; align-items: center;
             padding: 16px; box-sizing: border-box;
         }
         .modal.active { display: flex; }
         .modal-content {
             background: var(--bg-card); color: var(--text-main); padding: 20px; border-radius: 16px;
-            width: 100%; max-width: 600px; max-height: 85vh; overflow-y: auto;
+            width: 100%; max-width: 600px; max-height: 80vh; overflow-y: auto;
             position: relative; border: 1px solid var(--border); box-sizing: border-box;
         }
         .close-modal {
@@ -367,19 +368,18 @@
             .nav-btn { padding: 5px 8px; font-size: 0.75rem; }
             .theme-toggle-btn { width: 30px; height: 30px; font-size: 0.85rem; }
 
-            .view-container { height: calc(100vh - 56px); }
+            .view-container { height: calc(100dvh - 56px); }
 
-            /* Auf Mobile: Karte & Sidebar untereinander umschaltbar machen */
             #mapView { flex-direction: column; }
             .sidebar {
                 width: 100%; height: 100%; position: absolute; top: 0; left: 0;
                 z-index: 1200; transform: translateY(0); padding: 16px;
             }
             .sidebar.collapsed { transform: translateY(-100%); position: absolute; }
-            .collapse-btn { display: none; /* Am Handy nutzen wir die Nav oben oder einen Toggle */ }
+            .collapse-btn { display: none; }
             
             .pc-open-btn {
-                top: auto; bottom: 20px; left: 50%; transform: translateX(-50%);
+                top: auto; bottom: 30px; left: 50%; transform: translateX(-50%);
                 padding: 12px 20px; border-radius: 30px; font-size: 0.9rem;
                 box-shadow: 0 4px 16px rgba(0,0,0,0.2);
             }
@@ -601,7 +601,6 @@
                 document.getElementById('navMap').classList.add('active');
                 setTimeout(() => {
                     map.invalidateSize();
-                    // Am Handy standardmäßig Sidebar einklappen, damit man direkt die Karte sieht
                     if (window.innerWidth <= 768 && !isSidebarCollapsedPC) {
                         toggleSidebarMobile();
                     }
@@ -653,7 +652,6 @@
 
         function jumpToSpot(spotIndex) {
             switchView('map');
-            // Am Handy Sidebar zuklappen, wenn man zu einem Spot springt
             if (window.innerWidth <= 768 && !isSidebarCollapsedPC) {
                 toggleSidebarMobile();
             }
@@ -816,7 +814,7 @@
             var imageFile = document.getElementById('imageFile').files[0];
 
             function save(imageUrl) {
-                var targetVal = document.getElementById('spotTarget.value') || document.getElementById('spotTarget').value;
+                var targetVal = document.getElementById('spotTarget').value;
                 var author = document.getElementById('author').value;
                 var story = document.getElementById('blogStory').value;
 
@@ -840,7 +838,7 @@
 
                 localStorage.setItem('fotospots_v7', JSON.stringify(spots));
                 document.getElementById('spotForm').reset();
-                handleSpotTargetChange();
+                handleSpotTabChange = handleSpotTargetChange();
                 switchView('magazine');
                 renderApp();
             }
