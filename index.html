@@ -13,7 +13,6 @@
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
             --danger: #ef4444;
-            --warning: #f59e0b;
             --bg-sidebar: #ffffff;
             --bg-main: #f8fafc;
             --bg-card: #ffffff;
@@ -27,7 +26,6 @@
             --primary: #3b82f6;
             --primary-hover: #60a5fa;
             --danger: #f87171;
-            --warning: #fbbf24;
             --bg-sidebar: #1e293b;
             --bg-main: #0f172a;
             --bg-card: #1e293b;
@@ -207,7 +205,6 @@
         .mag-spot-name { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
         .mag-story { font-size: 0.9rem; line-height: 1.5; color: var(--text-main); margin-bottom: 10px; white-space: pre-line; }
         
-        /* EXIF Badges Styling */
         .exif-badges {
             display: flex;
             gap: 6px;
@@ -225,7 +222,6 @@
 
         .mag-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 10px; font-size: 0.75rem; color: var(--text-muted); flex-wrap: wrap; gap: 8px; }
 
-        /* Favoriten Stern Button */
         .fav-btn {
             background: transparent;
             border: none;
@@ -352,8 +348,8 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
 
-        .form-group { margin-bottom: 14px; }
-        .form-group label { display: block; font-size: 0.8rem; margin-bottom: 5px; font-weight: 600; color: var(--text-muted); }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.8rem; margin-bottom: 4px; font-weight: 600; color: var(--text-muted); }
         .form-group input, .form-group textarea, .form-group select { 
             width: 100%; padding: 10px; box-sizing: border-box; 
             border: 1px solid var(--border); border-radius: 8px; 
@@ -369,11 +365,37 @@
 
         button.primary-btn { 
             background: var(--primary); color: white; border: none; 
-            padding: 12px; width: 100%; border-radius: 8px; 
-            cursor: pointer; font-weight: 600; font-size: 0.95rem;
+            padding: 10px; width: 100%; border-radius: 8px; 
+            cursor: pointer; font-weight: 600; font-size: 0.9rem;
         }
 
         .hint { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.4; }
+
+
+        /* Leaflet Popup Formular Styling */
+        .leaflet-popup-content-wrapper {
+            background: var(--bg-card) !important;
+            color: var(--text-main) !important;
+            border-radius: 12px;
+            padding: 6px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border: 1px solid var(--border);
+        }
+        .leaflet-popup-content {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.85rem;
+            margin: 10px 12px;
+            max-height: 320px;
+            overflow-y: auto;
+            width: 260px !important;
+        }
+        .popup-form-group { margin-bottom: 8px; }
+        .popup-form-group label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-bottom: 2px; }
+        .popup-form-group input, .popup-form-group textarea {
+            width: 100%; padding: 6px 8px; box-sizing: border-box;
+            border: 1px solid var(--border); border-radius: 6px;
+            font-size: 0.8rem; font-family: inherit; background: var(--bg-main); color: var(--text-main);
+        }
 
 
         /* Modal */
@@ -410,9 +432,6 @@
 
         .action-btn { background: var(--border); color: var(--text-main); border: none; padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: 600; }
         .delete-btn { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: none; padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: 600; }
-
-        .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--bg-card) !important; color: var(--text-main) !important; }
-        .leaflet-popup-content b { color: var(--text-main); }
         .popup-link { color: var(--primary); font-weight: 600; cursor: pointer; text-decoration: underline; font-size: 0.8rem; margin-right: 8px; }
 
 
@@ -506,67 +525,34 @@
             <div id="map"></div>
         </div>
 
-        <!-- 3. Beitrag Verfassen Ansicht -->
+        <!-- 3. Beitrag Verfassen Ansicht (Fallback/Menü) -->
         <div class="view-section" id="createView">
-            <div class="form-card">
+            <div class="form-card" style="width: 100%; max-width: 500px; margin: 0 auto;">
                 <h2 style="margin-top:0; font-size: 1.2rem;">Neuen Beitrag erstellen</h2>
-                <p class="hint">Teile deine Erfahrung zu einem bestehenden Spot oder lege einen neuen an.</p>
+                <p class="hint">Tipp: Du kannst auch direkt auf die Karte klicken, um dort einen Spot anzulegen!</p>
                 
-                <form id="spotForm">
+                <form id="standaloneForm" onsubmit="handleStandaloneSubmit(event)">
                     <div class="form-group">
-                        <label for="spotTarget">Ziel-Spot</label>
-                        <select id="spotTarget" onchange="handleSpotTargetChange()">
-                            <option value="new">➕ Neuen Spot auf Karte anlegen</option>
-                        </select>
+                        <label for="standTitle">Spot-Titel</label>
+                        <input type="text" id="standTitle" required placeholder="z.B. Predil-See">
                     </div>
-
-                    <div class="form-group" id="newSpotTitleGroup">
-                        <label for="title">Titel des neuen Spots</label>
-                        <input type="text" id="title" placeholder="z.B. Raibl-See">
-                    </div>
-
                     <div class="form-group">
-                        <label for="author">Dein Name (Autor)</label>
-                        <input type="text" id="author" required placeholder="z.B. Anna Fotografie">
+                        <label for="standAuthor">Dein Name</label>
+                        <input type="text" id="standAuthor" required placeholder="z.B. Anna Fotografie">
                     </div>
-
                     <div class="form-group">
-                        <label for="blogStory">Reisebericht & Fotoprozess</label>
-                        <textarea id="blogStory" rows="4" required placeholder="Wie war das Licht? Besondere Erlebnisse?"></textarea>
+                        <label for="standStory">Reisebericht</label>
+                        <textarea id="standStory" rows="3" required placeholder="Wie war dein Erlebnis?"></textarea>
                     </div>
-
-                    <!-- EXIF Kameradaten Eingabe -->
                     <div class="form-group">
-                        <label>Kamera-Einstellungen (EXIF)</label>
-                        <div class="exif-row">
-                            <input type="text" id="exifAperture" placeholder="Blende (z.B. f/8)">
-                            <input type="text" id="exifShutter" placeholder="Belichtung (z.B. 1/125s)">
-                            <input type="text" id="exifIso" placeholder="ISO (z.B. 100)">
-                        </div>
+                        <label for="standTags">Tags (kommagetrennt)</label>
+                        <input type="text" id="standTags" placeholder="See, Natur">
                     </div>
-
-                    <div class="form-group" id="newSpotTagsGroup">
-                        <label for="tags">Tags (kommagetrennt)</label>
-                        <input type="text" id="tags" placeholder="Wasserfall, Natur, Langzeit">
+                    <div class="form-group" style="display: flex; gap: 10px;">
+                        <div style="flex: 1;"><label>Lat</label><input type="text" id="standLat" value="46.42" required></div>
+                        <div style="flex: 1;"><label>Lng</label><input type="text" id="standLng" value="13.56" required></div>
                     </div>
-
-                    <div class="form-group">
-                        <label for="imageFile">Foto vom Gerät auswählen</label>
-                        <input type="file" id="imageFile" accept="image/*">
-                    </div>
-
-                    <div class="form-group" id="coordsGroup" style="display: flex; gap: 10px;">
-                        <div style="flex: 1;">
-                            <label for="lat">Breitengrad</label>
-                            <input type="text" id="lat">
-                        </div>
-                        <div style="flex: 1;">
-                            <label for="lng">Längengrad</label>
-                            <input type="text" id="lng">
-                        </div>
-                    </div>
-
-                    <button type="submit" class="primary-btn">Veröffentlichen</button>
+                    <button type="submit" class="primary-btn">Spot auf Karte erstellen</button>
                 </form>
             </div>
         </div>
@@ -663,7 +649,7 @@
             }
         ];
 
-        var savedSpots = localStorage.getItem('fotospots_v7');
+        var savedSpots = localStorage.getItem('fotospots_v8');
         var spots = savedSpots ? JSON.parse(savedSpots) : defaultSpots;
         
         var savedFavs = localStorage.getItem('fotospots_favs');
@@ -741,7 +727,6 @@
                             var tagsHtml = spot.tags ? spot.tags.map(t => `<span class="tag">${t}</span>`).join('') : '';
                             var isFav = favorites.includes(spotIdx);
 
-                            // EXIF Badges generieren
                             var exifHtml = '';
                             if (art.aperture || art.shutter || art.iso) {
                                 exifHtml = `<div class="exif-badges">`;
@@ -818,7 +803,7 @@
             });
 
             if (count === 0) {
-                feed.innerHTML = "<p style='text-align:center; color:var(--text-muted);'>Du hast noch keine Spots auf deinem Merkzettl gespeichert. Klicke im Magazin auf den Stern ⭐!</p>";
+                feed.innerHTML = "<p style='text-align:center; color:var(--text-muted);'>Du hast noch keine Spots auf deinem Merkzettl gespeichert.</p>";
             }
         }
 
@@ -831,40 +816,6 @@
             map.setView([spot.lat, spot.lng], 14);
             if (markers[spotIndex]) {
                 markers[spotIndex].openPopup();
-            }
-        }
-
-        function updateSpotTargetDropdown() {
-            var select = document.getElementById('spotTarget');
-            var currentVal = select.value;
-            select.innerHTML = '<option value="new">➕ Neuen Spot auf Karte anlegen</option>';
-            spots.forEach(function(spot, index) {
-                select.innerHTML += `<option value="${index}">📍 ${spot.title}</option>`;
-            });
-            select.value = currentVal;
-            handleSpotTargetChange();
-        }
-
-        function handleSpotTargetChange() {
-            var val = document.getElementById('spotTarget').value;
-            var titleGroup = document.getElementById('newSpotTitleGroup');
-            var tagsGroup = document.getElementById('newSpotTagsGroup');
-            var coordsGroup = document.getElementById('coordsGroup');
-
-            if (val === 'new') {
-                titleGroup.style.display = 'block';
-                tagsGroup.style.display = 'block';
-                coordsGroup.style.display = 'flex';
-                document.getElementById('title').required = true;
-                document.getElementById('lat').required = true;
-                document.getElementById('lng').required = true;
-            } else {
-                titleGroup.style.display = 'none';
-                tagsGroup.style.display = 'none';
-                coordsGroup.style.display = 'none';
-                document.getElementById('title').required = false;
-                document.getElementById('lat').required = false;
-                document.getElementById('lng').required = false;
             }
         }
 
@@ -915,8 +866,7 @@
                 var artCount = spot.articles ? spot.articles.length : 0;
 
                 var content = `<b>${spot.title}</b><br><span class='article-count'>📖 ${artCount} Bericht(e)</span><br>` +
-                              `<span class='popup-link' onclick='openBlogModal(${originalIndex})'>Berichte lesen</span>` +
-                              `<span class='popup-link' onclick='prepareAddArticle(${originalIndex})'>+ Artikel</span>`;
+                              `<span class='popup-link' onclick='openBlogModal(${originalIndex})'>Berichte lesen</span>`;
                 
                 var marker = L.marker([spot.lat, spot.lng]).addTo(map);
                 marker.bindPopup(content);
@@ -938,21 +888,13 @@
             });
 
             renderFilters();
-            updateSpotTargetDropdown();
             renderMagazineFeed();
-        }
-
-        function prepareAddArticle(spotIndex) {
-            switchView('create');
-            document.getElementById('spotTarget').value = spotIndex;
-            handleSpotTargetChange();
-            document.getElementById('author').focus();
         }
 
         function deleteSpot(index) {
             if (confirm("Möchtest du diesen Spot wirklich löschen?")) {
                 spots.splice(index, 1);
-                localStorage.setItem('fotospots_v7', JSON.stringify(spots));
+                localStorage.setItem('fotospots_v8', JSON.stringify(spots));
                 renderApp();
             }
         }
@@ -976,69 +918,83 @@
             renderApp();
         }
 
+        // Klick auf Karte öffnet direkt ein Popup-Formular zum Hinzufügen
         map.on('click', function(e) {
-            switchView('create');
-            document.getElementById('spotTarget').value = 'new';
-            handleSpotTargetChange();
-            document.getElementById('lat').value = e.latlng.lat.toFixed(4);
-            document.getElementById('lng').value = e.latlng.lng.toFixed(4);
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
+
+            var popupContent = `
+                <b>📍 Neuer Spot</b>
+                <form id="mapPopupForm" onsubmit="handlePopupSubmit(event, ${lat}, ${lng})">
+                    <div class="popup-form-group">
+                        <label>Spot-Titel</label>
+                        <input type="text" id="popTitle" required placeholder="z.B. Aussichtspunkt">
+                    </div>
+                    <div class="popup-form-group">
+                        <label>Dein Name</label>
+                        <input type="text" id="popAuthor" required placeholder="z.B. Anna">
+                    </div>
+                    <div class="popup-form-group">
+                        <label>Reisebericht</label>
+                        <textarea id="popStory" rows="2" required placeholder="Erlebnis..."></textarea>
+                    </div>
+                    <div class="popup-form-group">
+                        <label>Tags (kommagetrennt)</label>
+                        <input type="text" id="popTags" placeholder="Natur, See">
+                    </div>
+                    <div class="popup-form-group">
+                        <label>Foto (optional)</label>
+                        <input type="file" id="popImage" accept="image/*">
+                    </div>
+                    <button type="submit" class="primary-btn" style="padding:6px; font-size:0.8rem; margin-top:4px;">Hinzufügen</button>
+                </form>
+            `;
+
+            L.popup()
+                .setLatLng(e.latlng)
+                .setContent(popupContent)
+                .openOn(map);
         });
 
-        document.getElementById('spotForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            var imageFile = document.getElementById('imageFile').files[0];
+        // Absenden direkt aus dem Karten-Popup
+        function handlePopupSubmit(event, lat, lng) {
+            event.preventDefault();
+            var title = document.getElementById('popTitle').value;
+            var author = document.getElementById('popAuthor').value;
+            var story = document.getElementById('popStory').value;
+            var rawTags = document.getElementById('popTags').value;
+            var tagsArray = rawTags ? rawTags.split(',').map(t => t.trim()).filter(t => t.length > 0) : [];
+            var fileInput = document.getElementById('popImage').files[0];
 
-            function save(imageUrl) {
-                var targetVal = document.getElementById('spotTarget').value;
-                var author = document.getElementById('author').value;
-                var story = document.getElementById('blogStory').value;
-                var aperture = document.getElementById('exifAperture').value;
-                var shutter = document.getElementById('exifShutter').value;
-                var iso = document.getElementById('exifIso').value;
-
-                var newArt = { 
-                    author: author, 
-                    story: story, 
-                    image: imageUrl,
-                    aperture: aperture,
-                    shutter: shutter,
-                    iso: iso
+            function saveSpot(imgUrl) {
+                var newSpot = {
+                    lat: lat,
+                    lng: lng,
+                    title: title,
+                    tags: tagsArray,
+                    articles: [{ author: author, story: story, image: imgUrl }]
                 };
-
-                if (targetVal === 'new') {
-                    var rawTags = document.getElementById('tags').value;
-                    var tagsArray = rawTags ? rawTags.split(',').map(t => t.trim()).filter(t => t.length > 0) : [];
-                    spots.push({
-                        lat: parseFloat(document.getElementById('lat').value),
-                        lng: parseFloat(document.getElementById('lng').value),
-                        title: document.getElementById('title').value,
-                        tags: tagsArray,
-                        articles: [newArt]
-                    });
-                } else {
-                    var idx = parseInt(targetVal);
-                    if (!spots[idx].articles) spots[idx].articles = [];
-                    spots[idx].articles.push(newArt);
-                }
-
-                localStorage.setItem('fotospots_v7', JSON.stringify(spots));
-                document.getElementById('spotForm').reset();
-                handleSpotTargetChange();
-                switchView('magazine');
+                spots.push(newSpot);
+                localStorage.setItem('fotospots_v8', JSON.stringify(spots));
+                map.closePopup();
                 renderApp();
             }
 
-            if (imageFile) {
+            if (fileInput) {
                 var reader = new FileReader();
-                reader.onload = e => save(e.target.result);
-                reader.readAsDataURL(imageFile);
+                reader.onload = function(e) {
+                    saveSpot(e.target.result);
+                };
+                reader.readAsDataURL(fileInput);
             } else {
-                save("");
+                saveSpot("");
             }
-        });
+        }
 
-        renderApp();
-    </script>
-
-</body>
-</html>
+        // Falls man über den Menüpunkt "Neu" geht
+        function handleStandaloneSubmit(event) {
+            event.preventDefault();
+            var title = document.getElementById('standTitle').value;
+            var author = document.getElementById('standAuthor').value;
+            var story = document.getElementById('standStory').value;
+            var rawTags = document.getElementById('standTags').value
