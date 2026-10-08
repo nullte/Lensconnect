@@ -997,4 +997,27 @@
             var title = document.getElementById('standTitle').value;
             var author = document.getElementById('standAuthor').value;
             var story = document.getElementById('standStory').value;
-            var rawTags = document.getElementById('standTags').value
+            var rawTags = document.getElementById('standTags').value;
+            var tagsArray = rawTags ? rawTags.split(',').map(t => t.trim()).filter(t => t.length > 0) : [];
+            var lat = parseFloat(document.getElementById('standLat').value);
+            var lng = parseFloat(document.getElementById('standLng').value);
+
+            spots.push({
+                lat: lat,
+                lng: lng,
+                title: title,
+                tags: tagsArray,
+                articles: [{ author: author, story: story, image: "" }]
+            });
+
+            localStorage.setItem('fotospots_v8', JSON.stringify(spots));
+            document.getElementById('standaloneForm').reset();
+            switchView('map');
+            renderApp();
+        }
+
+        renderApp();
+    </script>
+
+</body>
+</html>
