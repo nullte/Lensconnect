@@ -226,6 +226,32 @@
         .landing-card h3 { margin: 0 0 8px 0; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
         .landing-card p { margin: 0 0 16px 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
 
+        /* Magazin Sub-Tabs */
+        .mag-sub-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .mag-sub-tab {
+            flex: 1;
+            padding: 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-align: center;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+        .mag-sub-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+        }
+
         /* Über mich, Kontakt & Impressum Seiten Styling */
         #aboutView, #contactView, #imprintView {
             padding: 30px 16px 80px 16px;
@@ -745,7 +771,7 @@
             <!-- Desktop Button-Navigation -->
             <div class="nav-links">
                 <button class="nav-btn active" id="navLanding" onclick="switchView('landing')">🏠 Start</button>
-                <button class="nav-btn" id="navMag" onclick="switchView('magazine')">📖 Magazin</button>
+                <button class="nav-btn" id="navMag" onclick="switchView('magazine')">📖 Magazin & Tipps</button>
                 <button class="nav-btn" id="navMap" onclick="switchView('map')">🗺️ Karte & Spots</button>
                 <button class="nav-btn" id="navMarket" onclick="switchView('market')">🤝 Inserate</button>
                 <button class="nav-btn" id="navTools" onclick="switchView('tools')">🎒 Packliste</button>
@@ -757,7 +783,7 @@
             <!-- Mobile Dropdown-Menü -->
             <select class="mobile-nav-select" id="mobileNavSelect" onchange="switchView(this.value)">
                 <option value="landing">🏠 Start (Übersicht)</option>
-                <option value="magazine">📖 Magazin & Berichte</option>
+                <option value="magazine">📖 Magazin & Tipps</option>
                 <option value="map">🗺️ Karte & Spots</option>
                 <option value="market">🤝 Inserate & Shootings</option>
                 <option value="tools">🎒 Packliste & Tools</option>
@@ -804,8 +830,8 @@
 
                 <div class="landing-card" onclick="switchView('magazine')">
                     <div>
-                        <h3>📖 Magazin & Berichte</h3>
-                        <p>Lies Erfahrungsberichte, EXIF-Daten (Blende, ISO, Belichtungszeit) und Tipps zu perfekten Lichtstimmungen.</p>
+                        <h3>📖 Magazin & Tipps</h3>
+                        <p>Lies Spot-Berichte mit EXIF-Daten oder entdecke allgemeine Fototipps und Guides (z.B. für Heimstudios).</p>
                     </div>
                     <button class="primary-btn" style="pointer-events: none;">Magazin lesen →</button>
                 </div>
@@ -879,11 +905,11 @@
             </div>
         </div>
 
-        <!-- 1. Magazin / Feed Ansicht -->
+        <!-- 1. Magazin / Feed Ansicht (Getrennt in Spots & Tipps/Blog) -->
         <div class="view-section" id="magazineView">
             <div class="hero-banner">
-                <h1>LensConnect Fotomagazin</h1>
-                <p>Landschaft, Familie, Portrait & die besten Outdoor-Spots.</p>
+                <h1>LensConnect Magazin & Tipps</h1>
+                <p>Entdecke Spot-Berichte oder lies wertvolle Ratgeber & Foto-Tipps von Fotografen.</p>
             </div>
             
             <div class="sun-calc-box">
@@ -894,13 +920,50 @@
 
             <div class="stats-badge-bar" id="statsBar">
                 <span>📍 Spots: <strong id="statSpotsCount">0</strong></span>
-                <span>📖 Berichte: <strong id="statArticlesCount">0</strong></span>
-                <span>🤝 Inserate: <strong id="statMarketCount">0</strong></span>
+                <span>📖 Spot-Berichte: <strong id="statArticlesCount">0</strong></span>
+                <span>💡 Tipps & Guides: <strong id="statTipsCount">0</strong></span>
             </div>
 
-            <div class="search-bar-container">
-                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Nach Spot, Familie, Portrait, Autor suchen..." oninput="handleSearchInput()">
+            <!-- Sub-Tabs für Magazin -->
+            <div class="mag-sub-tabs">
+                <button class="mag-sub-tab active" id="subTabSpots" onclick="switchMagSubTab('spots')">📍 Spot-Berichte & Locations</button>
+                <button class="mag-sub-tab" id="subTabTips" onclick="switchMagSubTab('tips')">💡 Tipps, Guides & Studio-Blog</button>
             </div>
+
+            <!-- Suchleiste -->
+            <div class="search-bar-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Suchen nach Spot, Autor, Thema, Studio-Tipps..." oninput="handleSearchInput()">
+            </div>
+
+            <!-- Formular zum Hinzufügen von reinen Tipps/Blog-Beiträgen (nur sichtbar im Tipps-Tab) -->
+            <div class="form-card" id="tipFormCard" style="display: none;">
+                <h3 style="margin-top:0; font-size:1.05rem;">💡 Neuen Foto-Tipp oder Guide verfassen</h3>
+                <p class="hint">Teile dein Wissen über Shootings, Kamera-Einstellungen oder den Bau eines Heimstudios mit der Community.</p>
+                <div class="popup-form-group">
+                    <label>Titel des Beitrags</label>
+                    <input type="text" id="tipTitle" placeholder="z.B. Anleitung: Dein erstes Heimstudio aufbauen">
+                </div>
+                <div class="popup-form-group">
+                    <label>Dein Name / Fotograf</label>
+                    <input type="text" id="tipAuthor" placeholder="z.B. Christian A.">
+                </div>
+                <div class="popup-form-group">
+                    <label>Kategorie / Thema</label>
+                    <select id="tipCategory">
+                        <option value="🏠 Heimstudio & Setup">🏠 Heimstudio & Setup</option>
+                        <option value="📸 Shooting-Tipps">📸 Shooting-Tipps</option>
+                        <option value="⚙️ Technik & Kamera">⚙️ Technik & Kamera</option>
+                        <option value="💡 Allgemeines Know-how">💡 Allgemeines Know-how</option>
+                    </select>
+                </div>
+                <div class="popup-form-group">
+                    <label>Dein Beitrag / Anleitung</label>
+                    <textarea id="tipStory" rows="4" placeholder="Schreibe hier deine Tipps, Empfehlungen und Erfahrungen nieder..."></textarea>
+                </div>
+                <button type="button" class="primary-btn" onclick="submitTipItem()">Beitrag veröffentlichen</button>
+            </div>
+
+            <!-- Feeds -->
             <div class="magazine-grid" id="magazineFeed"></div>
         </div>
 
@@ -1149,6 +1212,64 @@
             }
         }
 
+        // --- Tipps & Blog Artikel Verwaltung (Ohne Location) ---
+        var defaultTips = [
+            {
+                title: "Dein erstes eigenes Heimstudio aufbauen: Worauf es ankommt",
+                author: "Christian Arnold",
+                category: "🏠 Heimstudio & Setup",
+                story: "Ein Heimstudio muss kein Vermögen kosten. Oft reicht schon eine freie Ecke mit neutralem Hintergrund, ein stabiles Stativ und eine zuverlässige Studioblitzanlage oder ein entfesselter Systemblitz. Wichtig ist vor allem genügend Raumhöhe (mindestens 2,40m) und die Möglichkeit, das Tageslicht komplett zu steuern, um mit künstlichem Licht saubere Ergebnisse zu erzielen."
+            },
+            {
+                title: "5 Tipps für entspannte Familienshootings mit Kindern",
+                author: "Sarah M.",
+                category: "📸 Shooting-Tipps",
+                story: "Kinder wollen nicht stundenlang in die Kamera lächeln. Der Schlüssel zu natürlichen Fotos ist Spiel und Spaß. Lass die Kinder erst ankommen, halte Spielzeug bereit und fotografiere aus ihrer Perspektive (auf Augenhöhe gehen!). So entstehen emotionale Momente statt gestellter Posen."
+            }
+        ];
+
+        var savedTips = localStorage.getItem('lensconnect_tips_v1');
+        var tipItems = savedTips ? JSON.parse(savedTips) : defaultTips;
+        var currentMagSubTab = 'spots';
+
+        function switchMagSubTab(tab) {
+            currentMagSubTab = tab;
+            document.getElementById('subTabSpots').classList.toggle('active', tab === 'spots');
+            document.getElementById('subTabTips').classList.toggle('active', tab === 'tips');
+            document.getElementById('tipFormCard').style.display = (tab === 'tips') ? 'block' : 'none';
+            renderMagazineFeed();
+        }
+
+        function submitTipItem() {
+            var title = document.getElementById('tipTitle').value.trim();
+            var author = document.getElementById('tipAuthor').value.trim();
+            var category = document.getElementById('tipCategory').value;
+            var story = document.getElementById('tipStory').value.trim();
+
+            if (!title || !author || !story) {
+                alert("Bitte fülle Titel, Name und deinen Beitrag aus!");
+                return;
+            }
+
+            tipItems.push({ title, author, category, story });
+            localStorage.setItem('lensconnect_tips_v1', JSON.stringify(tipItems));
+
+            document.getElementById('tipTitle').value = "";
+            document.getElementById('tipAuthor').value = "";
+            document.getElementById('tipStory').value = "";
+
+            renderMagazineFeed();
+            alert("Tipp erfolgreich veröffentlicht! 🚀");
+        }
+
+        function deleteTipItem(idx) {
+            if (confirm("Möchtest du diesen Beitrag löschen?")) {
+                tipItems.splice(idx, 1);
+                localStorage.setItem('lensconnect_tips_v1', JSON.stringify(tipItems));
+                renderMagazineFeed();
+            }
+        }
+
         // --- Inserate Verwaltung ---
         var defaultMarket = [
             {
@@ -1338,7 +1459,7 @@
         }
 
         function exportJSON() {
-            var allData = { spots: spots, market: marketItems };
+            var allData = { spots: spots, market: marketItems, tips: tipItems };
             var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allData, null, 2));
             var downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
@@ -1363,8 +1484,13 @@
                         marketItems = imported.market;
                         localStorage.setItem('lensconnect_market_v3', JSON.stringify(marketItems));
                     }
+                    if (imported.tips && Array.isArray(imported.tips)) {
+                        tipItems = imported.tips;
+                        localStorage.setItem('lensconnect_tips_v1', JSON.stringify(tipItems));
+                    }
                     renderApp();
                     renderMarketFeed();
+                    renderMagazineFeed();
                     alert("Backup erfolgreich geladen! 🚀");
                     switchView('landing');
                 } catch(err) {
@@ -1544,7 +1670,9 @@
                 favorites.push(spotIndex);
             }
             localStorage.setItem('lensconnect_favs', JSON.stringify(favorites));
-            renderMagazineFeed();
+            if (currentMagSubTab === 'spots') {
+                renderMagazineFeed();
+            }
             if (document.getElementById('favoritesView').classList.contains('active')) {
                 renderFavoritesFeed();
             }
@@ -1560,6 +1688,7 @@
             spots.forEach(s => { if (s.articles) totalArticles += s.articles.length; });
             document.getElementById('statSpotsCount').textContent = totalSpots;
             document.getElementById('statArticlesCount').textContent = totalArticles;
+            document.getElementById('statTipsCount').textContent = tipItems.length;
             document.getElementById('statMarketCount').textContent = marketItems.length;
         }
 
@@ -1569,70 +1698,110 @@
             feed.innerHTML = "";
             var query = document.getElementById('searchInput').value.toLowerCase();
 
-            var totalArticles = 0;
-            spots.forEach(function(spot, spotIdx) {
-                if (spot.articles) {
-                    spot.articles.forEach(function(art) {
-                        var searchMatch = !query || 
-                            spot.title.toLowerCase().includes(query) || 
-                            (art.author && art.author.toLowerCase().includes(query)) || 
-                            art.story.toLowerCase().includes(query) ||
-                            (art.lightMood && art.lightMood.toLowerCase().includes(query)) ||
-                            (spot.tags && spot.tags.some(t => t.toLowerCase().includes(query)));
+            if (currentMagSubTab === 'spots') {
+                // ANZEIGE: Spot-Berichte & Locations
+                var totalArticles = 0;
+                spots.forEach(function(spot, spotIdx) {
+                    if (spot.articles) {
+                        spot.articles.forEach(function(art) {
+                            var searchMatch = !query || 
+                                spot.title.toLowerCase().includes(query) || 
+                                (art.author && art.author.toLowerCase().includes(query)) || 
+                                art.story.toLowerCase().includes(query) ||
+                                (art.lightMood && art.lightMood.toLowerCase().includes(query)) ||
+                                (spot.tags && spot.tags.some(t => t.toLowerCase().includes(query)));
 
-                        if (searchMatch) {
-                            totalArticles++;
-                            var card = document.createElement('div');
-                            card.className = 'mag-card';
+                            if (searchMatch) {
+                                totalArticles++;
+                                var card = document.createElement('div');
+                                card.className = 'mag-card';
 
-                            var imgSrc = art.image ? art.image : "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600";
-                            var tagsHtml = spot.tags ? spot.tags.map(t => `<span class="tag">${t}</span>`).join('') : '';
-                            var isFav = favorites.includes(spotIdx);
+                                var imgSrc = art.image ? art.image : "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600";
+                                var tagsHtml = spot.tags ? spot.tags.map(t => `<span class="tag">${t}</span>`).join('') : '';
+                                var isFav = favorites.includes(spotIdx);
 
-                            var badgesHtml = '<div class="exif-badges">';
-                            if (art.lightMood) badgesHtml += `<span class="light-badge">${art.lightMood}</span>`;
-                            if (art.aperture) badgesHtml += `<span class="exif-badge">📷 ${art.aperture}</span>`;
-                            if (art.shutter) badgesHtml += `<span class="exif-badge">⏱️ ${art.shutter}</span>`;
-                            if (art.iso) badgesHtml += `<span class="exif-badge">🔆 ${art.iso}</span>`;
-                            badgesHtml += '</div>';
+                                var badgesHtml = '<div class="exif-badges">';
+                                if (art.lightMood) badgesHtml += `<span class="light-badge">${art.lightMood}</span>`;
+                                if (art.aperture) badgesHtml += `<span class="exif-badge">📷 ${art.aperture}</span>`;
+                                if (art.shutter) badgesHtml += `<span class="exif-badge">⏱️ ${art.shutter}</span>`;
+                                if (art.iso) badgesHtml += `<span class="exif-badge">🔆 ${art.iso}</span>`;
+                                badgesHtml += '</div>';
 
-                            var gpxHtml = art.gpxUrl ? `<a href="${art.gpxUrl}" target="_blank" class="gpx-link">🗺️ Route / Weg öffnen</a>` : '';
-                            var weatherUrl = `https://www.windy.com/?${spot.lat},${spot.lng},11`;
-                            var weatherHtml = `<a href="${weatherUrl}" target="_blank" class="weather-link">☁️ Wetter prüfen</a>`;
+                                var gpxHtml = art.gpxUrl ? `<a href="${art.gpxUrl}" target="_blank" class="gpx-link">🗺️ Route / Weg öffnen</a>` : '';
+                                var weatherUrl = `https://www.windy.com/?${spot.lat},${spot.lng},11`;
+                                var weatherHtml = `<a href="${weatherUrl}" target="_blank" class="weather-link">☁️ Wetter prüfen</a>`;
 
-                            card.innerHTML = `
-                                <img src="${imgSrc}" alt="Foto" onclick="openLightbox('${imgSrc}')">
-                                <div class="mag-content">
-                                    <div>
-                                        <div class="mag-spot-name">
-                                            <span>📍 Spot: <span style="color:var(--primary); cursor:pointer;" onclick="jumpToSpot(${spotIdx})">${spot.title}</span></span>
-                                            <div>
-                                                <button class="share-btn" onclick="shareSpot('${spot.title}', ${spot.lat}, ${spot.lng})" title="Teilen">🔗</button>
-                                                <button class="fav-btn" onclick="toggleFavorite(${spotIdx})" title="Merken">${isFav ? '⭐' : '☆'}</button>
+                                card.innerHTML = `
+                                    <img src="${imgSrc}" alt="Foto" onclick="openLightbox('${imgSrc}')">
+                                    <div class="mag-content">
+                                        <div>
+                                            <div class="mag-spot-name">
+                                                <span>📍 Spot: <span style="color:var(--primary); cursor:pointer;" onclick="jumpToSpot(${spotIdx})">${spot.title}</span></span>
+                                                <div>
+                                                    <button class="share-btn" onclick="shareSpot('${spot.title}', ${spot.lat}, ${spot.lng})" title="Teilen">🔗</button>
+                                                    <button class="fav-btn" onclick="toggleFavorite(${spotIdx})" title="Merken">${isFav ? '⭐' : '☆'}</button>
+                                                </div>
                                             </div>
+                                            <div class="mag-story">${art.story}</div>
+                                            ${badgesHtml}
+                                            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:6px;">
+                                                ${gpxHtml}
+                                                ${weatherHtml}
+                                            </div>
+                                            <div style="margin-top:6px;">${tagsHtml}</div>
                                         </div>
-                                        <div class="mag-story">${art.story}</div>
-                                        ${badgesHtml}
-                                        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:6px;">
-                                            ${gpxHtml}
-                                            ${weatherHtml}
+                                        <div class="mag-footer">
+                                            <span>✍️ von <strong>${art.author || 'Unbekannt'}</strong></span>
+                                            <span style="color:var(--primary); cursor:pointer; font-weight:600;" onclick="openBlogModal(${spotIdx})">Alle Berichte ansehen</span>
                                         </div>
-                                        <div style="margin-top:6px;">${tagsHtml}</div>
                                     </div>
-                                    <div class="mag-footer">
-                                        <span>✍️ von <strong>${art.author || 'Unbekannt'}</strong></span>
-                                        <span style="color:var(--primary); cursor:pointer; font-weight:600;" onclick="openBlogModal(${spotIdx})">Alle Berichte ansehen</span>
-                                    </div>
-                                </div>
-                            `;
-                            feed.appendChild(card);
-                        }
-                    });
-                }
-            });
+                                `;
+                                feed.appendChild(card);
+                            }
+                        });
+                    }
+                });
 
-            if (totalArticles === 0) {
-                feed.innerHTML = "<p style='text-align:center; color:var(--text-muted);'>Keine passenden Artikel gefunden.</p>";
+                if (totalArticles === 0) {
+                    feed.innerHTML = "<p style='text-align:center; color:var(--text-muted);'>Keine passenden Spot-Berichte gefunden.</p>";
+                }
+
+            } else {
+                // ANZEIGE: Tipps, Guides & Studio-Blog (Ohne Location)
+                var filteredTips = tipItems.filter(tip => !query || 
+                    tip.title.toLowerCase().includes(query) || 
+                    tip.author.toLowerCase().includes(query) || 
+                    tip.story.toLowerCase().includes(query) ||
+                    tip.category.toLowerCase().includes(query)
+                );
+
+                filteredTips.forEach(function(tip, idx) {
+                    var realIdx = tipItems.indexOf(tip);
+                    var card = document.createElement('div');
+                    card.className = 'mag-card';
+                    card.style.flexDirection = 'column';
+
+                    card.innerHTML = `
+                        <div class="mag-content" style="width: 100%; box-sizing: border-box;">
+                            <div>
+                                <div class="mag-spot-name">
+                                    <span><span style="background:var(--border); padding:2px 8px; border-radius:6px; font-size:0.75rem; font-weight:700; color:var(--primary);">💡 ${tip.category}</span></span>
+                                    <button class="delete-btn" onclick="deleteTipItem(${realIdx})">Löschen</button>
+                                </div>
+                                <h3 style="margin: 8px 0; font-size: 1.1rem; color: var(--text-main);">${tip.title}</h3>
+                                <div class="mag-story" style="margin-top: 8px;">${tip.story}</div>
+                            </div>
+                            <div class="mag-footer" style="margin-top: 14px;">
+                                <span>✍️ Verfasst von <strong>${tip.author}</strong></span>
+                            </div>
+                        </div>
+                    `;
+                    feed.appendChild(card);
+                });
+
+                if (filteredTips.length === 0) {
+                    feed.innerHTML = "<p style='text-align:center; color:var(--text-muted); padding: 20px;'>Keine Tipps oder Guides gefunden.</p>";
+                }
             }
         }
 
@@ -1782,7 +1951,9 @@
 
             renderFilters();
             renderLightFilters();
-            renderMagazineFeed();
+            if (currentMagSubTab === 'spots') {
+                renderMagazineFeed();
+            }
         }
 
         function deleteSpot(index) {
