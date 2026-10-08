@@ -174,21 +174,34 @@
             max-width: 900px;
             margin: 0 auto;
             flex-direction: column;
-            gap: 24px;
+            gap: 20px;
             box-sizing: border-box;
         }
 
         .landing-hero {
             background: linear-gradient(135deg, #1e293b, #0f172a);
             color: white;
-            padding: 36px 20px;
+            padding: 32px 20px;
             border-radius: 20px;
             text-align: center;
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
         }
         .landing-hero h1 { margin: 0 0 10px 0; font-size: 1.8rem; }
-        .landing-hero p { margin: 0 auto; color: #94a3b8; font-size: 1rem; max-width: 600px; line-height: 1.5; }
+        .landing-hero p { margin: 0 auto; color: #94a3b8; font-size: 0.95rem; max-width: 600px; line-height: 1.5; }
+
+        .dev-notice-box {
+            background: rgba(37, 99, 235, 0.08);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            border-radius: 14px;
+            padding: 16px 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            box-shadow: var(--shadow);
+            line-height: 1.5;
+        }
+        .dev-notice-box strong { color: var(--primary); }
 
         .landing-grid {
             display: grid;
@@ -712,11 +725,16 @@
     <!-- Hauptbereich -->
     <div class="view-container">
 
-        <!-- 0. LANDING PAGE (Aktualisierte Startseite) -->
+        <!-- 0. LANDING PAGE (Angepasst für Testphase & Mitarbeit) -->
         <div class="view-section active" id="landingView">
             <div class="landing-hero">
                 <h1>Willkommen bei LensConnect</h1>
-                <p>Das globale Netzwerk für Fotografen, Amateure, Models und Familien. Finde oder trage Fotospots ein, inseriere Shootings oder Heimstudios und nutze praktische Tools für deine Projekte.</p>
+                <p>Die Plattform für Fotografen, Amateure, Models und Familien in der Region. Finde oder trage Fotospots ein, inseriere Shootings oder Heimstudios und nutze praktische Tools.</p>
+            </div>
+
+            <div class="dev-notice-box">
+                🚧 <strong>Seite im Aufbau (Testphase):</strong> LensConnect wächst und entwickelt sich ständig weiter! Hast du Ideen, Feedback oder möchtest bei der Weiterentwicklung mitarbeiten? 
+                Melde dich gerne direkt bei mir!
             </div>
 
             <div class="landing-grid">
@@ -819,7 +837,7 @@
             <div id="map"></div>
         </div>
 
-        <!-- 3. Inserate & Shooting-Börse (inkl. Studio & Erfahrungs-Level) -->
+        <!-- 3. Inserate & Shooting-Börse (mit dynamischer Studio-Anpassung) -->
         <div class="view-section" id="marketView">
             <div class="hero-banner" style="background: linear-gradient(135deg, #0284c7, #0369a1);">
                 <h1>🤝 LensConnect Inserate</h1>
@@ -837,13 +855,14 @@
                 </div>
                 <div class="popup-form-group">
                     <label>Kategorie</label>
-                    <select id="marketCategory">
+                    <select id="marketCategory" onchange="toggleMarketSkillField()">
                         <option value="Shooting / Outdoor">📸 Shooting / Outdoor</option>
                         <option value="Heimstudio / Mietstudio">🏠 Heimstudio / Mietstudio</option>
                         <option value="Hochzeit / Event">💍 Hochzeit / Event</option>
                     </select>
                 </div>
-                <div class="popup-form-group">
+                <!-- Erfahrungs-Level wird bei Studio ausgeblendet -->
+                <div class="popup-form-group" id="marketSkillGroup">
                     <label>Erfahrungs- & Anspruchs-Level</label>
                     <select id="marketSkill">
                         <option value="amateur">🌱 Amateur / Portfolio-Aufbau (Gratis oder TFP)</option>
@@ -1014,12 +1033,22 @@
             `;
         }
 
-        // --- Inserate Verwaltung (inkl. Studio & Erfahrungs-Level) ---
+        function toggleMarketSkillField() {
+            var category = document.getElementById('marketCategory').value;
+            var skillGroup = document.getElementById('marketSkillGroup');
+            if (category === 'Heimstudio / Mietstudio') {
+                skillGroup.style.display = 'none';
+            } else {
+                skillGroup.style.display = 'block';
+            }
+        }
+
+        // --- Inserate Verwaltung ---
         var defaultMarket = [
             {
                 type: "offer",
                 category: "Heimstudio / Mietstudio",
-                skill: "pro",
+                skill: "",
                 title: "Heimstudio mit Blitzanlage & Hintergründen zu vermieten",
                 author: "Studio Villach",
                 location: "Villach",
@@ -1043,7 +1072,7 @@
             {
                 type: "request",
                 category: "Heimstudio / Mietstudio",
-                skill: "amateur",
+                skill: "",
                 title: "Suche Heimstudio für herbstliche Portraits",
                 author: "Sarah M.",
                 location: "Raum Villach / Arnoldstein",
@@ -1054,7 +1083,7 @@
             }
         ];
 
-        var savedMarket = localStorage.getItem('lensconnect_market_v2');
+        var savedMarket = localStorage.getItem('lensconnect_market_v3');
         var marketItems = savedMarket ? JSON.parse(savedMarket) : defaultMarket;
         var currentMarketTab = 'offer';
 
@@ -1082,7 +1111,7 @@
                 var skillBadge = "";
                 if (item.skill === 'pro') {
                     skillBadge = '<span class="skill-pro">⭐ Profi / Gewerblich</span>';
-                } else {
+                } else if (item.skill === 'amateur') {
                     skillBadge = '<span class="skill-amateur">🌱 Amateur / Portfolio</span>';
                 }
 
@@ -1114,7 +1143,7 @@
         function submitMarketItem() {
             var type = document.getElementById('marketType').value;
             var category = document.getElementById('marketCategory').value;
-            var skill = document.getElementById('marketSkill').value;
+            var skill = (category === 'Heimstudio / Mietstudio') ? "" : document.getElementById('marketSkill').value;
             var title = document.getElementById('marketTitle').value.trim();
             var author = document.getElementById('marketAuthor').value.trim();
             var location = document.getElementById('marketLocation').value.trim();
@@ -1129,7 +1158,7 @@
             }
 
             marketItems.push({ type, category, skill, title, author, location, time, price, desc, contact });
-            localStorage.setItem('lensconnect_market_v2', JSON.stringify(marketItems));
+            localStorage.setItem('lensconnect_market_v3', JSON.stringify(marketItems));
             
             document.getElementById('marketTitle').value = "";
             document.getElementById('marketAuthor').value = "";
@@ -1146,7 +1175,7 @@
         function deleteMarketItem(idx) {
             if (confirm("Möchtest du dieses Inserat löschen?")) {
                 marketItems.splice(idx, 1);
-                localStorage.setItem('lensconnect_market_v2', JSON.stringify(marketItems));
+                localStorage.setItem('lensconnect_market_v3', JSON.stringify(marketItems));
                 renderMarketFeed();
             }
         }
@@ -1226,7 +1255,7 @@
                     }
                     if (imported.market && Array.isArray(imported.market)) {
                         marketItems = imported.market;
-                        localStorage.setItem('lensconnect_market_v2', JSON.stringify(marketItems));
+                        localStorage.setItem('lensconnect_market_v3', JSON.stringify(marketItems));
                     }
                     renderApp();
                     renderMarketFeed();
