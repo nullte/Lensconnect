@@ -200,7 +200,9 @@
             .mag-card img { width: 320px; height: 230px; object-fit: cover; }
         }
 
-        .mag-card img { width: 100%; height: 180px; object-fit: cover; }
+        .mag-card img { width: 100%; height: 180px; object-fit: cover; cursor: pointer; transition: opacity 0.2s; }
+        .mag-card img:hover { opacity: 0.9; }
+
         .mag-content { padding: 16px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
         .mag-spot-name { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
         .mag-story { font-size: 0.9rem; line-height: 1.5; color: var(--text-main); margin-bottom: 10px; white-space: pre-line; }
@@ -222,14 +224,14 @@
 
         .mag-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 10px; font-size: 0.75rem; color: var(--text-muted); flex-wrap: wrap; gap: 8px; }
 
-        .fav-btn {
+        .fav-btn, .share-btn {
             background: transparent;
             border: none;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             cursor: pointer;
             transition: transform 0.2s;
         }
-        .fav-btn:hover { transform: scale(1.2); }
+        .fav-btn:hover, .share-btn:hover { transform: scale(1.2); }
 
 
         /* --- 2. Karten Ansicht --- */
@@ -300,6 +302,31 @@
             gap: 6px;
         }
 
+        /* GPS & Satellit Buttons auf der Karte */
+        .map-controls-top-right {
+            position: absolute;
+            top: 12px; right: 12px;
+            display: flex;
+            gap: 8px;
+            z-index: 1500;
+        }
+
+        .map-control-btn {
+            background: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .map-control-btn:hover { background: var(--border); }
+
         .section-box { 
             background: var(--bg-card); padding: 14px; border-radius: 12px; 
             border: 1px solid var(--border); 
@@ -314,21 +341,6 @@
         .spot-info { flex-grow: 1; cursor: pointer; padding-right: 8px; }
         .spot-title { color: var(--primary); font-weight: 600; display: block; margin-bottom: 2px; }
         .article-count { font-size: 0.7rem; color: var(--primary); font-weight: 600; background: rgba(37, 99, 235, 0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; }
-
-        .map-style-toggle {
-            position: absolute;
-            top: 12px; right: 12px;
-            background: var(--bg-card);
-            color: var(--text-main);
-            border: 1px solid var(--border);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            z-index: 1500;
-            cursor: pointer;
-        }
 
 
         /* --- 3. Beitrag erstellen Ansicht --- */
@@ -393,7 +405,7 @@
         }
 
 
-        /* Modal */
+        /* Modal & Lightbox */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
             background: rgba(0,0,0,0.6); z-index: 3000; justify-content: center; align-items: center;
@@ -411,13 +423,23 @@
             border-radius: 50%; font-weight: bold; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
         }
+
+        /* Lightbox für Großansicht */
+        .lightbox-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
+            background: rgba(0,0,0,0.9); z-index: 4000; justify-content: center; align-items: center;
+            padding: 20px; box-sizing: border-box; cursor: pointer;
+        }
+        .lightbox-modal.active { display: flex; }
+        .lightbox-modal img { max-width: 100%; max-height: 90vh; object-fit: contain; border-radius: 8px; }
+
         .article-card {
             background: var(--bg-main); border: 1px solid var(--border); border-radius: 10px;
             padding: 14px; margin-bottom: 12px;
         }
         .article-author { font-size: 0.75rem; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
         .article-story { font-size: 0.85rem; line-height: 1.4; color: var(--text-main); white-space: pre-line; margin-top: 6px; }
-        .article-card img { width: 100%; max-height: 180px; object-fit: cover; border-radius: 6px; margin-top: 8px; }
+        .article-card img { width: 100%; max-height: 180px; object-fit: cover; border-radius: 6px; margin-top: 8px; cursor: pointer; }
 
         .tag { 
             display: inline-block; background: rgba(37, 99, 235, 0.1); color: var(--primary); 
@@ -428,6 +450,8 @@
         .action-btn { background: var(--border); color: var(--text-main); border: none; padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: 600; }
         .delete-btn { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: none; padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: 600; }
         .popup-link { color: var(--primary); font-weight: 600; cursor: pointer; text-decoration: underline; font-size: 0.8rem; margin-right: 8px; }
+
+        .coord-hint { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; font-family: monospace; }
 
 
         /* --- RESPONSIVE OPTIMIERUNG FÜR SMARTPHONES (MAX 768px) --- */
@@ -500,7 +524,11 @@
         <!-- 2. Karten & Sidebar Ansicht -->
         <div class="view-section" id="mapView">
             <button class="pc-open-btn" id="pcOpenBtn" onclick="toggleSidebarMobile()">📝 Liste & Filter anzeigen</button>
-            <button class="map-style-toggle" id="mapStyleBtn" onclick="toggleMapStyle()">🛰️ Satellit</button>
+            
+            <div class="map-controls-top-right">
+                <button class="map-control-btn" onclick="panToUserGPS()" title="Meinen GPS-Standort anzeigen">📍 GPS</button>
+                <button class="map-control-btn" id="mapStyleBtn" onclick="toggleMapStyle()" title="Kartenstil wechseln">🛰️ Satellit</button>
+            </div>
 
             <div class="sidebar" id="sidebar">
                 <div class="sidebar-header">
@@ -564,6 +592,11 @@
         </div>
     </div>
 
+    <!-- Lightbox Modal für Foto-Großansicht -->
+    <div class="lightbox-modal" id="lightboxModal" onclick="closeLightbox()">
+        <img id="lightboxImg" src="" alt="Großansicht">
+    </div>
+
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
@@ -586,6 +619,48 @@
                 satelliteLayer.addTo(map);
                 btn.textContent = "🗺️ Standard";
                 isSatellite = true;
+            }
+        }
+
+        // GPS Standort ermitteln
+        function panToUserGPS() {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
+                    map.setView([lat, lng], 15);
+                    L.popup()
+                        .setLatLng([lat, lng])
+                        .setContent("<b>📍 Du bist hier!</b><br>Klicke in die Karte, um einen Spot anzulegen.")
+                        .openOn(map);
+                }, function(error) {
+                    alert("Standort konnte nicht ermittelt werden. Bitte GPS-Berechtigung prüfen.");
+                });
+            } else {
+                alert("Dein Browser unterstützt keine Geolokalisierung.");
+            }
+        }
+
+        // Lightbox für Bilder öffnen
+        function openLightbox(imgSrc) {
+            if (!imgSrc) return;
+            document.getElementById('lightboxImg').src = imgSrc;
+            document.getElementById('lightboxModal').classList.add('active');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightboxModal').classList.remove('active');
+        }
+
+        // Link teilen
+        function shareSpot(spotTitle, lat, lng) {
+            var shareText = `Entdecke den Fotospot "${spotTitle}" im Alpin-Adria Magazin!\nKoordinaten: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(shareText).then(function() {
+                    alert("Spot-Infos in die Zwischenablage kopiert! 📋");
+                });
+            } else {
+                alert(shareText);
             }
         }
 
@@ -644,7 +719,7 @@
             }
         ];
 
-        var savedSpots = localStorage.getItem('fotospots_v8');
+        var savedSpots = localStorage.getItem('fotospots_v9');
         var spots = savedSpots ? JSON.parse(savedSpots) : defaultSpots;
         
         var savedFavs = localStorage.getItem('fotospots_favs');
@@ -718,7 +793,7 @@
                             var card = document.createElement('div');
                             card.className = 'mag-card';
 
-                            var imgHtml = art.image ? `<img src="${art.image}" alt="Foto">` : `<img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600" alt="Platzhalter">`;
+                            var imgSrc = art.image ? art.image : "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600";
                             var tagsHtml = spot.tags ? spot.tags.map(t => `<span class="tag">${t}</span>`).join('') : '';
                             var isFav = favorites.includes(spotIdx);
 
@@ -732,12 +807,15 @@
                             }
 
                             card.innerHTML = `
-                                ${imgHtml}
+                                <img src="${imgSrc}" alt="Foto" onclick="openLightbox('${imgSrc}')">
                                 <div class="mag-content">
                                     <div>
                                         <div class="mag-spot-name">
                                             <span>📍 Spot: <span style="color:var(--primary); cursor:pointer;" onclick="jumpToSpot(${spotIdx})">${spot.title}</span></span>
-                                            <button class="fav-btn" onclick="toggleFavorite(${spotIdx})" title="Merken">${isFav ? '⭐' : '☆'}</button>
+                                            <div>
+                                                <button class="share-btn" onclick="shareSpot('${spot.title}', ${spot.lat}, ${spot.lng})" title="Teilen">🔗</button>
+                                                <button class="fav-btn" onclick="toggleFavorite(${spotIdx})" title="Merken">${isFav ? '⭐' : '☆'}</button>
+                                            </div>
                                         </div>
                                         <div class="mag-story">${art.story}</div>
                                         ${exifHtml}
@@ -772,16 +850,19 @@
                         count++;
                         var card = document.createElement('div');
                         card.className = 'mag-card';
-                        var imgHtml = art.image ? `<img src="${art.image}" alt="Foto">` : `<img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600" alt="Platzhalter">`;
+                        var imgSrc = art.image ? art.image : "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600";
                         var tagsHtml = spot.tags ? spot.tags.map(t => `<span class="tag">${t}</span>`).join('') : '';
 
                         card.innerHTML = `
-                            ${imgHtml}
+                            <img src="${imgSrc}" alt="Foto" onclick="openLightbox('${imgSrc}')">
                             <div class="mag-content">
                                 <div>
                                     <div class="mag-spot-name">
                                         <span>📍 Spot: <span style="color:var(--primary); cursor:pointer;" onclick="jumpToSpot(${spotIdx})">${spot.title}</span></span>
-                                        <button class="fav-btn" onclick="toggleFavorite(${spotIdx})">⭐</button>
+                                        <div>
+                                            <button class="share-btn" onclick="shareSpot('${spot.title}', ${spot.lat}, ${spot.lng})">🔗</button>
+                                            <button class="fav-btn" onclick="toggleFavorite(${spotIdx})">⭐</button>
+                                        </div>
                                     </div>
                                     <div class="mag-story">${art.story}</div>
                                     <div>${tagsHtml}</div>
@@ -826,9 +907,10 @@
             spot.articles.forEach(function(art) {
                 var card = document.createElement('div');
                 card.className = 'article-card';
+                var imgSrc = art.image ? art.image : '';
                 card.innerHTML = `<div class='article-author'>✍️ von ${art.author || 'Unbekannt'}</div>` +
                                  `<div class='article-story'>${art.story}</div>` +
-                                 (art.image ? `<img src='${art.image}' alt='Foto'>` : '');
+                                 (imgSrc ? `<img src='${imgSrc}' alt='Foto' onclick="openLightbox('${imgSrc}')">` : '');
                 container.appendChild(card);
             });
 
@@ -861,6 +943,7 @@
                 var artCount = spot.articles ? spot.articles.length : 0;
 
                 var content = `<b>${spot.title}</b><br><span class='article-count'>📖 ${artCount} Bericht(e)</span><br>` +
+                              `<div class='coord-hint'>Lat: ${spot.lat.toFixed(4)}, Lng: ${spot.lng.toFixed(4)}</div>` +
                               `<span class='popup-link' onclick='openBlogModal(${originalIndex})'>Berichte lesen</span>`;
                 
                 var marker = L.marker([spot.lat, spot.lng]).addTo(map);
@@ -889,7 +972,7 @@
         function deleteSpot(index) {
             if (confirm("Möchtest du diesen Spot wirklich löschen?")) {
                 spots.splice(index, 1);
-                localStorage.setItem('fotospots_v8', JSON.stringify(spots));
+                localStorage.setItem('fotospots_v9', JSON.stringify(spots));
                 renderApp();
             }
         }
@@ -921,6 +1004,7 @@
             var popupContent = `
                 <div style="width: 240px;">
                     <b style="margin-bottom:6px; display:block;">📍 Neuer Spot</b>
+                    <div class="coord-hint" style="margin-bottom:6px;">Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}</div>
                     <div class="popup-form-group">
                         <label>Spot-Titel</label>
                         <input type="text" id="popTitle" placeholder="z.B. Aussichtspunkt">
@@ -975,7 +1059,7 @@
                     articles: [{ author: author, story: story, image: imgUrl }]
                 };
                 spots.push(newSpot);
-                localStorage.setItem('fotospots_v8', JSON.stringify(spots));
+                localStorage.setItem('fotospots_v9', JSON.stringify(spots));
                 map.closePopup();
                 renderApp();
             }
@@ -1010,7 +1094,7 @@
                 articles: [{ author: author, story: story, image: "" }]
             });
 
-            localStorage.setItem('fotospots_v8', JSON.stringify(spots));
+            localStorage.setItem('fotospots_v9', JSON.stringify(spots));
             document.getElementById('standaloneForm').reset();
             switchView('map');
             renderApp();
