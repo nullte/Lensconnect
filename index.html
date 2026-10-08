@@ -52,7 +52,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* 1. Glassmorphism Header */
+        /* Glassmorphism Header */
         header {
             background: var(--nav-bg);
             backdrop-filter: blur(12px);
@@ -141,7 +141,7 @@
         .theme-toggle-btn:hover { transform: scale(1.08); }
         .theme-toggle-btn:active { transform: scale(0.9); }
 
-        /* 2. Micro-Interactions & Ansichten-Container mit Fade-In Animation */
+        /* Container mit Fade-In Animation */
         .view-container {
             flex-grow: 1;
             position: relative;
@@ -244,7 +244,6 @@
             gap: 16px;
         }
 
-        /* 3. Apple-Style Karten & Badges */
         .mag-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -254,7 +253,6 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            transition: transform 0.2s;
         }
 
         @media (min-width: 769px) {
@@ -355,7 +353,6 @@
             align-items: center;
             justify-content: center;
             font-size: 0.9rem;
-            transition: transform 0.15s;
         }
         .collapse-btn:active { transform: scale(0.9); }
 
@@ -376,9 +373,7 @@
             cursor: pointer;
             align-items: center;
             gap: 6px;
-            transition: transform 0.15s;
         }
-        .pc-open-btn:active { transform: scale(0.95); }
 
         .map-controls-top-right {
             position: absolute;
@@ -401,10 +396,8 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            transition: background 0.2s, transform 0.15s;
         }
         .map-control-btn:hover { background: var(--border); }
-        .map-control-btn:active { transform: scale(0.95); }
 
         .section-box { 
             background: var(--bg-card); padding: 14px; border-radius: 12px; 
@@ -423,7 +416,31 @@
         .article-count { font-size: 0.7rem; color: var(--primary); font-weight: 600; background: rgba(37, 99, 235, 0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; }
         .distance-info { font-size: 0.7rem; color: var(--light-badge); font-weight: 700; margin-top: 2px; }
 
-        /* Inserate / Shooting-Börse Karten */
+        /* Inserate / Shooting-Börse Styling */
+        .market-type-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .market-tab {
+            flex: 1;
+            padding: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-align: center;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+        .market-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
         .market-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -434,8 +451,20 @@
             flex-direction: column;
             gap: 8px;
             box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
         }
-        .market-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 700; color: var(--primary); }
+        .market-card.offer { border-left-color: #2563eb; }
+        .market-card.request { border-left-color: #d97706; }
+
+        .market-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 700; }
+        
+        .badge-offer { background: rgba(37, 99, 235, 0.1); color: var(--primary); padding: 2px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; }
+        .badge-request { background: rgba(217, 119, 6, 0.15); color: var(--light-badge); padding: 2px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; }
+        
+        /* Skill Level Badges */
+        .skill-pro { background: rgba(16, 185, 129, 0.15); color: #059669; padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; margin-left: 6px; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .skill-amateur { background: rgba(99, 102, 241, 0.15); color: #6366f1; padding: 2px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; margin-left: 6px; border: 1px solid rgba(99, 102, 241, 0.3); }
+
         .market-details { font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 16px; flex-wrap: wrap; margin: 4px 0; }
         .market-price { font-weight: 700; color: var(--light-badge); }
 
@@ -486,11 +515,10 @@
             font-weight: 600;
             font-size: 0.85rem;
             cursor: pointer;
-            transition: opacity 0.2s, transform 0.15s;
+            transition: opacity 0.2s;
             text-align: center;
         }
         .backup-btn:hover { opacity: 0.8; }
-        .backup-btn:active { transform: scale(0.97); }
 
         .hint { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.4; }
 
@@ -519,22 +547,19 @@
             font-size: 0.8rem; font-family: inherit; background: var(--bg-main); color: var(--text-main);
         }
 
-        /* 4. Touch-Feedback für Buttons */
         button.primary-btn { 
             background: var(--primary); color: white; border: none; 
             padding: 10px; width: 100%; border-radius: 10px; 
             cursor: pointer; font-weight: 600; font-size: 0.85rem;
-            transition: background 0.2s, transform 0.15s;
+            transition: background 0.2s;
         }
         button.primary-btn:hover { background: var(--primary-hover); }
-        button.primary-btn:active { transform: scale(0.97); }
 
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
             background: rgba(0,0,0,0.6); z-index: 3000; justify-content: center; align-items: center;
             padding: 16px; box-sizing: border-box;
             backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
         }
         .modal.active { display: flex; }
         .modal-content {
@@ -549,9 +574,7 @@
             background: var(--border); color: var(--text-main); border: none; width: 30px; height: 30px;
             border-radius: 50%; font-weight: bold; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
-            transition: transform 0.15s;
         }
-        .close-modal:active { transform: scale(0.9); }
 
         .lightbox-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
@@ -575,10 +598,8 @@
             margin-right: 4px; margin-top: 4px; font-weight: 600; 
         }
 
-        .action-btn { background: var(--border); color: var(--text-main); border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; font-weight: 600; transition: transform 0.15s; }
-        .action-btn:active { transform: scale(0.95); }
-        .delete-btn { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; font-weight: 600; transition: transform 0.15s; }
-        .delete-btn:active { transform: scale(0.95); }
+        .action-btn { background: var(--border); color: var(--text-main); border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; font-weight: 600; }
+        .delete-btn { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; font-weight: 600; }
         
         .popup-link { color: var(--primary); font-weight: 600; cursor: pointer; text-decoration: underline; font-size: 0.8rem; margin-right: 8px; }
         .coord-hint { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; font-family: monospace; }
@@ -625,7 +646,7 @@
                 <button class="nav-btn active" id="navMag" onclick="switchView('magazine')">📖 Magazin</button>
                 <button class="nav-btn" id="navFav" onclick="switchView('favorites')">⭐ Merkzettel</button>
                 <button class="nav-btn" id="navMap" onclick="switchView('map')">🗺️ Karte</button>
-                <button class="nav-btn" id="navMarket" onclick="switchView('market')">🤝 Shootings</button>
+                <button class="nav-btn" id="navMarket" onclick="switchView('market')">🤝 Inserate</button>
                 <button class="nav-btn" id="navTools" onclick="switchView('tools')">🎒 Packliste</button>
                 <button class="nav-btn" id="navCreate" onclick="switchView('create')">⚙️ Backup</button>
             </div>
@@ -635,7 +656,7 @@
                 <option value="magazine">📖 Magazin</option>
                 <option value="favorites">⭐ Merkzettel</option>
                 <option value="map">🗺️ Karte</option>
-                <option value="market">🤝 Shootings & Inserate</option>
+                <option value="market">🤝 Inserate & Shootings</option>
                 <option value="tools">🎒 Packliste</option>
                 <option value="create">⚙️ Backup</option>
             </select>
@@ -712,48 +733,67 @@
             <div id="map"></div>
         </div>
 
-        <!-- 3. Shooting-Börse / Inserate -->
+        <!-- 3. Inserate & Shooting-Börse mit Skill Meter -->
         <div class="view-section" id="marketView">
             <div class="hero-banner" style="background: linear-gradient(135deg, #0284c7, #0369a1);">
-                <h1>🤝 Shooting-Börse & Inserate</h1>
-                <p>Biete oder suche Shootings (Familie, Portrait, Paar) mit Location & Preis.</p>
+                <h1>🤝 Community Inserate & Shootings</h1>
+                <p>Profis & Amateure (Portfolio-Aufbau) bieten Shootings an oder suchen Begleitung.</p>
             </div>
 
             <div class="form-card">
-                <h3 style="margin-top:0; font-size:1.05rem;">Neues Shooting-Inserat erstellen</h3>
+                <h3 style="margin-top:0; font-size:1.05rem;">Neues Inserat erstellen</h3>
                 <div class="popup-form-group">
-                    <label>Art des Inserats / Titel</label>
-                    <input type="text" id="marketTitle" placeholder="z.B. Familien-Minisessions im Herbst">
+                    <label>Art des Inserats</label>
+                    <select id="marketType">
+                        <option value="offer">📸 Ich biete (Shooting / Minisession)</option>
+                        <option value="request">🔍 Ich suche (z.B. Fotograf für Hochzeit/Event)</option>
+                    </select>
                 </div>
                 <div class="popup-form-group">
-                    <label>Dein Name / Fotostudio</label>
-                    <input type="text" id="marketAuthor" placeholder="z.B. Lisa Müller Photography">
+                    <label>Erfahrung / Skill Level</label>
+                    <select id="marketSkill">
+                        <option value="amateur">🌱 Amateur / Portfolio-Aufbau (Gratis oder TFP)</option>
+                        <option value="pro">⭐ Professioneller Fotograf / Gewerblich</option>
+                    </select>
+                </div>
+                <div class="popup-form-group">
+                    <label>Titel des Inserats</label>
+                    <input type="text" id="marketTitle" placeholder="z.B. Kostenloses Porträtspecial für Portfolio">
+                </div>
+                <div class="popup-form-group">
+                    <label>Dein Name / Studio</label>
+                    <input type="text" id="marketAuthor" placeholder="z.B. Alex Photo (Hobby)">
                 </div>
                 <div class="popup-form-group">
                     <label>Location / Region</label>
-                    <input type="text" id="marketLocation" placeholder="z.B. Seeufer & Schlosspark Villach">
+                    <input type="text" id="marketLocation" placeholder="z.B. Villach Umgebung">
                 </div>
                 <div class="popup-form-group">
-                    <label>Uhrzeit / Datum / Zeitraum</label>
-                    <input type="text" id="marketTime" placeholder="z.B. Samstag ab 16:00 Uhr">
+                    <label>Wann / Zeitraum</label>
+                    <input type="text" id="marketTime" placeholder="z.B. Nächstes Wochenende">
                 </div>
                 <div class="popup-form-group">
                     <label>Preis / Konditionen</label>
-                    <input type="text" id="marketPrice" placeholder="z.B. 120€ inkl. 5 bearbeiteter Bilder">
+                    <input type="text" id="marketPrice" placeholder="z.B. Gratis (TFP) oder 120€">
                 </div>
                 <div class="popup-form-group">
                     <label>Beschreibung & Details</label>
-                    <textarea id="marketDesc" rows="2" placeholder="Perfekt für Familien mit kleinen Kindern..."></textarea>
+                    <textarea id="marketDesc" rows="2" placeholder="Erweitere mein Portfolio im Bereich Outdoor-Portrait..."></textarea>
                 </div>
                 <div class="popup-form-group">
                     <label>Kontakt (Instagram, E-Mail oder Telefon)</label>
-                    <input type="text" id="marketContact" placeholder="z.B. @lisa.photo oder lisa@mail.com">
+                    <input type="text" id="marketContact" placeholder="z.B. @alex.photo.hobby">
                 </div>
                 <button type="button" class="primary-btn" onclick="submitMarketItem()">Inserat veröffentlichen</button>
             </div>
 
-            <h3 style="margin: 10px 0 0 0;">Aktuelle Inserate & Angebote</h3>
-            <div id="marketFeed" style="margin-top: 10px;"></div>
+            <!-- Tabs zum Umschalten zwischen Angeboten und Gesuchen -->
+            <div class="market-type-tabs">
+                <button class="market-tab active" id="tabOffer" onclick="switchMarketTab('offer')">📸 Angebote (Fotografen)</button>
+                <button class="market-tab" id="tabRequest" onclick="switchMarketTab('request')">🔍 Gesuche (Suche Fotograf)</button>
+            </div>
+
+            <div id="marketFeed" style="margin-top: 6px;"></div>
         </div>
 
         <!-- 4. Foto-Packliste & Checkliste -->
@@ -880,33 +920,82 @@
             `;
         }
 
+        // --- Inserate Verwaltung (inkl. Skill Meter) ---
         var defaultMarket = [
             {
-                title: "Familien-Herbstshooting am See",
+                type: "offer",
+                skill: "amateur",
+                title: "Kostenloses Portrait-Shooting für Portfolio",
+                author: "Julian H. (Hobby)",
+                location: "Villach & Umgebung",
+                time: "Nächstes Wochenende",
+                price: "Gratis (TFP)",
+                desc: "Ich bin ambitionierter Hobbyfotograf und möchte mein Portfolio erweitern. Du bekommst alle gelungenen Bilder bearbeitet!",
+                contact: "@julian.hobby.photo"
+            },
+            {
+                type: "offer",
+                skill: "pro",
+                title: "Familien-Minisessions im Herbst",
                 author: "Anna Bauer Fotografie",
                 location: "Faaker See (Ostufer)",
                 time: "Samstag, 15:00 Uhr",
                 price: "99€ inkl. 3 Bilder",
-                desc: "Kinderfreundlicher Spot mit tollem Steg und weichem Nachmittagslicht.",
+                desc: "Professionelles Familienshooting mit tollem Steg und weichem Nachmittagslicht.",
                 contact: "@anna.bauer.photo"
+            },
+            {
+                type: "request",
+                skill: "amateur",
+                title: "Suche Fotograf für Standesamtliche Hochzeit",
+                author: "Laura & Michael",
+                location: "Villach Stadt",
+                time: "Juni 2027",
+                price: "Nach Vereinbarung",
+                desc: "Wir suchen einen entspannten Fotografen für ca. 2 Stunden Standesamt und Paarshooting.",
+                contact: "laura.m@mail.com"
             }
         ];
 
-        var savedMarket = localStorage.getItem('fotospots_market_v1');
+        var savedMarket = localStorage.getItem('fotospots_market_v3');
         var marketItems = savedMarket ? JSON.parse(savedMarket) : defaultMarket;
+        var currentMarketTab = 'offer';
+
+        function switchMarketTab(tab) {
+            currentMarketTab = tab;
+            document.getElementById('tabOffer').classList.toggle('active', tab === 'offer');
+            document.getElementById('tabRequest').classList.toggle('active', tab === 'request');
+            renderMarketFeed();
+        }
 
         function renderMarketFeed() {
             var feed = document.getElementById('marketFeed');
             feed.innerHTML = "";
-            marketItems.forEach(function(item, idx) {
+            
+            var filteredItems = marketItems.filter(item => (item.type || 'offer') === currentMarketTab);
+
+            filteredItems.forEach(function(item, idx) {
+                var realIdx = marketItems.indexOf(item);
                 var card = document.createElement('div');
-                card.className = 'market-card';
+                card.className = 'market-card ' + (item.type || 'offer');
+                
+                var badgeHtml = (item.type === 'request') ? '<span class="badge-request">🔍 Suche Fotograf</span>' : '<span class="badge-offer">📸 Biete Shooting</span>';
+                
+                var skillBadge = "";
+                if (item.skill === 'pro') {
+                    skillBadge = '<span class="skill-pro">⭐ Profi / Commercial</span>';
+                } else {
+                    skillBadge = '<span class="skill-amateur">🌱 Amateur / Portfolio</span>';
+                }
+
                 card.innerHTML = `
                     <div class="market-header">
-                        <span>📸 ${item.title}</span>
-                        <button class="delete-btn" onclick="deleteMarketItem(${idx})">Löschen</button>
+                        <div>${badgeHtml} ${item.title}</div>
+                        <button class="delete-btn" onclick="deleteMarketItem(${realIdx})">Löschen</button>
                     </div>
-                    <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-main);">Von: ${item.author}</div>
+                    <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-main); display:flex; align-items:center;">
+                        Von: ${item.author} ${skillBadge}
+                    </div>
                     <div class="market-details">
                         <span>📍 ${item.location}</span>
                         <span>⏰ ${item.time}</span>
@@ -917,13 +1006,16 @@
                 `;
                 feed.appendChild(card);
             });
-            if (marketItems.length === 0) {
-                feed.innerHTML = "<p style='text-align:center; color:var(--text-muted);'>Aktuell sind keine Inserate vorhanden.</p>";
+
+            if (filteredItems.length === 0) {
+                feed.innerHTML = `<p style='text-align:center; color:var(--text-muted); padding: 20px;'>Keine ${currentMarketTab === 'offer' ? 'Angebote' : 'Gesuche'} vorhanden.</p>`;
             }
             updateStats();
         }
 
         function submitMarketItem() {
+            var type = document.getElementById('marketType').value;
+            var skill = document.getElementById('marketSkill').value;
             var title = document.getElementById('marketTitle').value.trim();
             var author = document.getElementById('marketAuthor').value.trim();
             var location = document.getElementById('marketLocation').value.trim();
@@ -937,8 +1029,8 @@
                 return;
             }
 
-            marketItems.push({ title, author, location, time, price, desc, contact });
-            localStorage.setItem('fotospots_market_v1', JSON.stringify(marketItems));
+            marketItems.push({ type, skill, title, author, location, time, price, desc, contact });
+            localStorage.setItem('fotospots_market_v3', JSON.stringify(marketItems));
             
             document.getElementById('marketTitle').value = "";
             document.getElementById('marketAuthor').value = "";
@@ -948,14 +1040,14 @@
             document.getElementById('marketDesc').value = "";
             document.getElementById('marketContact').value = "";
 
-            renderMarketFeed();
+            switchMarketTab(type);
             alert("Inserat erfolgreich veröffentlicht! 🚀");
         }
 
         function deleteMarketItem(idx) {
             if (confirm("Möchtest du dieses Inserat löschen?")) {
                 marketItems.splice(idx, 1);
-                localStorage.setItem('fotospots_market_v1', JSON.stringify(marketItems));
+                localStorage.setItem('fotospots_market_v3', JSON.stringify(marketItems));
                 renderMarketFeed();
             }
         }
@@ -1035,7 +1127,7 @@
                     }
                     if (imported.market && Array.isArray(imported.market)) {
                         marketItems = imported.market;
-                        localStorage.setItem('fotospots_market_v1', JSON.stringify(marketItems));
+                        localStorage.setItem('fotospots_market_v3', JSON.stringify(marketItems));
                     }
                     renderApp();
                     renderMarketFeed();
