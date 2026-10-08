@@ -81,21 +81,20 @@
             gap: 8px;
         }
 
+        /* Desktop Navigations-Buttons */
         .nav-links {
             display: flex;
             gap: 4px;
-            overflow-x: auto;
-            max-width: 40vw;
         }
 
         .nav-btn {
             background: transparent;
             border: none;
-            padding: 6px 8px;
+            padding: 6px 10px;
             border-radius: 6px;
             font-family: inherit;
             font-weight: 600;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
             cursor: pointer;
             transition: all 0.2s;
@@ -104,6 +103,20 @@
 
         .nav-btn:hover { background: var(--border); color: var(--text-main); }
         .nav-btn.active { background: var(--primary); color: white; }
+
+        /* Mobile Dropdown-Auswahl (Standardmäßig versteckt auf Desktop) */
+        .mobile-nav-select {
+            display: none;
+            background: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.85rem;
+            outline: none;
+        }
 
         .theme-toggle-btn {
             background: var(--border);
@@ -224,7 +237,7 @@
             position: relative;
         }
 
-        @media (min-width: 640px) {
+        @media (min-width: 769px) {
             .mag-card { flex-direction: row; }
             .mag-card img { width: 320px; height: 230px; object-fit: cover; }
         }
@@ -523,9 +536,11 @@
         /* --- RESPONSIVE OPTIMIERUNG FÜR SMARTPHONES (MAX 768px) --- */
         @media (max-width: 768px) {
             header { padding: 0 10px; height: 56px; }
-            .logo { font-size: 0.95rem; gap: 4px; }
-            .nav-btn { padding: 5px 6px; font-size: 0.7rem; }
-            .theme-toggle-btn { width: 30px; height: 30px; font-size: 0.85rem; }
+            .logo { font-size: 0.9rem; gap: 4px; }
+            
+            /* Auf Smartphones Button-Leiste verstecken und Dropdown einblenden */
+            .nav-links { display: none; }
+            .mobile-nav-select { display: block; }
 
             .view-container { height: calc(100dvh - 56px); }
 
@@ -553,6 +568,7 @@
             <span>📸</span> <span>Alpin-Adria</span>
         </div>
         <div class="nav-right">
+            <!-- Desktop Button-Navigation -->
             <div class="nav-links">
                 <button class="nav-btn active" id="navMag" onclick="switchView('magazine')">📖 Magazin</button>
                 <button class="nav-btn" id="navFav" onclick="switchView('favorites')">⭐ Merkzettel</button>
@@ -560,6 +576,16 @@
                 <button class="nav-btn" id="navTools" onclick="switchView('tools')">🎒 Packliste</button>
                 <button class="nav-btn" id="navCreate" onclick="switchView('create')">⚙️ Backup</button>
             </div>
+
+            <!-- Mobile Dropdown-Menü -->
+            <select class="mobile-nav-select" id="mobileNavSelect" onchange="switchView(this.value)">
+                <option value="magazine">📖 Magazin</option>
+                <option value="favorites">⭐ Merkzettel</option>
+                <option value="map">🗺️ Karte</option>
+                <option value="tools">🎒 Packliste</option>
+                <option value="create">⚙️ Backup</option>
+            </select>
+
             <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Design umschalten">🌙</button>
         </div>
     </header>
@@ -634,7 +660,7 @@
             <div id="map"></div>
         </div>
 
-        <!-- 3. Foto-Packliste & Checkliste (bearbeitbar & löschbar) -->
+        <!-- 3. Foto-Packliste & Checkliste -->
         <div class="view-section" id="toolsView">
             <div class="form-card" style="width: 100%; max-width: 600px; margin: 0 auto;">
                 <h2 style="margin-top:0; font-size: 1.2rem;">🎒 Foto-Touren Packliste</h2>
@@ -769,7 +795,6 @@
             `;
         }
 
-        // Packlisten Verwaltung (Hinzufügen, Abhaken, Löschen)
         var defaultChecklist = [
             { text: "Kamera-Gehäuse & Ersatzakkus", checked: true },
             { text: "Weitwinkel- & Teleobjektiv", checked: true },
@@ -842,7 +867,7 @@
                     var importedSpots = JSON.parse(e.target.result);
                     if (Array.isArray(importedSpots)) {
                         spots = importedSpots;
-                        localStorage.setItem('fotospots_v13', JSON.stringify(spots));
+                        localStorage.setItem('fotospots_v14', JSON.stringify(spots));
                         renderApp();
                         alert("Backup erfolgreich geladen! 🚀");
                         switchView('magazine');
@@ -934,7 +959,7 @@
             }
         ];
 
-        var savedSpots = localStorage.getItem('fotospots_v13');
+        var savedSpots = localStorage.getItem('fotospots_v14');
         var spots = savedSpots ? JSON.parse(savedSpots) : defaultSpots;
         
         var savedFavs = localStorage.getItem('fotospots_favs');
@@ -944,22 +969,24 @@
         var currentFilter = 'Alle';
         var currentLightFilter = 'Alle';
 
+        // Ansichten umschalten mit Synchronisation für Desktop-Buttons und Mobile-Dropdown
         function switchView(viewName, pushHistory = true) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
 
+            // Desktop Buttons aktualisieren
             if (viewName === 'magazine') {
                 document.getElementById('magazineView').classList.add('active');
-                document.getElementById('navMag').classList.add('active');
+                var btn = document.getElementById('navMag'); if(btn) btn.classList.add('active');
                 renderMagazineFeed();
                 initSunCalculator();
             } else if (viewName === 'favorites') {
                 document.getElementById('favoritesView').classList.add('active');
-                document.getElementById('navFav').classList.add('active');
+                var btn = document.getElementById('navFav'); if(btn) btn.classList.add('active');
                 renderFavoritesFeed();
             } else if (viewName === 'map') {
                 document.getElementById('mapView').classList.add('active');
-                document.getElementById('navMap').classList.add('active');
+                var btn = document.getElementById('navMap'); if(btn) btn.classList.add('active');
                 setTimeout(() => {
                     map.invalidateSize();
                     if (window.innerWidth <= 768 && !isSidebarCollapsedPC) {
@@ -968,12 +995,16 @@
                 }, 200);
             } else if (viewName === 'tools') {
                 document.getElementById('toolsView').classList.add('active');
-                document.getElementById('navTools').classList.add('active');
+                var btn = document.getElementById('navTools'); if(btn) btn.classList.add('active');
                 renderChecklist();
             } else if (viewName === 'create') {
                 document.getElementById('createView').classList.add('active');
-                document.getElementById('navCreate').classList.add('active');
+                var btn = document.getElementById('navCreate'); if(btn) btn.classList.add('active');
             }
+
+            // Mobile Dropdown synchron halten
+            var mobileSelect = document.getElementById('mobileNavSelect');
+            if (mobileSelect) mobileSelect.value = viewName;
 
             if (pushHistory) {
                 history.pushState({ view: viewName }, "", "#" + viewName);
@@ -1232,7 +1263,7 @@
         function deleteSpot(index) {
             if (confirm("Möchtest du diesen Spot wirklich löschen?")) {
                 spots.splice(index, 1);
-                localStorage.setItem('fotospots_v13', JSON.stringify(spots));
+                localStorage.setItem('fotospots_v14', JSON.stringify(spots));
                 renderApp();
             }
         }
@@ -1348,7 +1379,7 @@
                     articles: [{ author: author, story: story, lightMood: lightMood, gpxUrl: gpxUrl, image: imgUrl }]
                 };
                 spots.push(newSpot);
-                localStorage.setItem('fotospots_v13', JSON.stringify(spots));
+                localStorage.setItem('fotospots_v14', JSON.stringify(spots));
                 map.closePopup();
                 renderApp();
             }
