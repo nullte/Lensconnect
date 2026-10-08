@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alpin-Adria Magazin & Fotospots</title>
+    <title>Alpin-Adria Foto-Community & Shootings</title>
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <!-- Google Fonts -->
@@ -81,7 +81,6 @@
             gap: 8px;
         }
 
-        /* Desktop Navigations-Buttons */
         .nav-links {
             display: flex;
             gap: 4px;
@@ -104,7 +103,6 @@
         .nav-btn:hover { background: var(--border); color: var(--text-main); }
         .nav-btn.active { background: var(--primary); color: white; }
 
-        /* Mobile Dropdown-Auswahl */
         .mobile-nav-select {
             display: none;
             background: var(--bg-card);
@@ -133,7 +131,6 @@
         }
         .theme-toggle-btn:hover { transform: scale(1.05); }
 
-        /* Ansichten-Container (Views) */
         .view-container {
             flex-grow: 1;
             position: relative;
@@ -154,7 +151,6 @@
             display: flex;
         }
 
-        /* Suchleiste Header */
         .search-bar-container {
             display: flex;
             gap: 10px;
@@ -171,7 +167,6 @@
             font-family: inherit;
         }
 
-        /* Statistiken & Licht-Rechner Banner */
         .stats-badge-bar {
             display: flex;
             gap: 12px;
@@ -198,8 +193,8 @@
         .sun-calc-box h3 { margin: 0 0 8px 0; font-size: 1rem; color: var(--light-badge); }
         .sun-times { display: flex; justify-content: space-around; font-size: 0.85rem; font-weight: 600; margin-top: 8px; }
 
-        /* --- 1. Magazin & Favoriten Ansicht --- */
-        #magazineView, #favoritesView, #toolsView, #createView {
+        /* Ansichten */
+        #magazineView, #favoritesView, #toolsView, #marketView, #createView {
             padding: 20px 16px 80px 16px;
             max-width: 900px;
             margin: 0 auto;
@@ -283,8 +278,7 @@
         }
         .fav-btn:hover, .share-btn:hover { transform: scale(1.2); }
 
-
-        /* --- 2. Karten Ansicht & Kompass --- */
+        /* Karten Ansicht */
         #mapView {
             display: none;
             flex-direction: row;
@@ -392,8 +386,22 @@
         .article-count { font-size: 0.7rem; color: var(--primary); font-weight: 600; background: rgba(37, 99, 235, 0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; }
         .distance-info { font-size: 0.7rem; color: var(--light-badge); font-weight: 700; margin-top: 2px; }
 
+        /* Inserate / Shooting-Börse Karten */
+        .market-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .market-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 700; color: var(--primary); }
+        .market-details { font-size: 0.85rem; color: var(--text-muted); display: flex; gap: 16px; flex-wrap: wrap; margin: 4px 0; }
+        .market-price { font-weight: 700; color: var(--light-badge); }
 
-        /* --- 3. Tools & Packliste Ansicht --- */
+        /* Packliste */
         .checklist-item {
             display: flex;
             align-items: center;
@@ -417,8 +425,6 @@
             color: var(--text-muted);
         }
 
-
-        /* --- Backup & Daten Verwaltung --- */
         .form-card {
             background: var(--bg-card);
             padding: 20px 16px;
@@ -449,8 +455,7 @@
 
         .hint { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.4; }
 
-
-        /* Leaflet Popup Formular Styling */
+        /* Leaflet Popup Styling */
         .leaflet-popup-content-wrapper {
             background: var(--bg-card) !important;
             color: var(--text-main) !important;
@@ -482,8 +487,6 @@
         }
         button.primary-btn:hover { background: var(--primary-hover); }
 
-
-        /* Modal & Lightbox */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
             background: rgba(0,0,0,0.6); z-index: 3000; justify-content: center; align-items: center;
@@ -534,8 +537,6 @@
         .weather-link { display: inline-block; margin-top: 4px; font-size: 0.75rem; color: #0284c7; font-weight: 600; text-decoration: none; }
         .weather-link:hover { text-decoration: underline; }
 
-
-        /* --- RESPONSIVE OPTIMIERUNG FÜR SMARTPHONES (MAX 768px) --- */
         @media (max-width: 768px) {
             header { padding: 0 10px; height: 56px; }
             .logo { font-size: 0.9rem; gap: 4px; }
@@ -566,7 +567,7 @@
     <!-- Header / Navigation -->
     <header>
         <div class="logo" onclick="switchView('magazine')">
-            <span>📸</span> <span>Alpin-Adria</span>
+            <span>📸</span> <span>Alpin-Adria Community</span>
         </div>
         <div class="nav-right">
             <!-- Desktop Button-Navigation -->
@@ -574,6 +575,7 @@
                 <button class="nav-btn active" id="navMag" onclick="switchView('magazine')">📖 Magazin</button>
                 <button class="nav-btn" id="navFav" onclick="switchView('favorites')">⭐ Merkzettel</button>
                 <button class="nav-btn" id="navMap" onclick="switchView('map')">🗺️ Karte</button>
+                <button class="nav-btn" id="navMarket" onclick="switchView('market')">🤝 Shootings</button>
                 <button class="nav-btn" id="navTools" onclick="switchView('tools')">🎒 Packliste</button>
                 <button class="nav-btn" id="navCreate" onclick="switchView('create')">⚙️ Backup</button>
             </div>
@@ -583,6 +585,7 @@
                 <option value="magazine">📖 Magazin</option>
                 <option value="favorites">⭐ Merkzettel</option>
                 <option value="map">🗺️ Karte</option>
+                <option value="market">🤝 Shootings & Inserate</option>
                 <option value="tools">🎒 Packliste</option>
                 <option value="create">⚙️ Backup</option>
             </select>
@@ -594,29 +597,27 @@
     <!-- Hauptbereich -->
     <div class="view-container">
 
-        <!-- 1. Magazin / Feed Ansicht mit Live-Sonnenstandsrechner & Statistik -->
+        <!-- 1. Magazin / Feed Ansicht -->
         <div class="view-section active" id="magazineView">
             <div class="hero-banner">
                 <h1>Alpin-Adria Fotomagazin</h1>
-                <p>Entdecke die besten Fotospots, Lichtstimmungen und Routen.</p>
+                <p>Landschaft, Familie, Portrait & die besten Outdoor-Spots.</p>
             </div>
             
-            <!-- Sonnenstand & Goldene Stunde Rechner -->
             <div class="sun-calc-box">
                 <h3>☀️ Licht- & Sonnenstand heute</h3>
                 <div id="sunCalcText" style="font-size:0.85rem; color:var(--text-main);">Berechne Sonnenstand...</div>
                 <div class="sun-times" id="sunTimesContainer"></div>
             </div>
 
-            <!-- Live Statistik-Badge Bar -->
             <div class="stats-badge-bar" id="statsBar">
                 <span>📍 Spots: <strong id="statSpotsCount">0</strong></span>
                 <span>📖 Berichte: <strong id="statArticlesCount">0</strong></span>
-                <span>✨ Region: <strong id="statRegionCount">Alpin-Adria</strong></span>
+                <span>🤝 Inserate: <strong id="statMarketCount">0</strong></span>
             </div>
 
             <div class="search-bar-container">
-                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Nach Spot, Lichtstimmung, Autor suchen..." oninput="handleSearchInput()">
+                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Nach Spot, Familie, Portrait, Autor suchen..." oninput="handleSearchInput()">
             </div>
             <div class="magazine-grid" id="magazineFeed"></div>
         </div>
@@ -625,12 +626,12 @@
         <div class="view-section" id="favoritesView">
             <div class="hero-banner" style="background: linear-gradient(135deg, #b45309, #78350f);">
                 <h1>Deine Merkliste ⭐</h1>
-                <p>Deine persönlich gespeicherten Lieblingsspots für die nächste Fototour.</p>
+                <p>Deine persönlich gespeicherten Lieblingsspots für die nächste Tour.</p>
             </div>
             <div class="magazine-grid" id="favoritesFeed"></div>
         </div>
 
-        <!-- 2. Karten & Sidebar Ansicht mit Kompass & Entfernungen -->
+        <!-- 2. Karten & Sidebar Ansicht -->
         <div class="view-section" id="mapView">
             <button class="pc-open-btn" id="pcOpenBtn" onclick="toggleSidebarMobile()">📝 Liste & Filter anzeigen</button>
             
@@ -647,7 +648,7 @@
                 <div class="section-box">
                     <input type="text" id="mapSearchInput" class="search-input" style="width:100%; margin-bottom:10px;" placeholder="🔍 Spot suchen..." oninput="renderApp()">
                     
-                    <h3 style="margin-top:0;">Kategorien</h3>
+                    <h3 style="margin-top:0;">Kategorien (auch Familie & Portrait)</h3>
                     <div id="filterButtons" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;"></div>
 
                     <h3 style="margin-top:0;">Lichtstimmungen</h3>
@@ -661,7 +662,51 @@
             <div id="map"></div>
         </div>
 
-        <!-- 3. Foto-Packliste & Checkliste -->
+        <!-- 3. Shooting-Börse / Inserate (NEU) -->
+        <div class="view-section" id="marketView">
+            <div class="hero-banner" style="background: linear-gradient(135deg, #0284c7, #0369a1);">
+                <h1>🤝 Shooting-Börse & Inserate</h1>
+                <p>Biete oder suche Shootings (Familie, Portrait, Paar) mit Location & Preis.</p>
+            </div>
+
+            <div class="form-card">
+                <h3 style="margin-top:0; font-size:1.05rem;">Neues Shooting-Inserat erstellen</h3>
+                <div class="popup-form-group">
+                    <label>Art des Inserats / Titel</label>
+                    <input type="text" id="marketTitle" placeholder="z.B. Familien-Minisessions im Herbst">
+                </div>
+                <div class="popup-form-group">
+                    <label>Dein Name / Fotostudio</label>
+                    <input type="text" id="marketAuthor" placeholder="z.B. Lisa Müller Photography">
+                </div>
+                <div class="popup-form-group">
+                    <label>Location / Region</label>
+                    <input type="text" id="marketLocation" placeholder="z.B. Seeufer & Schlosspark Villach">
+                </div>
+                <div class="popup-form-group">
+                    <label>Uhrzeit / Datum / Zeitraum</label>
+                    <input type="text" id="marketTime" placeholder="z.B. Samstag ab 16:00 Uhr">
+                </div>
+                <div class="popup-form-group">
+                    <label>Preis / Konditionen</label>
+                    <input type="text" id="marketPrice" placeholder="z.B. 120€ inkl. 5 bearbeiteter Bilder">
+                </div>
+                <div class="popup-form-group">
+                    <label>Beschreibung & Details</label>
+                    <textarea id="marketDesc" rows="2" placeholder="Perfekt für Familien mit kleinen Kindern..."></textarea>
+                </div>
+                <div class="popup-form-group">
+                    <label>Kontakt (Instagram, E-Mail oder Telefon)</label>
+                    <input type="text" id="marketContact" placeholder="z.B. @lisa.photo oder lisa@mail.com">
+                </div>
+                <button type="button" class="primary-btn" onclick="submitMarketItem()">Inserat veröffentlichen</button>
+            </div>
+
+            <h3 style="margin: 10px 0 0 0;">Aktuelle Inserate & Angebote</h3>
+            <div id="marketFeed" style="margin-top: 10px;"></div>
+        </div>
+
+        <!-- 4. Foto-Packliste & Checkliste -->
         <div class="view-section" id="toolsView">
             <div class="form-card" style="width: 100%; max-width: 600px; margin: 0 auto;">
                 <h2 style="margin-top:0; font-size: 1.2rem;">🎒 Foto-Touren Packliste</h2>
@@ -676,11 +721,11 @@
             </div>
         </div>
 
-        <!-- 4. Backup & Daten Verwaltung -->
+        <!-- 5. Backup & Daten Verwaltung -->
         <div class="view-section" id="createView">
             <div class="form-card" style="width: 100%; max-width: 500px; margin: 0 auto;">
                 <h2 style="margin-top:0; font-size: 1.2rem;">Daten & Backup (JSON)</h2>
-                <p class="hint">Sichere alle deine Fotospots und Berichte als Datei oder spiele ein bestehendes Backup auf ein anderes Gerät auf.</p>
+                <p class="hint">Sichere alle deine Fotospots, Berichte und Shooting-Inserate als Datei.</p>
                 
                 <div class="backup-btn-group" style="margin-bottom: 24px;">
                     <button type="button" class="backup-btn" onclick="exportJSON()">📥 Backup herunterladen</button>
@@ -688,11 +733,6 @@
                         📤 Backup laden <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importJSON(event)">
                     </label>
                 </div>
-
-                <hr style="border:0; border-top:1px solid var(--border); margin-bottom:20px;">
-
-                <h3 style="font-size: 1rem; margin-top:0;">Tipp für neue Spots</h3>
-                <p class="hint">Klicke einfach unten in der Navigation auf <strong>🗺️ Karte</strong> und tippe an eine beliebige Stelle in der Karte, um dort direkt im Popup einen neuen Spot samt Lichtstimmung und GPX-Link anzulegen!</p>
             </div>
         </div>
 
@@ -708,7 +748,7 @@
         </div>
     </div>
 
-    <!-- Lightbox Modal für Foto-Großansicht -->
+    <!-- Lightbox Modal -->
     <div class="lightbox-modal" id="lightboxModal" onclick="closeLightbox()">
         <img id="lightboxImg" src="" alt="Großansicht">
     </div>
@@ -749,14 +789,14 @@
                     map.setView([userLat, userLng], 14);
                     L.popup()
                         .setLatLng([userLat, userLng])
-                        .setContent("<b>📍 Dein GPS-Standort</b><br>Entfernungen zu Spots werden aktualisiert!")
+                        .setContent("<b>📍 Dein GPS-Standort</b>")
                         .openOn(map);
                     renderApp();
                 }, function(error) {
-                    alert("Standort konnte nicht ermittelt werden. Bitte GPS-Berechtigung prüfen.");
+                    alert("Standort konnte nicht ermittelt werden.");
                 });
             } else {
-                alert("Dein Browser unterstützt keine Geolokalisierung.");
+                alert("Geolokalisierung wird nicht unterstützt.");
             }
         }
 
@@ -778,32 +818,107 @@
 
             var compassDirections = ["N", "NNO", "NO", "ONO", "O", "OSO", "SO", "SSW", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
             var index = Math.round(brng / 22.5) % 16;
-            var dir = compassDirections[index];
-
-            return { dist: dist.toFixed(1), dir: dir };
+            return { dist: dist.toFixed(1), dir: compassDirections[index] };
         }
 
         function initSunCalculator() {
             var now = new Date();
-            var hours = now.getHours();
-            var minutes = now.getMinutes();
-            
-            document.getElementById('sunCalcText').innerHTML = "Aktuelle Uhrzeit: <strong>" + String(hours).padStart(2,'0') + ":" + String(minutes).padStart(2,'0') + " Uhr</strong>. Nutze das weiche Licht des frühen Morgens oder späten Nachmittags!";
-            
+            document.getElementById('sunCalcText').innerHTML = "Aktuelle Uhrzeit: <strong>" + String(now.getHours()).padStart(2,'0') + ":" + String(now.getMinutes()).padStart(2,'0') + " Uhr</strong>. Ideal für Outdoor-Shootings im weichen Licht!";
             document.getElementById('sunTimesContainer').innerHTML = `
                 <span>🌅 Morgenlicht: ca. 06:30 - 08:00</span>
                 <span>🌇 Abendlicht: ca. 18:00 - 19:30</span>
             `;
         }
 
+        // --- Inserate / Shooting-Börse Verwaltung ---
+        var defaultMarket = [
+            {
+                title: "Familien-Herbstshooting am See",
+                author: "Anna Bauer Fotografie",
+                location: "Faaker See (Ostufer)",
+                time: "Samstag, 15:00 Uhr",
+                price: "99€ inkl. 3 Bilder",
+                desc: "Kinderfreundlicher Spot mit tollem Steg und weichem Nachmittagslicht.",
+                contact: "@anna.bauer.photo"
+            }
+        ];
+
+        var savedMarket = localStorage.getItem('fotospots_market_v1');
+        var marketItems = savedMarket ? JSON.parse(savedMarket) : defaultMarket;
+
+        function renderMarketFeed() {
+            var feed = document.getElementById('marketFeed');
+            feed.innerHTML = "";
+            marketItems.forEach(function(item, idx) {
+                var card = document.createElement('div');
+                card.className = 'market-card';
+                card.innerHTML = `
+                    <div class="market-header">
+                        <span>📸 ${item.title}</span>
+                        <button class="delete-btn" onclick="deleteMarketItem(${idx})">Löschen</button>
+                    </div>
+                    <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-main);">Von: ${item.author}</div>
+                    <div class="market-details">
+                        <span>📍 ${item.location}</span>
+                        <span>⏰ ${item.time}</span>
+                        <span class="market-price">💰 ${item.price}</span>
+                    </div>
+                    <div style="font-size: 0.85rem; line-height: 1.4;">${item.desc}</div>
+                    <div style="font-size: 0.8rem; font-weight: 600; color: var(--primary); margin-top: 4px;">📬 Kontakt: ${item.contact}</div>
+                `;
+                feed.appendChild(card);
+            });
+            if (marketItems.length === 0) {
+                feed.innerHTML = "<p style='text-align:center; color:var(--text-muted);'>Aktuell sind keine Inserate vorhanden.</p>";
+            }
+            updateStats();
+        }
+
+        function submitMarketItem() {
+            var title = document.getElementById('marketTitle').value.trim();
+            var author = document.getElementById('marketAuthor').value.trim();
+            var location = document.getElementById('marketLocation').value.trim();
+            var time = document.getElementById('marketTime').value.trim();
+            var price = document.getElementById('marketPrice').value.trim();
+            var desc = document.getElementById('marketDesc').value.trim();
+            var contact = document.getElementById('marketContact').value.trim();
+
+            if (!title || !author || !contact) {
+                alert("Bitte fülle zumindest Titel, Name und Kontakt aus!");
+                return;
+            }
+
+            marketItems.push({ title, author, location, time, price, desc, contact });
+            localStorage.setItem('fotospots_market_v1', JSON.stringify(marketItems));
+            
+            // Felder leeren
+            document.getElementById('marketTitle').value = "";
+            document.getElementById('marketAuthor').value = "";
+            document.getElementById('marketLocation').value = "";
+            document.getElementById('marketTime').value = "";
+            document.getElementById('marketPrice').value = "";
+            document.getElementById('marketDesc').value = "";
+            document.getElementById('marketContact').value = "";
+
+            renderMarketFeed();
+            alert("Inserat erfolgreich veröffentlicht! 🚀");
+        }
+
+        function deleteMarketItem(idx) {
+            if (confirm("Möchtest du dieses Inserat löschen?")) {
+                marketItems.splice(idx, 1);
+                localStorage.setItem('fotospots_market_v1', JSON.stringify(marketItems));
+                renderMarketFeed();
+            }
+        }
+
+        // Packliste
         var defaultChecklist = [
             { text: "Kamera-Gehäuse & Ersatzakkus", checked: true },
-            { text: "Weitwinkel- & Teleobjektiv", checked: true },
-            { text: "Stabdreibein (Stativ) & L-Winkel", checked: false },
-            { text: "Polfilter & ND-Filter (Graufilter)", checked: false },
-            { text: "Fernauslöser / Intervalltimer", checked: false },
-            { text: "Stirnlampe (für Nacht/Blaue Stunde)", checked: false },
-            { text: "Wanderstiefel & Regenschutz", checked: true }
+            { text: "Portraitojektiv (z.B. 85mm / 50mm)", checked: true },
+            { text: "Reflektor für Aufhellung", checked: false },
+            { text: "Kinder-Entertainment / Spielzeug (für Familienshootings)", checked: false },
+            { text: "Stativ & Polfilter", checked: false }
         ];
 
         var savedChecklist = localStorage.getItem('fotospots_checklist_v2');
@@ -850,10 +965,11 @@
         }
 
         function exportJSON() {
-            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(spots, null, 2));
+            var allData = { spots: spots, market: marketItems };
+            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allData, null, 2));
             var downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "alpin_adria_fotospots_backup.json");
+            downloadAnchor.setAttribute("download", "alpin_adria_community_backup.json");
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             downloadAnchor.remove();
@@ -865,16 +981,19 @@
             var reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    var importedSpots = JSON.parse(e.target.result);
-                    if (Array.isArray(importedSpots)) {
-                        spots = importedSpots;
-                        localStorage.setItem('fotospots_v15', JSON.stringify(spots));
-                        renderApp();
-                        alert("Backup erfolgreich geladen! 🚀");
-                        switchView('magazine');
-                    } else {
-                        alert("Ungültiges Datei-Format.");
+                    var imported = JSON.parse(e.target.result);
+                    if (imported.spots && Array.isArray(imported.spots)) {
+                        spots = imported.spots;
+                        localStorage.setItem('fotospots_v16', JSON.stringify(spots));
                     }
+                    if (imported.market && Array.isArray(imported.market)) {
+                        marketItems = imported.market;
+                        localStorage.setItem('fotospots_market_v1', JSON.stringify(marketItems));
+                    }
+                    renderApp();
+                    renderMarketFeed();
+                    alert("Backup erfolgreich geladen! 🚀");
+                    switchView('magazine');
                 } catch(err) {
                     alert("Fehler beim Lesen der JSON-Datei.");
                 }
@@ -893,7 +1012,7 @@
         }
 
         function shareSpot(spotTitle, lat, lng) {
-            var shareText = `Entdecke den Fotospot "${spotTitle}" im Alpin-Adria Magazin!\nKoordinaten: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+            var shareText = `Entdecke den Fotospot "${spotTitle}" im Alpin-Adria Community Magazin!\nKoordinaten: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(shareText).then(function() {
                     alert("Spot-Infos in die Zwischenablage kopiert! 📋");
@@ -946,7 +1065,7 @@
             { 
                 lat: 46.5580, lng: 13.7120, 
                 title: "Arnoldsteiner Wasserfall", 
-                tags: ["Wasserfall", "Natur"],
+                tags: ["Natur", "Wasserfall"],
                 articles: [
                     {
                         author: "Markus K.",
@@ -957,10 +1076,24 @@
                         image: "https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=600"
                     }
                 ]
+            },
+            {
+                lat: 46.6100, lng: 13.8550,
+                title: "Schlosspark Villach (Familien-Spot)",
+                tags: ["👶 Familie", "👤 Portrait", "Park"],
+                articles: [
+                    {
+                        author: "Sarah L.",
+                        story: "Wunderschöner, ebenerdiger Park. Perfekt für Kinderwagen und entspannte Familienshootings im goldenen Abendlicht.",
+                        lightMood: "🌇 Abendlicht",
+                        aperture: "f/2.8", shutter: "1/500s", iso: "ISO 200",
+                        image: "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?w=600"
+                    }
+                ]
             }
         ];
 
-        var savedSpots = localStorage.getItem('fotospots_v15');
+        var savedSpots = localStorage.getItem('fotospots_v16');
         var spots = savedSpots ? JSON.parse(savedSpots) : defaultSpots;
         
         var savedFavs = localStorage.getItem('fotospots_favs');
@@ -992,6 +1125,10 @@
                         toggleSidebarMobile();
                     }
                 }, 200);
+            } else if (viewName === 'market') {
+                document.getElementById('marketView').classList.add('active');
+                var btn = document.getElementById('navMarket'); if(btn) btn.classList.add('active');
+                renderMarketFeed();
             } else if (viewName === 'tools') {
                 document.getElementById('toolsView').classList.add('active');
                 var btn = document.getElementById('navTools'); if(btn) btn.classList.add('active');
@@ -1041,6 +1178,7 @@
             spots.forEach(s => { if (s.articles) totalArticles += s.articles.length; });
             document.getElementById('statSpotsCount').textContent = totalSpots;
             document.getElementById('statArticlesCount').textContent = totalArticles;
+            document.getElementById('statMarketCount').textContent = marketItems.length;
         }
 
         function renderMagazineFeed() {
@@ -1076,9 +1214,9 @@
                             if (art.iso) badgesHtml += `<span class="exif-badge">🔆 ${art.iso}</span>`;
                             badgesHtml += '</div>';
 
-                            var gpxHtml = art.gpxUrl ? `<a href="${art.gpxUrl}" target="_blank" class="gpx-link">🗺️ Route / Wanderung öffnen</a>` : '';
+                            var gpxHtml = art.gpxUrl ? `<a href="${art.gpxUrl}" target="_blank" class="gpx-link">🗺️ Route / Weg öffnen</a>` : '';
                             var weatherUrl = `https://www.windy.com/?${spot.lat},${spot.lng},11`;
-                            var weatherHtml = `<a href="${weatherUrl}" target="_blank" class="weather-link">☁️ Bergwetter & Wind prüfen</a>`;
+                            var weatherHtml = `<a href="${weatherUrl}" target="_blank" class="weather-link">☁️ Wetter prüfen</a>`;
 
                             card.innerHTML = `
                                 <img src="${imgSrc}" alt="Foto" onclick="openLightbox('${imgSrc}')">
@@ -1130,7 +1268,6 @@
                         card.className = 'mag-card';
                         var imgSrc = art.image ? art.image : "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600";
                         var tagsHtml = spot.tags ? spot.tags.map(t => `<span class="tag">${t}</span>`).join('') : '';
-                        var weatherUrl = `https://www.windy.com/?${spot.lat},${spot.lng},11`;
 
                         card.innerHTML = `
                             <img src="${imgSrc}" alt="Foto" onclick="openLightbox('${imgSrc}')">
@@ -1144,7 +1281,6 @@
                                         </div>
                                     </div>
                                     <div class="mag-story">${art.story}</div>
-                                    <div style="margin-bottom:6px;"><a href="${weatherUrl}" target="_blank" class="weather-link">☁️ Bergwetter prüfen</a></div>
                                     <div>${tagsHtml}</div>
                                 </div>
                                 <div class="mag-footer">
@@ -1159,7 +1295,7 @@
             });
 
             if (count === 0) {
-                feed.innerHTML = "<p style='text-align:center; color:var(--text-muted);'>Du hast noch keine Spots auf deinem Merkzettl gespeichert.</p>";
+                feed.innerHTML = "<p style='text-align:center; color:var(--text-muted);'>Du hast noch keine Spots auf deiner Merkliste.</p>";
             }
         }
 
@@ -1188,9 +1324,9 @@
                 var card = document.createElement('div');
                 card.className = 'article-card';
                 var imgSrc = art.image ? art.image : '';
-                var gpxHtml = art.gpxUrl ? `<a href="${art.gpxUrl}" target="_blank" class="gpx-link">🗺️ Route / Wanderung öffnen</a>` : '';
+                var gpxHtml = art.gpxUrl ? `<a href="${art.gpxUrl}" target="_blank" class="gpx-link">🗺️ Route / Weg öffnen</a>` : '';
                 var weatherUrl = `https://www.windy.com/?${spot.lat},${spot.lng},11`;
-                var weatherHtml = `<a href="${weatherUrl}" target="_blank" class="weather-link">☁️ Bergwetter & Wind prüfen</a>`;
+                var weatherHtml = `<a href="${weatherUrl}" target="_blank" class="weather-link">☁️ Wetter prüfen</a>`;
                 
                 card.innerHTML = `<div class='article-author'>✍️ von ${art.author || 'Unbekannt'}</div>` +
                                  `<div class='article-story'>${art.story}</div>` +
@@ -1235,13 +1371,10 @@
                     distHtml = `<div class='distance-info'>📍 ${calc.dist} km Luftlinie (${calc.dir})</div>`;
                 }
 
-                var weatherUrl = `https://www.windy.com/?${spot.lat},${spot.lng},11`;
-
                 var content = `<b>${spot.title}</b><br><span class='article-count'>📖 ${artCount} Bericht(e)</span><br>` +
                               distHtml +
                               `<div class='coord-hint'>Lat: ${spot.lat.toFixed(4)}, Lng: ${spot.lng.toFixed(4)}</div>` +
-                              `<span class='popup-link' onclick='openBlogModal(${originalIndex})'>Berichte lesen</span>` +
-                              `<a href="${weatherUrl}" target="_blank" class="weather-link" style="display:block; margin-top:4px;">☁️ Wetter prüfen</a>`;
+                              `<span class='popup-link' onclick='openBlogModal(${originalIndex})'>Berichte lesen</span>`;
                 
                 var marker = L.marker([spot.lat, spot.lng]).addTo(map);
                 marker.bindPopup(content);
@@ -1273,7 +1406,7 @@
         function deleteSpot(index) {
             if (confirm("Möchtest du diesen Spot wirklich löschen?")) {
                 spots.splice(index, 1);
-                localStorage.setItem('fotospots_v15', JSON.stringify(spots));
+                localStorage.setItem('fotospots_v16', JSON.stringify(spots));
                 renderApp();
             }
         }
@@ -1322,15 +1455,15 @@
                     <div class="coord-hint" style="margin-bottom:6px;">Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}</div>
                     <div class="popup-form-group">
                         <label>Spot-Titel</label>
-                        <input type="text" id="popTitle" placeholder="z.B. Aussichtspunkt">
+                        <input type="text" id="popTitle" placeholder="z.B. Schlosspark">
                     </div>
                     <div class="popup-form-group">
                         <label>Dein Name</label>
                         <input type="text" id="popAuthor" placeholder="z.B. Anna">
                     </div>
                     <div class="popup-form-group">
-                        <label>Reisebericht</label>
-                        <textarea id="popStory" rows="2" placeholder="Erlebnis..."></textarea>
+                        <label>Reise- / Shooting-Bericht</label>
+                        <textarea id="popStory" rows="2" placeholder="Ideal für Familie..."></textarea>
                     </div>
                     <div class="popup-form-group">
                         <label>Lichtstimmung</label>
@@ -1343,12 +1476,8 @@
                         </select>
                     </div>
                     <div class="popup-form-group">
-                        <label>GPX / Routen-Link (optional)</label>
-                        <input type="text" id="popGpx" placeholder="https://komoot.de/...">
-                    </div>
-                    <div class="popup-form-group">
                         <label>Tags (kommagetrennt)</label>
-                        <input type="text" id="popTags" placeholder="Natur, See">
+                        <input type="text" id="popTags" value="👶 Familie, 👤 Portrait" placeholder="Familie, Portrait">
                     </div>
                     <div class="popup-form-group">
                         <label>Foto (optional)</label>
@@ -1369,12 +1498,11 @@
             var author = document.getElementById('popAuthor').value.trim();
             var story = document.getElementById('popStory').value.trim();
             var lightMood = document.getElementById('popLight').value;
-            var gpxUrl = document.getElementById('popGpx').value.trim();
             var rawTags = document.getElementById('popTags').value.trim();
             var fileInput = document.getElementById('popImage').files[0];
 
             if (!title || !author || !story) {
-                alert("Bitte fülle zumindest Titel, Name und Reisebericht aus!");
+                alert("Bitte fülle zumindest Titel, Name und Bericht aus!");
                 return;
             }
 
@@ -1386,19 +1514,17 @@
                     lng: lng,
                     title: title,
                     tags: tagsArray,
-                    articles: [{ author: author, story: story, lightMood: lightMood, gpxUrl: gpxUrl, image: imgUrl }]
+                    articles: [{ author: author, story: story, lightMood: lightMood, image: imgUrl }]
                 };
                 spots.push(newSpot);
-                localStorage.setItem('fotospots_v15', JSON.stringify(spots));
+                localStorage.setItem('fotospots_v16', JSON.stringify(spots));
                 map.closePopup();
                 renderApp();
             }
 
             if (fileInput) {
                 var reader = new FileReader();
-                reader.onload = function(e) {
-                    saveSpot(e.target.result);
-                };
+                reader.onload = function(e) { saveSpot(e.target.result); };
                 reader.readAsDataURL(fileInput);
             } else {
                 saveSpot("");
@@ -1407,6 +1533,8 @@
 
         history.replaceState({ view: 'magazine' }, "", "#magazine");
         initSunCalculator();
+        renderChecklist();
+        renderMarketFeed();
         renderApp();
     </script>
 
