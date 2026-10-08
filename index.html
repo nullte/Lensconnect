@@ -13,7 +13,7 @@
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
             --danger: #ef4444;
-            --light-badge: #d97706; /* Goldton für Lichtstimmungen */
+            --light-badge: #d97706;
             --bg-sidebar: #ffffff;
             --bg-main: #f8fafc;
             --bg-card: #ffffff;
@@ -145,7 +145,7 @@
         .search-bar-container {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
         .search-input {
             flex-grow: 1;
@@ -158,13 +158,29 @@
             font-family: inherit;
         }
 
+        /* Statistiken Banner */
+        .stats-badge-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            background: var(--bg-card);
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            justify-content: space-around;
+            text-align: center;
+        }
+        .stats-badge-bar strong { color: var(--primary); }
+
         /* --- 1. Magazin & Favoriten Ansicht --- */
         #magazineView, #favoritesView {
             padding: 20px 16px 80px 16px;
             max-width: 900px;
             margin: 0 auto;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
             box-sizing: border-box;
         }
 
@@ -352,7 +368,7 @@
         .article-count { font-size: 0.7rem; color: var(--primary); font-weight: 600; background: rgba(37, 99, 235, 0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; }
 
 
-        /* --- 3. JSON Backup & Einstellungen --- */
+        /* --- 3. Backup & Daten Verwaltung --- */
         #createView {
             padding: 20px 16px 80px 16px;
             max-width: 600px;
@@ -370,22 +386,6 @@
             margin-bottom: 20px;
         }
 
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 0.8rem; margin-bottom: 4px; font-weight: 600; color: var(--text-muted); }
-        .form-group input, .form-group textarea, .form-group select { 
-            width: 100%; padding: 10px; box-sizing: border-box; 
-            border: 1px solid var(--border); border-radius: 8px; 
-            font-size: 0.9rem; font-family: inherit; background: var(--bg-main); color: var(--text-main);
-        }
-        .form-group input[type="file"] { padding: 6px; cursor: pointer; }
-
-        button.primary-btn { 
-            background: var(--primary); color: white; border: none; 
-            padding: 10px; width: 100%; border-radius: 8px; 
-            cursor: pointer; font-weight: 600; font-size: 0.9rem;
-        }
-        button.primary-btn:hover { background: var(--primary-hover); }
-
         .backup-btn-group {
             display: flex;
             gap: 10px;
@@ -401,6 +401,7 @@
             font-size: 0.85rem;
             cursor: pointer;
             transition: opacity 0.2s;
+            text-align: center;
         }
         .backup-btn:hover { opacity: 0.8; }
 
@@ -431,6 +432,13 @@
             border: 1px solid var(--border); border-radius: 6px;
             font-size: 0.8rem; font-family: inherit; background: var(--bg-main); color: var(--text-main);
         }
+
+        button.primary-btn { 
+            background: var(--primary); color: white; border: none; 
+            padding: 8px; width: 100%; border-radius: 8px; 
+            cursor: pointer; font-weight: 600; font-size: 0.85rem;
+        }
+        button.primary-btn:hover { background: var(--primary-hover); }
 
 
         /* Modal & Lightbox */
@@ -529,12 +537,20 @@
     <!-- Hauptbereich -->
     <div class="view-container">
 
-        <!-- 1. Magazin / Feed Ansicht mit Suche -->
+        <!-- 1. Magazin / Feed Ansicht mit Suche & Statistik -->
         <div class="view-section active" id="magazineView">
             <div class="hero-banner">
                 <h1>Alpin-Adria Fotomagazin</h1>
                 <p>Entdecke die besten Fotospots, Lichtstimmungen und Routen.</p>
             </div>
+            
+            <!-- Live Statistik-Badge Bar -->
+            <div class="stats-badge-bar" id="statsBar">
+                <span>📍 Spots: <strong id="statSpotsCount">0</strong></span>
+                <span>📖 Berichte: <strong id="statArticlesCount">0</strong></span>
+                <span>✨ Region: <strong id="statRegionCount">Alpin-Adria</strong></span>
+            </div>
+
             <div class="search-bar-container">
                 <input type="text" id="searchInput" class="search-input" placeholder="🔍 Nach Spot, Lichtstimmung, Autor suchen..." oninput="handleSearchInput()">
             </div>
@@ -550,7 +566,7 @@
             <div class="magazine-grid" id="favoritesFeed"></div>
         </div>
 
-        <!-- 2. Karten & Sidebar Ansicht -->
+        <!-- 2. Karten & Sidebar Ansicht mit Lichtstimmungs-Filtern -->
         <div class="view-section" id="mapView">
             <button class="pc-open-btn" id="pcOpenBtn" onclick="toggleSidebarMobile()">📝 Liste & Filter anzeigen</button>
             
@@ -566,8 +582,12 @@
                 </div>
                 <div class="section-box">
                     <input type="text" id="mapSearchInput" class="search-input" style="width:100%; margin-bottom:10px;" placeholder="🔍 Spot suchen..." oninput="renderApp()">
+                    
                     <h3 style="margin-top:0;">Kategorien</h3>
-                    <div id="filterButtons" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
+                    <div id="filterButtons" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;"></div>
+
+                    <h3 style="margin-top:0;">Lichtstimmungen</h3>
+                    <div id="lightFilterButtons" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
                 </div>
                 <div class="section-box" style="flex-grow:1; display:flex; flex-direction:column;">
                     <h3 style="margin-top:0;">Entdeckte Spots (<span id="spotCount">0</span>)</h3>
@@ -577,7 +597,7 @@
             <div id="map"></div>
         </div>
 
-        <!-- 3. Backup & Daten Verwaltung (JSON Export / Import) -->
+        <!-- 3. Backup & Daten Verwaltung -->
         <div class="view-section" id="createView">
             <div class="form-card" style="width: 100%; max-width: 500px; margin: 0 auto;">
                 <h2 style="margin-top:0; font-size: 1.2rem;">Daten & Backup (JSON)</h2>
@@ -639,7 +659,6 @@
             }
         }
 
-        // GPS Standort ermitteln
         function panToUserGPS() {
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(function(position) {
@@ -658,7 +677,6 @@
             }
         }
 
-        // JSON Backup Export & Import (Schritt 4)
         function exportJSON() {
             var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(spots, null, 2));
             var downloadAnchor = document.createElement('a');
@@ -678,7 +696,7 @@
                     var importedSpots = JSON.parse(e.target.result);
                     if (Array.isArray(importedSpots)) {
                         spots = importedSpots;
-                        localStorage.setItem('fotospots_v10', JSON.stringify(spots));
+                        localStorage.setItem('fotospots_v11', JSON.stringify(spots));
                         renderApp();
                         alert("Backup erfolgreich geladen! 🚀");
                         switchView('magazine');
@@ -692,7 +710,6 @@
             reader.readAsText(file);
         }
 
-        // Lightbox für Bilder öffnen
         function openLightbox(imgSrc) {
             if (!imgSrc) return;
             document.getElementById('lightboxImg').src = imgSrc;
@@ -703,7 +720,6 @@
             document.getElementById('lightboxModal').classList.remove('active');
         }
 
-        // Link teilen
         function shareSpot(spotTitle, lat, lng) {
             var shareText = `Entdecke den Fotospot "${spotTitle}" im Alpin-Adria Magazin!\nKoordinaten: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
             if (navigator.clipboard) {
@@ -772,7 +788,7 @@
             }
         ];
 
-        var savedSpots = localStorage.getItem('fotospots_v10');
+        var savedSpots = localStorage.getItem('fotospots_v11');
         var spots = savedSpots ? JSON.parse(savedSpots) : defaultSpots;
         
         var savedFavs = localStorage.getItem('fotospots_favs');
@@ -780,6 +796,7 @@
 
         var markers = [];
         var currentFilter = 'Alle';
+        var currentLightFilter = 'Alle';
 
         function switchView(viewName) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
@@ -826,7 +843,16 @@
             renderMagazineFeed();
         }
 
+        function updateStats() {
+            var totalSpots = spots.length;
+            var totalArticles = 0;
+            spots.forEach(s => { if (s.articles) totalArticles += s.articles.length; });
+            document.getElementById('statSpotsCount').textContent = totalSpots;
+            document.getElementById('statArticlesCount').textContent = totalArticles;
+        }
+
         function renderMagazineFeed() {
+            updateStats();
             var feed = document.getElementById('magazineFeed');
             feed.innerHTML = "";
             var query = document.getElementById('searchInput').value.toLowerCase();
@@ -851,7 +877,6 @@
                             var tagsHtml = spot.tags ? spot.tags.map(t => `<span class="tag">${t}</span>`).join('') : '';
                             var isFav = favorites.includes(spotIdx);
 
-                            // Lichtstimmung & EXIF Badges
                             var badgesHtml = '<div class="exif-badges">';
                             if (art.lightMood) badgesHtml += `<span class="light-badge">${art.lightMood}</span>`;
                             if (art.aperture) badgesHtml += `<span class="exif-badge">📷 ${art.aperture}</span>`;
@@ -992,7 +1017,10 @@
             var filteredSpots = spots.filter(function(spot) {
                 var matchesSearch = !mapSearchQuery || spot.title.toLowerCase().includes(mapSearchQuery);
                 var matchesFilter = currentFilter === 'Alle' || (spot.tags && spot.tags.includes(currentFilter));
-                return matchesSearch && matchesFilter;
+                
+                var matchesLight = currentLightFilter === 'Alle' || (spot.articles && spot.articles.some(a => a.lightMood === currentLightFilter));
+
+                return matchesSearch && matchesFilter && matchesLight;
             });
 
             document.getElementById('spotCount').textContent = filteredSpots.length;
@@ -1025,13 +1053,14 @@
             });
 
             renderFilters();
+            renderLightFilters();
             renderMagazineFeed();
         }
 
         function deleteSpot(index) {
             if (confirm("Möchtest du diesen Spot wirklich löschen?")) {
                 spots.splice(index, 1);
-                localStorage.setItem('fotospots_v10', JSON.stringify(spots));
+                localStorage.setItem('fotospots_v11', JSON.stringify(spots));
                 renderApp();
             }
         }
@@ -1052,6 +1081,21 @@
 
         function filterSpots(tag) {
             currentFilter = tag;
+            renderApp();
+        }
+
+        function renderLightFilters() {
+            var lights = ["🌅 Morgenlicht", "🌇 Abendlicht", "✨ Blaue Stunde / Nacht", "☀️ Tageslicht", "☁️ Nebel / Wetter"];
+            var container = document.getElementById('lightFilterButtons');
+            var html = `<button class="action-btn ${currentLightFilter === 'Alle' ? 'active' : ''}" onclick="filterLight('Alle')">Alle</button>`;
+            lights.forEach(l => {
+                html += `<button class="action-btn ${currentLightFilter === l ? 'active' : ''}" onclick="filterLight('${l}')">${l}</button>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function filterLight(light) {
+            currentLightFilter = light;
             renderApp();
         }
 
@@ -1098,7 +1142,7 @@
                         <label>Foto (optional)</label>
                         <input type="file" id="popImage" accept="image/*">
                     </div>
-                    <button type="button" class="primary-btn" style="padding:6px; font-size:0.8rem; margin-top:6px; width:100%;" onclick="submitPopupSpot(${lat}, ${lng})">Hinzufügen</button>
+                    <button type="button" class="primary-btn" style="margin-top:6px; width:100%;" onclick="submitPopupSpot(${lat}, ${lng})">Hinzufügen</button>
                 </div>
             `;
 
@@ -1108,7 +1152,6 @@
                 .openOn(map);
         });
 
-        // Spot per Popup speichern
         function submitPopupSpot(lat, lng) {
             var title = document.getElementById('popTitle').value.trim();
             var author = document.getElementById('popAuthor').value.trim();
@@ -1134,7 +1177,7 @@
                     articles: [{ author: author, story: story, lightMood: lightMood, gpxUrl: gpxUrl, image: imgUrl }]
                 };
                 spots.push(newSpot);
-                localStorage.setItem('fotospots_v10', JSON.stringify(spots));
+                localStorage.setItem('fotospots_v11', JSON.stringify(spots));
                 map.closePopup();
                 renderApp();
             }
