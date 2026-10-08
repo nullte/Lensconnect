@@ -22,6 +22,7 @@
             --border: #e2e8f0;
             --nav-bg: rgba(255, 255, 255, 0.85);
             --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+            --scrollbar-bg: #cbd5e1;
         }
 
         [data-theme="dark"] {
@@ -37,7 +38,14 @@
             --border: #334155;
             --nav-bg: rgba(30, 41, 59, 0.85);
             --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
+            --scrollbar-bg: #475569;
         }
+
+        /* Custom Scrollbars für modernen App-Look */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-bg); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
         body { 
             margin: 0; padding: 0; 
@@ -91,7 +99,11 @@
         .nav-links {
             display: flex;
             gap: 4px;
+            overflow-x: auto;
+            max-width: 520px;
+            scrollbar-width: none; /* Firefox */
         }
+        .nav-links::-webkit-scrollbar { display: none; } /* Chrome/Safari */
 
         .nav-btn {
             background: transparent;
@@ -813,20 +825,22 @@
             <!-- Desktop Button-Navigation -->
             <div class="nav-links">
                 <button class="nav-btn active" id="navLanding" onclick="switchView('landing')">🏠 Start</button>
-                <button class="nav-btn" id="navMag" onclick="switchView('magazine')">📖 Magazin & Tipps</button>
+                <button class="nav-btn" id="navMag" onclick="switchView('magazine')">📖 Magazin</button>
+                <button class="nav-btn" id="navFav" onclick="switchView('favorites')">⭐ Merkliste</button>
                 <button class="nav-btn" id="navMap" onclick="switchView('map')">🗺️ Karte & Spots</button>
                 <button class="nav-btn" id="navMarket" onclick="switchView('market')">🤝 Inserate</button>
                 <button class="nav-btn" id="navProfiles" onclick="switchView('profiles')">👥 Community-Profile</button>
-                <button class="nav-btn" id="navTools" onclick="switchView('tools')">🎒 Tools & Helfer</button>
+                <button class="nav-btn" id="navTools" onclick="switchView('tools')">🎒 Tools</button>
                 <button class="nav-btn" id="navAbout" onclick="switchView('about')">ℹ️ Über mich</button>
                 <button class="nav-btn" id="navContact" onclick="switchView('contact')">📬 Kontakt</button>
-                <button class="nav-btn" id="navImprint" onclick="switchView('imprint')">⚖️ Impressum & Datenschutz</button>
+                <button class="nav-btn" id="navImprint" onclick="switchView('imprint')">⚖️ Impressum</button>
             </div>
 
             <!-- Mobile Dropdown-Menü -->
             <select class="mobile-nav-select" id="mobileNavSelect" onchange="switchView(this.value)">
                 <option value="landing">🏠 Start (Übersicht)</option>
                 <option value="magazine">📖 Magazin & Tipps</option>
+                <option value="favorites">⭐ Merkliste</option>
                 <option value="map">🗺️ Karte & Spots</option>
                 <option value="market">🤝 Inserate & Shootings</option>
                 <option value="profiles">👥 Community-Profile</option>
