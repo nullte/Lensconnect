@@ -13,6 +13,7 @@
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
             --danger: #ef4444;
+            --warning: #f59e0b;
             --bg-sidebar: #ffffff;
             --bg-main: #f8fafc;
             --bg-card: #ffffff;
@@ -26,6 +27,7 @@
             --primary: #3b82f6;
             --primary-hover: #60a5fa;
             --danger: #f87171;
+            --warning: #fbbf24;
             --bg-sidebar: #1e293b;
             --bg-main: #0f172a;
             --bg-card: #1e293b;
@@ -40,7 +42,7 @@
             font-family: 'Plus Jakarta Sans', sans-serif; 
             background-color: var(--bg-main);
             color: var(--text-main);
-            height: 100dvh; /* Nutzt die dynamische Ansichtsfenster-Höhe für Mobile */
+            height: 100dvh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -82,6 +84,8 @@
         .nav-links {
             display: flex;
             gap: 4px;
+            overflow-x: auto;
+            max-width: 50vw;
         }
 
         .nav-btn {
@@ -91,7 +95,7 @@
             border-radius: 6px;
             font-family: inherit;
             font-weight: 600;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
             cursor: pointer;
             transition: all 0.2s;
@@ -130,16 +134,33 @@
             height: 100%;
             box-sizing: border-box;
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch; /* Flüssiges Scrollen auf iOS */
+            -webkit-overflow-scrolling: touch;
         }
 
         .view-section.active {
             display: flex;
         }
 
-        /* --- 1. Magazin / Feed Ansicht --- */
-        #magazineView {
-            padding: 20px 16px 80px 16px; /* Unten extra viel Luft (80px), damit nichts überdeckt wird */
+        /* Suchleiste Header */
+        .search-bar-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .search-input {
+            flex-grow: 1;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-card);
+            color: var(--text-main);
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+
+        /* --- 1. Magazin & Favoriten Ansicht --- */
+        #magazineView, #favoritesView {
+            padding: 20px 16px 80px 16px;
             max-width: 900px;
             margin: 0 auto;
             flex-direction: column;
@@ -173,18 +194,46 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.02);
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         @media (min-width: 640px) {
             .mag-card { flex-direction: row; }
-            .mag-card img { width: 320px; height: 220px; object-fit: cover; }
+            .mag-card img { width: 320px; height: 230px; object-fit: cover; }
         }
 
         .mag-card img { width: 100%; height: 180px; object-fit: cover; }
         .mag-content { padding: 16px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .mag-spot-name { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
-        .mag-story { font-size: 0.9rem; line-height: 1.5; color: var(--text-main); margin-bottom: 12px; white-space: pre-line; }
+        .mag-spot-name { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+        .mag-story { font-size: 0.9rem; line-height: 1.5; color: var(--text-main); margin-bottom: 10px; white-space: pre-line; }
+        
+        /* EXIF Badges Styling */
+        .exif-badges {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .exif-badge {
+            background: var(--border);
+            color: var(--text-main);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
         .mag-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 10px; font-size: 0.75rem; color: var(--text-muted); flex-wrap: wrap; gap: 8px; }
+
+        /* Favoriten Stern Button */
+        .fav-btn {
+            background: transparent;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .fav-btn:hover { transform: scale(1.2); }
 
 
         /* --- 2. Karten Ansicht --- */
@@ -312,6 +361,12 @@
         }
         .form-group input[type="file"] { padding: 6px; cursor: pointer; }
 
+        .exif-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+
         button.primary-btn { 
             background: var(--primary); color: white; border: none; 
             padding: 12px; width: 100%; border-radius: 8px; 
@@ -396,6 +451,7 @@
         <div class="nav-right">
             <div class="nav-links">
                 <button class="nav-btn active" id="navMag" onclick="switchView('magazine')">📖 Magazin</button>
+                <button class="nav-btn" id="navFav" onclick="switchView('favorites')">⭐ Merkzettel</button>
                 <button class="nav-btn" id="navMap" onclick="switchView('map')">🗺️ Karte</button>
                 <button class="nav-btn" id="navCreate" onclick="switchView('create')">✍️ Neu</button>
             </div>
@@ -406,13 +462,25 @@
     <!-- Hauptbereich -->
     <div class="view-container">
 
-        <!-- 1. Magazin / Startseite -->
+        <!-- 1. Magazin / Feed Ansicht mit Suche -->
         <div class="view-section active" id="magazineView">
             <div class="hero-banner">
                 <h1>Alpin-Adria Fotomagazin</h1>
                 <p>Entdecke die besten Fotospots und Berichte.</p>
             </div>
+            <div class="search-bar-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Nach Spot, Autor oder Stichwort suchen..." oninput="handleSearchInput()">
+            </div>
             <div class="magazine-grid" id="magazineFeed"></div>
+        </div>
+
+        <!-- 1b. Favoriten Ansicht -->
+        <div class="view-section" id="favoritesView">
+            <div class="hero-banner" style="background: linear-gradient(135deg, #b45309, #78350f);">
+                <h1>Deine Merkliste ⭐</h1>
+                <p>Deine persönlich gespeicherten Lieblingsspots für die nächste Fototour.</p>
+            </div>
+            <div class="magazine-grid" id="favoritesFeed"></div>
         </div>
 
         <!-- 2. Karten & Sidebar Ansicht -->
@@ -426,6 +494,7 @@
                     <button class="collapse-btn" onclick="toggleSidebarMobile()" title="Menü einklappen">✕</button>
                 </div>
                 <div class="section-box">
+                    <input type="text" id="mapSearchInput" class="search-input" style="width:100%; margin-bottom:10px;" placeholder="🔍 Spot suchen..." oninput="renderApp()">
                     <h3 style="margin-top:0;">Kategorien</h3>
                     <div id="filterButtons" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
                 </div>
@@ -463,12 +532,22 @@
 
                     <div class="form-group">
                         <label for="blogStory">Reisebericht & Fotoprozess</label>
-                        <textarea id="blogStory" rows="4" required placeholder="Wie war das Licht? Einstellungen?"></textarea>
+                        <textarea id="blogStory" rows="4" required placeholder="Wie war das Licht? Besondere Erlebnisse?"></textarea>
+                    </div>
+
+                    <!-- EXIF Kameradaten Eingabe -->
+                    <div class="form-group">
+                        <label>Kamera-Einstellungen (EXIF)</label>
+                        <div class="exif-row">
+                            <input type="text" id="exifAperture" placeholder="Blende (z.B. f/8)">
+                            <input type="text" id="exifShutter" placeholder="Belichtung (z.B. 1/125s)">
+                            <input type="text" id="exifIso" placeholder="ISO (z.B. 100)">
+                        </div>
                     </div>
 
                     <div class="form-group" id="newSpotTagsGroup">
                         <label for="tags">Tags (kommagetrennt)</label>
-                        <input type="text" id="tags" placeholder="Wasserfall, Natur">
+                        <input type="text" id="tags" placeholder="Wasserfall, Natur, Langzeit">
                     </div>
 
                     <div class="form-group">
@@ -576,7 +655,8 @@
                 articles: [
                     {
                         author: "Markus K.",
-                        story: "Morgendliches Weichlicht im schattigen Canyon.\n\nFoto-Setup: Stativ, Graufilter (ND1000) und 15 Sekunden Belichtungszeit.",
+                        story: "Morgendliches Weichlicht im schattigen Canyon.",
+                        aperture: "f/11", shutter: "15s", iso: "ISO 64",
                         image: "https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=600"
                     }
                 ]
@@ -585,6 +665,10 @@
 
         var savedSpots = localStorage.getItem('fotospots_v7');
         var spots = savedSpots ? JSON.parse(savedSpots) : defaultSpots;
+        
+        var savedFavs = localStorage.getItem('fotospots_favs');
+        var favorites = savedFavs ? JSON.parse(savedFavs) : [];
+
         var markers = [];
         var currentFilter = 'Alle';
 
@@ -596,6 +680,10 @@
                 document.getElementById('magazineView').classList.add('active');
                 document.getElementById('navMag').classList.add('active');
                 renderMagazineFeed();
+            } else if (viewName === 'favorites') {
+                document.getElementById('favoritesView').classList.add('active');
+                document.getElementById('navFav').classList.add('active');
+                renderFavoritesFeed();
             } else if (viewName === 'map') {
                 document.getElementById('mapView').classList.add('active');
                 document.getElementById('navMap').classList.add('active');
@@ -611,18 +699,99 @@
             }
         }
 
+        function toggleFavorite(spotIndex) {
+            var idx = favorites.indexOf(spotIndex);
+            if (idx > -1) {
+                favorites.splice(idx, 1);
+            } else {
+                favorites.push(spotIndex);
+            }
+            localStorage.setItem('fotospots_favs', JSON.stringify(favorites));
+            renderMagazineFeed();
+            if (document.getElementById('favoritesView').classList.contains('active')) {
+                renderFavoritesFeed();
+            }
+        }
+
+        function handleSearchInput() {
+            renderMagazineFeed();
+        }
+
         function renderMagazineFeed() {
             var feed = document.getElementById('magazineFeed');
             feed.innerHTML = "";
+            var query = document.getElementById('searchInput').value.toLowerCase();
 
             var totalArticles = 0;
             spots.forEach(function(spot, spotIdx) {
                 if (spot.articles) {
                     spot.articles.forEach(function(art) {
-                        totalArticles++;
+                        var searchMatch = !query || 
+                            spot.title.toLowerCase().includes(query) || 
+                            (art.author && art.author.toLowerCase().includes(query)) || 
+                            art.story.toLowerCase().includes(query) ||
+                            (spot.tags && spot.tags.some(t => t.toLowerCase().includes(query)));
+
+                        if (searchMatch) {
+                            totalArticles++;
+                            var card = document.createElement('div');
+                            card.className = 'mag-card';
+
+                            var imgHtml = art.image ? `<img src="${art.image}" alt="Foto">` : `<img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600" alt="Platzhalter">`;
+                            var tagsHtml = spot.tags ? spot.tags.map(t => `<span class="tag">${t}</span>`).join('') : '';
+                            var isFav = favorites.includes(spotIdx);
+
+                            // EXIF Badges generieren
+                            var exifHtml = '';
+                            if (art.aperture || art.shutter || art.iso) {
+                                exifHtml = `<div class="exif-badges">`;
+                                if (art.aperture) exifHtml += `<span class="exif-badge">📷 ${art.aperture}</span>`;
+                                if (art.shutter) exifHtml += `<span class="exif-badge">⏱️ ${art.shutter}</span>`;
+                                if (art.iso) exifHtml += `<span class="exif-badge">🔆 ${art.iso}</span>`;
+                                exifHtml += `</div>`;
+                            }
+
+                            card.innerHTML = `
+                                ${imgHtml}
+                                <div class="mag-content">
+                                    <div>
+                                        <div class="mag-spot-name">
+                                            <span>📍 Spot: <span style="color:var(--primary); cursor:pointer;" onclick="jumpToSpot(${spotIdx})">${spot.title}</span></span>
+                                            <button class="fav-btn" onclick="toggleFavorite(${spotIdx})" title="Merken">${isFav ? '⭐' : '☆'}</button>
+                                        </div>
+                                        <div class="mag-story">${art.story}</div>
+                                        ${exifHtml}
+                                        <div>${tagsHtml}</div>
+                                    </div>
+                                    <div class="mag-footer">
+                                        <span>✍️ von <strong>${art.author || 'Unbekannt'}</strong></span>
+                                        <span style="color:var(--primary); cursor:pointer; font-weight:600;" onclick="openBlogModal(${spotIdx})">Alle Berichte ansehen</span>
+                                    </div>
+                                </div>
+                            `;
+                            feed.appendChild(card);
+                        }
+                    });
+                }
+            });
+
+            if (totalArticles === 0) {
+                feed.innerHTML = "<p style='text-align:center; color:var(--text-muted);'>Keine passenden Artikel gefunden.</p>";
+            }
+        }
+
+        function renderFavoritesFeed() {
+            var feed = document.getElementById('favoritesFeed');
+            feed.innerHTML = "";
+
+            var count = 0;
+            favorites.forEach(function(spotIdx) {
+                var spot = spots[spotIdx];
+                if (spot && spot.articles) {
+                    spot.articles.forEach(function(art) {
+                        count++;
                         var card = document.createElement('div');
                         card.className = 'mag-card';
-
                         var imgHtml = art.image ? `<img src="${art.image}" alt="Foto">` : `<img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600" alt="Platzhalter">`;
                         var tagsHtml = spot.tags ? spot.tags.map(t => `<span class="tag">${t}</span>`).join('') : '';
 
@@ -630,13 +799,16 @@
                             ${imgHtml}
                             <div class="mag-content">
                                 <div>
-                                    <div class="mag-spot-name">📍 Spot: <span style="color:var(--primary); cursor:pointer;" onclick="jumpToSpot(${spotIdx})">${spot.title}</span></div>
+                                    <div class="mag-spot-name">
+                                        <span>📍 Spot: <span style="color:var(--primary); cursor:pointer;" onclick="jumpToSpot(${spotIdx})">${spot.title}</span></span>
+                                        <button class="fav-btn" onclick="toggleFavorite(${spotIdx})">⭐</button>
+                                    </div>
                                     <div class="mag-story">${art.story}</div>
                                     <div>${tagsHtml}</div>
                                 </div>
                                 <div class="mag-footer">
                                     <span>✍️ von <strong>${art.author || 'Unbekannt'}</strong></span>
-                                    <span style="color:var(--primary); cursor:pointer; font-weight:600;" onclick="openBlogModal(${spotIdx})">Alle Berichte ansehen</span>
+                                    <span style="color:var(--primary); cursor:pointer; font-weight:600;" onclick="openBlogModal(${spotIdx})">Berichte ansehen</span>
                                 </div>
                             </div>
                         `;
@@ -645,8 +817,8 @@
                 }
             });
 
-            if (totalArticles === 0) {
-                feed.innerHTML = "<p style='text-align:center; color:var(--text-muted);'>Noch keine Artikel vorhanden.</p>";
+            if (count === 0) {
+                feed.innerHTML = "<p style='text-align:center; color:var(--text-muted);'>Du hast noch keine Spots auf deinem Merkzettl gespeichert. Klicke im Magazin auf den Stern ⭐!</p>";
             }
         }
 
@@ -728,9 +900,12 @@
             var listContainer = document.getElementById('spotList');
             listContainer.innerHTML = "";
             
+            var mapSearchQuery = document.getElementById('mapSearchInput').value.toLowerCase();
+
             var filteredSpots = spots.filter(function(spot) {
-                if (currentFilter === 'Alle') return true;
-                return spot.tags && spot.tags.includes(currentFilter);
+                var matchesSearch = !mapSearchQuery || spot.title.toLowerCase().includes(mapSearchQuery);
+                var matchesFilter = currentFilter === 'Alle' || (spot.tags && spot.tags.includes(currentFilter));
+                return matchesSearch && matchesFilter;
             });
 
             document.getElementById('spotCount').textContent = filteredSpots.length;
@@ -817,8 +992,18 @@
                 var targetVal = document.getElementById('spotTarget').value;
                 var author = document.getElementById('author').value;
                 var story = document.getElementById('blogStory').value;
+                var aperture = document.getElementById('exifAperture').value;
+                var shutter = document.getElementById('exifShutter').value;
+                var iso = document.getElementById('exifIso').value;
 
-                var newArt = { author: author, story: story, image: imageUrl };
+                var newArt = { 
+                    author: author, 
+                    story: story, 
+                    image: imageUrl,
+                    aperture: aperture,
+                    shutter: shutter,
+                    iso: iso
+                };
 
                 if (targetVal === 'new') {
                     var rawTags = document.getElementById('tags').value;
@@ -838,7 +1023,7 @@
 
                 localStorage.setItem('fotospots_v7', JSON.stringify(spots));
                 document.getElementById('spotForm').reset();
-                handleSpotTabChange = handleSpotTargetChange();
+                handleSpotTargetChange();
                 switchView('magazine');
                 renderApp();
             }
