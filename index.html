@@ -104,7 +104,7 @@
         .nav-btn:hover { background: var(--border); color: var(--text-main); }
         .nav-btn.active { background: var(--primary); color: white; }
 
-        /* Mobile Dropdown-Auswahl (Standardmäßig versteckt auf Desktop) */
+        /* Mobile Dropdown-Auswahl */
         .mobile-nav-select {
             display: none;
             background: var(--bg-card);
@@ -531,6 +531,8 @@
         .coord-hint { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; font-family: monospace; }
         .gpx-link { display: inline-block; margin-top: 6px; font-size: 0.75rem; color: var(--primary); font-weight: 600; text-decoration: none; }
         .gpx-link:hover { text-decoration: underline; }
+        .weather-link { display: inline-block; margin-top: 4px; font-size: 0.75rem; color: #0284c7; font-weight: 600; text-decoration: none; }
+        .weather-link:hover { text-decoration: underline; }
 
 
         /* --- RESPONSIVE OPTIMIERUNG FÜR SMARTPHONES (MAX 768px) --- */
@@ -538,7 +540,6 @@
             header { padding: 0 10px; height: 56px; }
             .logo { font-size: 0.9rem; gap: 4px; }
             
-            /* Auf Smartphones Button-Leiste verstecken und Dropdown einblenden */
             .nav-links { display: none; }
             .mobile-nav-select { display: block; }
 
@@ -867,7 +868,7 @@
                     var importedSpots = JSON.parse(e.target.result);
                     if (Array.isArray(importedSpots)) {
                         spots = importedSpots;
-                        localStorage.setItem('fotospots_v14', JSON.stringify(spots));
+                        localStorage.setItem('fotospots_v15', JSON.stringify(spots));
                         renderApp();
                         alert("Backup erfolgreich geladen! 🚀");
                         switchView('magazine');
@@ -959,7 +960,7 @@
             }
         ];
 
-        var savedSpots = localStorage.getItem('fotospots_v14');
+        var savedSpots = localStorage.getItem('fotospots_v15');
         var spots = savedSpots ? JSON.parse(savedSpots) : defaultSpots;
         
         var savedFavs = localStorage.getItem('fotospots_favs');
@@ -969,12 +970,10 @@
         var currentFilter = 'Alle';
         var currentLightFilter = 'Alle';
 
-        // Ansichten umschalten mit Synchronisation für Desktop-Buttons und Mobile-Dropdown
         function switchView(viewName, pushHistory = true) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
 
-            // Desktop Buttons aktualisieren
             if (viewName === 'magazine') {
                 document.getElementById('magazineView').classList.add('active');
                 var btn = document.getElementById('navMag'); if(btn) btn.classList.add('active');
@@ -1002,7 +1001,6 @@
                 var btn = document.getElementById('navCreate'); if(btn) btn.classList.add('active');
             }
 
-            // Mobile Dropdown synchron halten
             var mobileSelect = document.getElementById('mobileNavSelect');
             if (mobileSelect) mobileSelect.value = viewName;
 
@@ -1079,6 +1077,8 @@
                             badgesHtml += '</div>';
 
                             var gpxHtml = art.gpxUrl ? `<a href="${art.gpxUrl}" target="_blank" class="gpx-link">🗺️ Route / Wanderung öffnen</a>` : '';
+                            var weatherUrl = `https://www.windy.com/?${spot.lat},${spot.lng},11`;
+                            var weatherHtml = `<a href="${weatherUrl}" target="_blank" class="weather-link">☁️ Bergwetter & Wind prüfen</a>`;
 
                             card.innerHTML = `
                                 <img src="${imgSrc}" alt="Foto" onclick="openLightbox('${imgSrc}')">
@@ -1093,7 +1093,10 @@
                                         </div>
                                         <div class="mag-story">${art.story}</div>
                                         ${badgesHtml}
-                                        ${gpxHtml}
+                                        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:6px;">
+                                            ${gpxHtml}
+                                            ${weatherHtml}
+                                        </div>
                                         <div style="margin-top:6px;">${tagsHtml}</div>
                                     </div>
                                     <div class="mag-footer">
@@ -1127,6 +1130,7 @@
                         card.className = 'mag-card';
                         var imgSrc = art.image ? art.image : "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600";
                         var tagsHtml = spot.tags ? spot.tags.map(t => `<span class="tag">${t}</span>`).join('') : '';
+                        var weatherUrl = `https://www.windy.com/?${spot.lat},${spot.lng},11`;
 
                         card.innerHTML = `
                             <img src="${imgSrc}" alt="Foto" onclick="openLightbox('${imgSrc}')">
@@ -1140,6 +1144,7 @@
                                         </div>
                                     </div>
                                     <div class="mag-story">${art.story}</div>
+                                    <div style="margin-bottom:6px;"><a href="${weatherUrl}" target="_blank" class="weather-link">☁️ Bergwetter prüfen</a></div>
                                     <div>${tagsHtml}</div>
                                 </div>
                                 <div class="mag-footer">
@@ -1184,10 +1189,12 @@
                 card.className = 'article-card';
                 var imgSrc = art.image ? art.image : '';
                 var gpxHtml = art.gpxUrl ? `<a href="${art.gpxUrl}" target="_blank" class="gpx-link">🗺️ Route / Wanderung öffnen</a>` : '';
+                var weatherUrl = `https://www.windy.com/?${spot.lat},${spot.lng},11`;
+                var weatherHtml = `<a href="${weatherUrl}" target="_blank" class="weather-link">☁️ Bergwetter & Wind prüfen</a>`;
                 
                 card.innerHTML = `<div class='article-author'>✍️ von ${art.author || 'Unbekannt'}</div>` +
                                  `<div class='article-story'>${art.story}</div>` +
-                                 gpxHtml +
+                                 `<div style="display:flex; gap:12px; margin-top:6px;">${gpxHtml} ${weatherHtml}</div>` +
                                  (imgSrc ? `<img src='${imgSrc}' alt='Foto' onclick="openLightbox('${imgSrc}')">` : '');
                 container.appendChild(card);
             });
@@ -1228,10 +1235,13 @@
                     distHtml = `<div class='distance-info'>📍 ${calc.dist} km Luftlinie (${calc.dir})</div>`;
                 }
 
+                var weatherUrl = `https://www.windy.com/?${spot.lat},${spot.lng},11`;
+
                 var content = `<b>${spot.title}</b><br><span class='article-count'>📖 ${artCount} Bericht(e)</span><br>` +
                               distHtml +
                               `<div class='coord-hint'>Lat: ${spot.lat.toFixed(4)}, Lng: ${spot.lng.toFixed(4)}</div>` +
-                              `<span class='popup-link' onclick='openBlogModal(${originalIndex})'>Berichte lesen</span>`;
+                              `<span class='popup-link' onclick='openBlogModal(${originalIndex})'>Berichte lesen</span>` +
+                              `<a href="${weatherUrl}" target="_blank" class="weather-link" style="display:block; margin-top:4px;">☁️ Wetter prüfen</a>`;
                 
                 var marker = L.marker([spot.lat, spot.lng]).addTo(map);
                 marker.bindPopup(content);
@@ -1263,7 +1273,7 @@
         function deleteSpot(index) {
             if (confirm("Möchtest du diesen Spot wirklich löschen?")) {
                 spots.splice(index, 1);
-                localStorage.setItem('fotospots_v14', JSON.stringify(spots));
+                localStorage.setItem('fotospots_v15', JSON.stringify(spots));
                 renderApp();
             }
         }
@@ -1379,7 +1389,7 @@
                     articles: [{ author: author, story: story, lightMood: lightMood, gpxUrl: gpxUrl, image: imgUrl }]
                 };
                 spots.push(newSpot);
-                localStorage.setItem('fotospots_v14', JSON.stringify(spots));
+                localStorage.setItem('fotospots_v15', JSON.stringify(spots));
                 map.closePopup();
                 renderApp();
             }
