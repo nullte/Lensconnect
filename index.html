@@ -109,7 +109,7 @@
             <button onclick="openProfileModal()" class="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
                 <div class="w-7 h-7 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs" id="userAvatarInitials">CP</div>
                 <span class="text-sm font-medium hidden sm:inline" id="userNameDisplay">Christian</span>
-                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.2.0</span>
+                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.2.1</span>
             </button>
             <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition cursor-pointer">
                 <i data-lucide="moon" class="w-4 h-4" id="themeIcon"></i>
@@ -689,7 +689,20 @@
             spots.forEach(spot => {
                 if(spot.lat && spot.lng) {
                     const marker = L.marker([spot.lat, spot.lng]);
-                    marker.bindPopup(`<b>${spot.title}</b><br><span class="text-xs text-brand-600">${spot.category}</span><p class="mt-1 text-xs">${spot.desc}</p><span class="text-[10px] text-slate-500 block mt-1">Von: ${spot.author || 'Christian'}</span>`);
+                    marker.bindPopup(`
+                        <div class="space-y-2 p-1 min-w-[200px]">
+                            <div class="flex justify-between items-start">
+                                <b class="text-sm text-slate-900">${spot.title}</b>
+                            </div>
+                            <span class="inline-block text-[10px] bg-brand-500/15 text-brand-700 px-2 py-0.5 rounded font-semibold">${spot.category}</span>
+                            <p class="text-xs text-slate-700">${spot.desc}</p>
+                            <span class="text-[10px] text-slate-500 block">Von: ${spot.author || 'Christian'}</span>
+                            <div class="pt-2 border-t border-slate-200 flex items-center gap-2">
+                                <button onclick="openEditSpotModal(${spot.id})" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs py-1.5 px-2 rounded font-medium cursor-pointer">Bearbeiten</button>
+                                <button onclick="openSpotContributionModal(${spot.id})" class="flex-1 bg-brand-500 hover:bg-brand-600 text-slate-900 text-xs py-1.5 px-2 rounded font-medium cursor-pointer">Beitrag hinzufügen</button>
+                            </div>
+                        </div>
+                    `);
                     markersLayer.addLayer(marker);
                 }
             });
@@ -821,6 +834,7 @@
             }
             closeSpotContributionModal();
             renderSpots();
+            plotMapMarkers();
         }
 
         function toggleSpotContributions(id) {
@@ -835,6 +849,7 @@
                 spots = spots.filter(s => s.id !== id);
                 localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
                 renderSpots();
+                plotMapMarkers();
             }
         }
 
@@ -1038,6 +1053,7 @@
             if(m) m.style.display = 'none';
             cancelMapPinMode();
             renderSpots();
+            plotMapMarkers();
             
             if(spotOpenedFromMap) {
                 switchView('map');
