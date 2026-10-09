@@ -10,8 +10,6 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <!-- SunCalc for Golden Hour -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Lucide Icons -->
@@ -94,10 +92,6 @@
                 <i data-lucide="store" class="w-4 h-4"></i>
                 <span>Markt</span>
             </button>
-            <button onclick="switchView('tools')" id="nav-tools" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center space-x-1.5 text-slate-400 hover:text-white hover:bg-slate-800">
-                <i data-lucide="sun" class="w-4 h-4"></i>
-                <span>Tools</span>
-            </button>
             <button onclick="switchView('community')" id="nav-community" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center space-x-1.5 text-slate-400 hover:text-white hover:bg-slate-800">
                 <i data-lucide="users" class="w-4 h-4"></i>
                 <span>Community</span>
@@ -109,7 +103,7 @@
             <button onclick="openProfileModal()" class="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
                 <div class="w-7 h-7 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs" id="userAvatarInitials">CP</div>
                 <span class="text-sm font-medium hidden sm:inline" id="userNameDisplay">Christian</span>
-                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.2.5</span>
+                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.2.6</span>
             </button>
             <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition cursor-pointer">
                 <i data-lucide="moon" class="w-4 h-4" id="themeIcon"></i>
@@ -163,7 +157,7 @@
                         Die Community-Plattform für <span class="bg-gradient-to-r from-brand-400 to-emerald-200 bg-clip-text text-transparent">Fotografen & Models</span>
                     </h1>
                     <p class="text-slate-200 text-base lg:text-lg leading-relaxed">
-                        LensConnect ist dein zentraler Hub, um versteckte Fotospots zu entdecken, präzise Lichtverhältnisse zu berechnen, sich auf dem Marktplatz für Shootings und Studios zu vernetzen und Foto-Projekte in der Community zu teilen.
+                        LensConnect ist dein zentraler Hub, um versteckte Fotospots zu entdecken, sich auf dem Marktplatz für Shootings und Studios zu vernetzen und Foto-Projekte in der Community zu teilen.
                     </p>
                     <div class="flex flex-wrap gap-4 pt-2">
                         <button onclick="switchView('map')" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold px-6 py-3 rounded-2xl text-sm flex items-center space-x-2 shadow-lg shadow-brand-500/20 transition cursor-pointer">
@@ -290,67 +284,6 @@
                 </div>
 
                 <div id="marketGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-6"></div>
-            </div>
-        </div>
-
-        <!-- VIEW 4: TOOLS & LICHT -->
-        <div id="view-tools" class="view-panel w-full h-full hidden flex-col overflow-y-auto p-4 lg:p-8 space-y-6">
-            <div class="max-w-4xl mx-auto w-full space-y-6">
-                <div>
-                    <h1 class="text-2xl font-bold text-white">Foto-Tools & Lichtrechner</h1>
-                    <p class="text-sm text-slate-400">Goldene Stunde Rechner und ND-Filter Timer.</p>
-                </div>
-
-                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
-                    <div class="flex items-center space-x-3 text-brand-400">
-                        <i data-lucide="sun" class="w-6 h-6"></i>
-                        <h3 class="text-lg font-semibold text-white">Sonnenstand & Golden Hour</h3>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50">
-                            <span class="text-xs text-slate-400 block">Goldene Stunde (Morgens)</span>
-                            <span class="text-lg font-bold text-white" id="goldenMorning">-</span>
-                        </div>
-                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50">
-                            <span class="text-xs text-slate-400 block">Blaue Stunde (Abends)</span>
-                            <span class="text-lg font-bold text-white" id="blueEvening">-</span>
-                        </div>
-                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50">
-                            <span class="text-xs text-slate-400 block">Sonnenuntergang</span>
-                            <span class="text-lg font-bold text-white" id="sunsetTime">-</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
-                    <div class="flex items-center space-x-3 text-brand-400">
-                        <i data-lucide="timer" class="w-6 h-6"></i>
-                        <h3 class="text-lg font-semibold text-white">ND-Filter Belichtungsrechner</h3>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs text-slate-400 mb-1">Ausgangs-Belichtungszeit</label>
-                            <select id="ndBaseTime" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm">
-                                <option value="0.001">1/1000 s</option>
-                                <option value="0.004">1/250 s</option>
-                                <option value="0.01">1/100 s</option>
-                                <option value="0.03">1/30 s</option>
-                                <option value="0.25">1/4 s</option>
-                                <option value="1">1 Sekunde</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-400 mb-1">ND-Filter Stärke</label>
-                            <select id="ndStrength" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm">
-                                <option value="8">ND8 (3 Blendenstufen)</option>
-                                <option value="64">ND64 (6 Blendenstufen)</option>
-                                <option value="1000">ND1000 (10 Blendenstufen)</option>
-                            </select>
-                        </div>
-                    </div>
-                    <button onclick="calculateND()" class="w-full bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold py-2.5 rounded-xl text-sm transition cursor-pointer">Berechnen</button>
-                    <div id="ndResult" class="text-center font-bold text-brand-400 text-lg pt-2"></div>
-                </div>
             </div>
         </div>
 
@@ -535,7 +468,6 @@
         let map = null;
         let markersLayer = null;
         let pickingMarker = null;
-        let previousView = 'home';
         let compressedSpotImage = '';
         let editingSpotId = null;
         let activeContribSpotId = null;
@@ -574,7 +506,6 @@
                 renderSpots();
                 renderMarket();
                 renderCommunity();
-                initTools();
 
                 // Initialize History API state
                 history.replaceState({ view: 'home', modal: null }, '', '');
@@ -1246,37 +1177,6 @@
                 `;
                 grid.appendChild(card);
             });
-        }
-
-        // Tools
-        function initTools() {
-            try {
-                if(window.SunCalc) {
-                    const times = SunCalc.getTimes(new Date(), 46.61, 14.30);
-                    if(times && times.goldenHour) {
-                        const el = document.getElementById('goldenMorning');
-                        if(el) el.textContent = times.goldenHour.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    }
-                    if(times && times.sunset) {
-                        const elSunset = document.getElementById('sunsetTime');
-                        if(elSunset) elSunset.textContent = times.sunset.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                        const elDusk = document.getElementById('blueEvening');
-                        if(elDusk) elDusk.textContent = times.dusk ? times.dusk.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '-';
-                    }
-                }
-            } catch(e) { console.warn("SunCalc error", e); }
-        }
-
-        function calculateND() {
-            const baseEl = document.getElementById('ndBaseTime');
-            const strengthEl = document.getElementById('ndStrength');
-            if(!baseEl || !strengthEl) return;
-            const base = parseFloat(baseEl.value);
-            const factor = parseInt(strengthEl.value);
-            const totalSecs = base * factor;
-            let resultText = totalSecs >= 60 ? `Belichtungszeit: ${(totalSecs / 60).toFixed(1)} Minuten` : `Belichtungszeit: ${totalSecs.toFixed(2)} Sekunden`;
-            const resEl = document.getElementById('ndResult');
-            if(resEl) resEl.textContent = resultText;
         }
 
         // Community Feed
