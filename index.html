@@ -109,7 +109,7 @@
             <button onclick="openProfileModal()" class="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
                 <div class="w-7 h-7 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs" id="userAvatarInitials">CP</div>
                 <span class="text-sm font-medium hidden sm:inline" id="userNameDisplay">Christian</span>
-                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.3.2</span>
+                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.3.3</span>
             </button>
             <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition cursor-pointer">
                 <i data-lucide="moon" class="w-4 h-4" id="themeIcon"></i>
@@ -454,16 +454,31 @@
         </div>
     </div>
 
-    <!-- MODAL: PROFILE -->
+    <!-- MODAL: PROFILE & AUTH -->
     <div id="profileModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
             <div class="flex justify-between items-center">
-                <h3 class="text-lg font-bold text-white">Profil verwalten</h3>
+                <h3 class="text-lg font-bold text-white">Profil & Anmelden</h3>
                 <button onclick="closeProfileModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            <div class="space-y-3">
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">Dein Name / Handle</label>
+            <div class="space-y-4">
+                <div id="authSection" class="space-y-3 p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
+                    <span class="text-xs font-bold text-brand-400 block">Supabase Account</span>
+                    <input type="email" id="authEmail" placeholder="E-Mail-Adresse" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                    <input type="password" id="authPassword" placeholder="Passwort" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                    <div class="flex space-x-2 pt-1">
+                        <button onclick="supabaseLogin()" class="flex-1 bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold py-2 rounded-xl text-xs transition cursor-pointer">Anmelden</button>
+                        <button onclick="supabaseRegister()" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 rounded-xl text-xs transition cursor-pointer">Registrieren</button>
+                    </div>
+                </div>
+
+                <div id="loggedInSection" class="space-y-3 hidden">
+                    <p class="text-xs text-slate-300">Eingeloggt als: <strong id="loggedInUserEmail" class="text-brand-400"></strong></p>
+                    <button onclick="supabaseLogout()" class="w-full bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 font-semibold py-2 rounded-xl text-xs transition cursor-pointer">Abmelden</button>
+                </div>
+
+                <div class="pt-2 border-t border-slate-800">
+                    <label class="block text-xs text-slate-400 mb-1">Lokaler Name / Handle</label>
                     <input type="text" id="profileNameInput" placeholder="z.B. Christian" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
                 </div>
             </div>
@@ -564,8 +579,8 @@
         } catch(e) { console.warn("PWA setup notice:", e); }
 
         // --- SUPABASE CONFIGURATION ---
-        const SUPABASE_URL = 'https://ygzazikwcngwclvmhbbb.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlnemF6aWt3Y25nd2Nsdm1oYmJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0NjA1OTgsImV4cCI6MjEwNzAzNjU5OH0.30RNloWiRhtOIq3QVsQcJmvuOw4xU2_4vSzra6NKeUg';
+        const SUPABASE_URL = 'DEINE_SUPABASE_URL';
+        const SUPABASE_KEY = 'DEINE_SUPABASE_ANON_KEY';
         let supabaseClient = null;
         try {
             if (SUPABASE_URL !== 'DEINE_SUPABASE_URL' && SUPABASE_KEY !== 'DEINE_SUPABASE_ANON_KEY' && window.supabase) {
@@ -623,7 +638,7 @@
             }
         };
 
-        // Load Data from Supabase (mit automatischem Fallback auf localStorage)
+        // Load Data from Supabase (mit Fallback auf localStorage)
         async function loadDataFromSupabase() {
             if (supabaseClient) {
                 try {
@@ -647,6 +662,12 @@
 
                     const { data: postsData } = await supabaseClient.from('community_posts').select('*');
                     if (postsData) communityPosts = postsData;
+
+                    // Check Auth Session
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    if (session) {
+                        updateAuthUI(session.user);
+                    }
                 } catch (e) {
                     console.warn("Supabase load failed, fallback to local:", e);
                     loadLocalFallback();
@@ -672,6 +693,49 @@
             communityPosts = JSON.parse(localStorage.getItem('lensconnect_posts')) || [
                 { id: 1, author: 'Christian', text: 'Erster Test mit der analogen Kamera und Kodak Portra 400. Die Farben sind einfach genial!', time: 'Vor 2 Stunden' }
             ];
+        }
+
+        // Supabase Auth Actions
+        async function supabaseRegister() {
+            if (!supabaseClient) { alert('Supabase ist nicht konfiguriert.'); return; }
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+            if(!email || !password) { alert('Bitte E-Mail und Passwort eingeben.'); return; }
+            const { data, error } = await supabaseClient.auth.signUp({ email, password });
+            if (error) { alert('Fehler: ' + error.message); } 
+            else { alert('Registrierung erfolgreich! Du kannst dich jetzt anmelden.'); }
+        }
+
+        async function supabaseLogin() {
+            if (!supabaseClient) { alert('Supabase ist nicht konfiguriert.'); return; }
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+            if(!email || !password) { alert('Bitte E-Mail und Passwort eingeben.'); return; }
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) { alert('Login fehlgeschlagen: ' + error.message); }
+            else {
+                updateAuthUI(data.user);
+                closeProfileModal();
+                loadDataFromSupabase();
+            }
+        }
+
+        async function supabaseLogout() {
+            if (!supabaseClient) return;
+            await supabaseClient.auth.signOut();
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('loggedInSection').classList.add('hidden');
+            alert('Erfolgreich abgemeldet.');
+        }
+
+        function updateAuthUI(user) {
+            if (user) {
+                document.getElementById('authSection').classList.add('hidden');
+                document.getElementById('loggedInSection').classList.remove('hidden');
+                document.getElementById('loggedInUserEmail').textContent = user.email;
+                userProfile.name = user.email.split('@')[0];
+                initUserDisplay();
+            }
         }
 
         // History API popstate listener to manage Back button without leaving page
@@ -1058,7 +1122,7 @@
                     contrib.text = textEl.value;
                     contrib.image = compressedContribImage;
                     if(supabaseClient) {
-                        await supabaseClient.from('spot_contributions').update({ text: contrib.text, image: contrib.image }).eq('id', contribId);
+                        await supabaseClient.from('spot_contributions').update({ text: contrib.text, image: contrib.image }).eq('id', editingContribId);
                     }
                 }
             } else {
