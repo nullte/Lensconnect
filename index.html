@@ -739,7 +739,6 @@
         function updateAuthUI(user) {
             if (user) {
                 currentUserEmail = user.email;
-                // Check if user is Admin
                 isAdmin = (currentUserEmail.toLowerCase() === 'christian.arnold10@gmail.com');
 
                 document.getElementById('authSection').classList.add('hidden');
@@ -758,10 +757,10 @@
             }
         }
 
-        // Helper check for ownership or admin rights
+        // Helper check for ownership or admin rights (strict: unregistered users cannot modify)
         function canModify(itemAuthor) {
+            if (!currentUserEmail) return false;
             if (isAdmin) return true;
-            if (!currentUserEmail) return true; // Fallback if not logged in via Supabase Auth yet
             return (itemAuthor === userProfile.name || itemAuthor === currentUserEmail);
         }
 
@@ -940,6 +939,10 @@
         }
 
         function enableMapPinMode() {
+            if(!currentUserEmail) {
+                alert('Bitte melde dich an, um Spots hinzuzufügen.');
+                return;
+            }
             if(!map) initMap();
             isPickingLocation = true;
             document.getElementById('mapPickingBanner').style.display = 'flex';
@@ -1096,6 +1099,10 @@
         }
 
         function openSpotContributionModal(spotId) {
+            if(!currentUserEmail) {
+                alert('Bitte melde dich an, um Berichte zu erfassen.');
+                return;
+            }
             activeContribSpotId = spotId;
             editingContribSpotId = null;
             editingContribId = null;
@@ -1152,6 +1159,10 @@
         }
 
         async function saveSpotContribution() {
+            if(!currentUserEmail) {
+                alert('Bitte melde dich an.');
+                return;
+            }
             const textEl = document.getElementById('contribText');
             if(!textEl || !textEl.value) { alert('Bitte Text eingeben'); return; }
             
@@ -1340,6 +1351,10 @@
         function filterSpots() { renderSpots(); }
 
         function openNewSpotModal(fromMap = false) {
+            if(!currentUserEmail) {
+                alert('Bitte melde dich an, um einen Spot hinzuzufügen.');
+                return;
+            }
             editingSpotId = null;
             compressedSpotImage = '';
             const modalTitle = document.getElementById('spotModalTitle');
@@ -1401,6 +1416,10 @@
         }
 
         async function saveNewSpot() {
+            if(!currentUserEmail) {
+                alert('Bitte melde dich an.');
+                return;
+            }
             const titleEl = document.getElementById('newSpotTitle');
             if(!titleEl || !titleEl.value) { alert('Bitte Titel angeben'); return; }
             
@@ -1459,6 +1478,10 @@
         }
 
         function openNewMarketModal() {
+            if(!currentUserEmail) {
+                alert('Bitte melde dich an, um ein Inserat zu erstellen.');
+                return;
+            }
             editingMarketId = null;
             document.getElementById('marketModalTitle').textContent = 'Neues Inserat erstellen';
             document.getElementById('marketTitle').value = '';
@@ -1507,6 +1530,10 @@
         }
 
         async function saveNewMarketItem() {
+            if(!currentUserEmail) {
+                alert('Bitte melde dich an.');
+                return;
+            }
             const titleEl = document.getElementById('marketTitle');
             if(!titleEl || !titleEl.value) { alert('Bitte Titel angeben'); return; }
             const category = document.getElementById('marketCategory').value;
@@ -1575,6 +1602,11 @@
         async function toggleMarketCompleted(id, checkbox) {
             const item = marketItems.find(m => m.id === id);
             if(!item) return;
+            if(!canModify(item.author)) {
+                alert('Keine Berechtigung.');
+                checkbox.checked = false;
+                return;
+            }
             if(checkbox.checked) {
                 item.completed = true;
                 if(supabaseClient) {
@@ -1702,6 +1734,10 @@
         }
 
         async function submitCommunityPost() {
+            if(!currentUserEmail) {
+                alert('Bitte melde dich an, um Beiträge zu posten.');
+                return;
+            }
             const input = document.getElementById('communityPostInput');
             if(!input || !input.value) return;
             const postData = {
