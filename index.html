@@ -109,7 +109,7 @@
             <button onclick="openProfileModal()" class="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
                 <div class="w-7 h-7 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs" id="userAvatarInitials">CP</div>
                 <span class="text-sm font-medium hidden sm:inline" id="userNameDisplay">Christian</span>
-                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.2.2</span>
+                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.2.3</span>
             </button>
             <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition cursor-pointer">
                 <i data-lucide="moon" class="w-4 h-4" id="themeIcon"></i>
@@ -420,7 +420,7 @@
     <div id="spotContributionModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center">
-                <h3 class="text-lg font-bold text-white">Bericht zum Spot erfassen</h3>
+                <h3 class="text-lg font-bold text-white" id="contribModalTitle">Bericht zum Spot erfassen</h3>
                 <button onclick="closeSpotContributionModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="space-y-3">
@@ -436,7 +436,7 @@
             </div>
             <div class="flex justify-between items-center pt-2">
                 <button onclick="closeSpotContributionModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition cursor-pointer">Abbrechen</button>
-                <button onclick="saveSpotContribution()" class="px-5 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold transition cursor-pointer">Bericht speichern</button>
+                <button onclick="saveSpotContribution()" class="px-5 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold transition cursor-pointer">Speichern</button>
             </div>
         </div>
     </div>
@@ -539,6 +539,8 @@
         let compressedSpotImage = '';
         let editingSpotId = null;
         let activeContribSpotId = null;
+        let editingContribSpotId = null;
+        let editingContribId = null;
         let compressedContribImage = '';
         let currentCategoryFilter = 'all';
         let currentMarketFilter = 'all';
@@ -811,6 +813,9 @@
 
         function openSpotContributionModal(spotId) {
             activeContribSpotId = spotId;
+            editingContribSpotId = null;
+            editingContribId = null;
+            document.getElementById('contribModalTitle').textContent = 'Bericht zum Spot erfassen';
             compressedContribImage = '';
             const fileInput = document.getElementById('contribImageFile');
             if(fileInput) fileInput.value = '';
@@ -823,31 +828,82 @@
             if(m) m.style.display = 'flex';
         }
 
+        function openEditContributionModal(spotId, contribId) {
+            editingContribSpotId = spotId;
+            editingContribId = contribId;
+            activeContribSpotId = null;
+            const spot = spots.find(s => s.id === spotId);
+            const contrib = spot?.contributions.find(c => c.id === contribId);
+            if(!contrib) return;
+
+            document.getElementById('contribModalTitle').textContent = 'Bericht bearbeiten';
+            document.getElementById('contribText').value = contrib.text;
+            compressedContribImage = contrib.image || '';
+
+            if(contrib.image) {
+                const preview = document.getElementById('contribImagePreview');
+                const previewContainer = document.getElementById('contribImagePreviewContainer');
+                if(preview && previewContainer) {
+                    preview.src = contrib.image;
+                    previewContainer.classList.remove('hidden');
+                }
+            } else {
+                const previewContainer = document.getElementById('contribImagePreviewContainer');
+                if(previewContainer) previewContainer.classList.add('hidden');
+            }
+
+            const m = document.getElementById('spotContributionModal');
+            if(m) m.style.display = 'flex';
+        }
+
         function closeSpotContributionModal() {
             const m = document.getElementById('spotContributionModal');
             if(m) m.style.display = 'none';
             activeContribSpotId = null;
+            editingContribSpotId = null;
+            editingContribId = null;
         }
 
         function saveSpotContribution() {
             const textEl = document.getElementById('contribText');
             if(!textEl || !textEl.value) { alert('Bitte Text eingeben'); return; }
             
-            const spot = spots.find(s => s.id === activeContribSpotId);
-            if(spot) {
-                if(!spot.contributions) spot.contributions = [];
-                spot.contributions.push({
-                    id: Date.now(),
-                    author: userProfile.name || 'Christian',
-                    text: textEl.value,
-                    image: compressedContribImage,
-                    time: 'Gerade eben'
-                });
-                localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
+            if(editingContribSpotId && editingContribId) {
+                const spot = spots.find(s => s.id === editingContribSpotId);
+                const contrib = spot?.contributions.find(c => c.id === editingContribId);
+                if(contrib) {
+                    contrib.text = textEl.value;
+                    contrib.image = compressedContribImage;
+                }
+            } else {
+                const spot = spots.find(s => s.id === activeContribSpotId);
+                if(spot) {
+                    if(!spot.contributions) spot.contributions = [];
+                    spot.contributions.push({
+                        id: Date.now(),
+                        author: userProfile.name || 'Christian',
+                        text: textEl.value,
+                        image: compressedContribImage,
+                        time: 'Gerade eben'
+                    });
+                }
             }
+            localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
             closeSpotContributionModal();
             renderSpots();
             plotMapMarkers();
+        }
+
+        function deleteContribution(spotId, contribId) {
+            if(confirm('Möchtest du diesen Bericht wirklich löschen? (Der Spot selbst bleibt erhalten)')) {
+                const spot = spots.find(s => s.id === spotId);
+                if(spot && spot.contributions) {
+                    spot.contributions = spot.contributions.filter(c => c.id !== contribId);
+                    localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
+                    renderSpots();
+                    plotMapMarkers();
+                }
+            }
         }
 
         function toggleSpotContributions(id) {
@@ -858,7 +914,7 @@
         }
 
         function deleteSpot(id) {
-            if(confirm('Möchtest du diesen Spot wirklich löschen?')) {
+            if(confirm('Möchtest du diesen Spot samt aller zugehörigen Berichte wirklich komplett löschen?')) {
                 spots = spots.filter(s => s.id !== id);
                 localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
                 renderSpots();
@@ -885,16 +941,19 @@
                 let contributionsHtml = `
                     <div id="contrib-section-${spot.id}" class="hidden mt-3 pt-3 border-t border-slate-700/50 space-y-2">
                         <span class="text-xs font-bold text-brand-400">Berichte (${spot.contributions ? spot.contributions.length : 0}):</span>
-                        <div class="space-y-2 max-h-40 overflow-y-auto">
+                        <div class="space-y-2 max-h-48 overflow-y-auto">
                 `;
                 if(spot.contributions && spot.contributions.length > 0) {
                     spot.contributions.forEach(c => {
                         let cImg = c.image ? `<img src="${c.image}" class="w-full h-20 object-cover rounded-lg mt-1 border border-slate-700">` : '';
                         contributionsHtml += `
                             <div class="bg-slate-900/65 p-2.5 rounded-xl border border-slate-700/50 text-xs space-y-1">
-                                <div class="flex justify-between font-semibold text-slate-200">
-                                    <span>${c.author}</span>
-                                    <span class="text-[10px] text-slate-400">${c.time}</span>
+                                <div class="flex justify-between items-center font-semibold text-slate-200">
+                                    <span>${c.author} <span class="text-[10px] text-slate-400 font-normal">(${c.time})</span></span>
+                                    <div class="space-x-2">
+                                        <button onclick="openEditContributionModal(${spot.id}, ${c.id})" class="text-brand-400 hover:underline cursor-pointer">Bearbeiten</button>
+                                        <button onclick="deleteContribution(${spot.id}, ${c.id})" class="text-red-400 hover:underline cursor-pointer">Löschen</button>
+                                    </div>
                                 </div>
                                 <p class="text-slate-200">${c.text}</p>
                                 ${cImg}
@@ -1038,7 +1097,7 @@
                     spot.desc = document.getElementById('newSpotDesc').value;
                     spot.lat = parseFloat(document.getElementById('newSpotLat').value) || spot.lat;
                     spot.lng = parseFloat(document.getElementById('newSpotLng').value) || spot.lng;
-                    if(compressedSpotImage) spot.image = compressedSpotImage;
+                    spot.image = compressedSpotImage;
                 }
                 editingSpotId = null;
             } else {
