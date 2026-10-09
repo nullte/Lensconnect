@@ -472,6 +472,7 @@
         let currentView = 'home';
         let map = null;
         let markersLayer = null;
+        let pickingMarker = null;
         let currentCategoryFilter = 'all';
         let currentMarketFilter = 'all';
         let isPickingLocation = false;
@@ -572,13 +573,22 @@
                 markersLayer = L.layerGroup().addTo(map);
                 plotMapMarkers();
 
+                // Robust Map Click Listener for Pin Dropping
                 map.on('click', function(e) {
-                    if(isPickingLocation) {
-                        document.getElementById('newSpotLat').value = e.latlng.lat.toFixed(5);
-                        document.getElementById('newSpotLng').value = e.latlng.lng.toFixed(5);
-                        cancelMapPinMode();
-                        openNewSpotModal();
-                    }
+                    if(!isPickingLocation) return;
+                    
+                    const lat = e.latlng.lat;
+                    const lng = e.latlng.lng;
+
+                    document.getElementById('newSpotLat').value = lat.toFixed(5);
+                    document.getElementById('newSpotLng').value = lng.toFixed(5);
+
+                    // Show temporary preview marker on map
+                    if(pickingMarker) map.removeLayer(pickingMarker);
+                    pickingMarker = L.marker([lat, lng]).addTo(map);
+
+                    cancelMapPinMode();
+                    openNewSpotModal();
                 });
             } catch(e) { console.error("Map init error:", e); }
         }
@@ -586,11 +596,17 @@
         function enableMapPinMode() {
             isPickingLocation = true;
             document.getElementById('mapPickingBanner').style.display = 'flex';
+            if(map && map.getContainer()) {
+                map.getContainer().style.cursor = 'crosshair';
+            }
         }
 
         function cancelMapPinMode() {
             isPickingLocation = false;
             document.getElementById('mapPickingBanner').style.display = 'none';
+            if(map && map.getContainer()) {
+                map.getContainer().style.cursor = '';
+            }
         }
 
         function plotMapMarkers() {
@@ -670,6 +686,11 @@
         function closeNewSpotModal() {
             const m = document.getElementById('newSpotModal');
             if(m) m.style.display = 'none';
+            if(pickingMarker && map) {
+                map.removeLayer(pickingMarker);
+                pickingMarker = null;
+            }
+            cancelMapPinMode();
         }
         function saveNewSpot() {
             const titleEl = document.getElementById('newSpotTitle');
@@ -685,6 +706,10 @@
             };
             spots.push(newSpot);
             localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
+            if(pickingMarker && map) {
+                map.removeLayer(pickingMarker);
+                pickingMarker = null;
+            }
             closeNewSpotModal();
             renderSpots();
             switchView('spots');
