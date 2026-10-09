@@ -254,7 +254,7 @@
                         <h1 class="text-2xl font-bold text-white">Entdeckte Fotospots</h1>
                         <p class="text-sm text-slate-400">Durchstöbere alle gespeicherten Locations & Beiträge.</p>
                     </div>
-                    <button onclick="openNewSpotModal(false)" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-medium px-4 py-2 rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow cursor-pointer">
+                    <button onclick="startSpotCreationFromList()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-medium px-4 py-2 rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow cursor-pointer">
                         <i data-lucide="plus" class="w-4 h-4"></i>
                         <span>Neuen Spot erstellen</span>
                     </button>
@@ -346,16 +346,16 @@
                     <label class="block text-xs text-slate-400 mb-1">Foto hochladen (optional)</label>
                     <input type="file" id="newSpotImageFile" accept="image/*" onchange="handleImageUpload(event)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-300 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-500 file:text-slate-900 hover:file:bg-brand-600 cursor-pointer">
                     <div id="imagePreviewContainer" class="mt-2 hidden">
-                        <img id="imagePreview" class="h-24 rounded-xl object-cover border border-slate-700" alt="Vorschau">
-                        <span class="text-[10px] text-brand-400 mt-1 block">Bild bereit!</span>
+                        <img id="imagePreview" class="h-28 rounded-xl object-contain bg-slate-950 border border-slate-700 mx-auto" alt="Vorschau">
+                        <span class="text-[10px] text-brand-400 mt-1 block text-center">Bild bereit!</span>
                     </div>
                 </div>
 
-                <div class="space-y-1">
+                <div class="space-y-1 hidden">
                     <label class="block text-xs text-slate-400">Koordinaten (Lat / Lng)</label>
                     <div class="flex items-center space-x-2">
-                        <input type="number" step="any" id="newSpotLat" placeholder="Lat" class="w-1/2 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
-                        <input type="number" step="any" id="newSpotLng" placeholder="Lng" class="w-1/2 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
+                        <input type="number" step="any" id="newSpotLat" placeholder="Lat" class="w-1/2 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                        <input type="number" step="any" id="newSpotLng" placeholder="Lng" class="w-1/2 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
                     </div>
                 </div>
             </div>
@@ -379,8 +379,8 @@
                     <label class="block text-xs text-slate-400 mb-1">Foto hinzufügen (optional)</label>
                     <input type="file" id="contribImageFile" accept="image/*" onchange="handleContribImageUpload(event)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-300 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-500 file:text-slate-900 hover:file:bg-brand-600 cursor-pointer">
                     <div id="contribImagePreviewContainer" class="mt-2 hidden">
-                        <img id="contribImagePreview" class="h-24 rounded-xl object-cover border border-slate-700" alt="Vorschau">
-                        <span class="text-[10px] text-brand-400 mt-1 block">Bild bereit!</span>
+                        <img id="contribImagePreview" class="h-28 rounded-xl object-contain bg-slate-950 border border-slate-700 mx-auto" alt="Vorschau">
+                        <span class="text-[10px] text-brand-400 mt-1 block text-center">Bild bereit!</span>
                     </div>
                 </div>
             </div>
@@ -480,7 +480,7 @@
                 </div>
 
                 <div class="pt-2 border-t border-slate-800">
-                    <label class="block text-xs text-slate-400 mb-1">Lokaler Name / Handle</label>
+                    <label class="block text-xs text-slate-400 mb-1">Benutzername / Handle (einmalig festlegbar)</label>
                     <input type="text" id="profileNameInput" placeholder="z.B. Christian" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
                 </div>
             </div>
@@ -516,6 +516,14 @@
                 <button onclick="closeImpressumModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition cursor-pointer">Abbrechen</button>
                 <button onclick="saveImpressum()" class="px-5 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold transition cursor-pointer">Speichern</button>
             </div>
+        </div>
+    </div>
+
+    <!-- LIGHTBOX MODAL FOR IMAGE ZOOM -->
+    <div id="imageLightboxModal" style="display: none;" class="fixed inset-0 z-[10000] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer" onclick="closeImageLightbox()">
+        <div class="relative max-w-5xl max-h-[90vh] flex items-center justify-center">
+            <img id="lightboxImage" class="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl" alt="Grossansicht">
+            <button onclick="closeImageLightbox()" class="absolute top-4 right-4 bg-slate-800/80 text-white p-2 rounded-full hover:bg-slate-700 cursor-pointer"><i data-lucide="x" class="w-6 h-6"></i></button>
         </div>
     </div>
 
@@ -581,8 +589,8 @@
         } catch(e) { console.warn("PWA setup notice:", e); }
 
         // --- SUPABASE CONFIGURATION ---
-        const SUPABASE_URL = 'https://ygzazikwcngwclvmhbbb.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlnemF6aWt3Y25nd2Nsdm1oYmJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0NjA1OTgsImV4cCI6MjEwNzAzNjU5OH0.30RNloWiRhtOIq3QVsQcJmvuOw4xU2_4vSzra6NKeUg';
+        const SUPABASE_URL = 'DEINE_SUPABASE_URL';
+        const SUPABASE_KEY = 'DEINE_SUPABASE_ANON_KEY';
         let supabaseClient = null;
         let realtimeChannel = null;
 
@@ -611,7 +619,7 @@
         let spots = [];
         let marketItems = [];
         let communityPosts = [];
-        let userProfile = JSON.parse(localStorage.getItem('lensconnect_user')) || { name: 'Christian' };
+        let userProfile = JSON.parse(localStorage.getItem('lensconnect_user')) || { name: 'Christian', nameLocked: false };
         let currentUserEmail = null;
         let isAdmin = false;
 
@@ -797,7 +805,9 @@
                     adminBadge.classList.add('hidden');
                 }
 
-                userProfile.name = user.email.split('@')[0];
+                if (!userProfile.nameLocked || !userProfile.name) {
+                    userProfile.name = user.email.split('@')[0];
+                }
                 initUserDisplay();
             } else {
                 currentUserEmail = null;
@@ -833,6 +843,8 @@
             if(pm) pm.style.display = 'none';
             const im = document.getElementById('impressumModal');
             if(im) im.style.display = 'none';
+            const lb = document.getElementById('imageLightboxModal');
+            if(lb) lb.style.display = 'none';
             if(isPickingLocation) cancelMapPinMode();
             if(pickingMarker && map) {
                 map.removeLayer(pickingMarker);
@@ -878,18 +890,29 @@
         function initUserDisplay() {
             const nameEl = document.getElementById('userNameDisplay');
             const initialsEl = document.getElementById('userAvatarInitials');
+            const inputEl = document.getElementById('profileNameInput');
             
             if (!currentUserEmail) {
                 if(nameEl) nameEl.textContent = 'Anmelden';
                 if(initialsEl) initialsEl.innerHTML = '<i data-lucide="user" class="w-4 h-4"></i>';
+                if(inputEl) {
+                    inputEl.disabled = false;
+                    inputEl.value = userProfile.name || '';
+                }
             } else {
                 const name = userProfile.name || currentUserEmail.split('@')[0];
                 if(nameEl) nameEl.textContent = name;
                 if(initialsEl) initialsEl.textContent = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
+                if(inputEl) {
+                    inputEl.value = name;
+                    if (userProfile.nameLocked) {
+                        inputEl.disabled = true;
+                        inputEl.title = "Der Benutzername wurde einmalig festgelegt und kann nicht mehr geändert werden.";
+                    } else {
+                        inputEl.disabled = false;
+                    }
+                }
             }
-
-            const inputEl = document.getElementById('profileNameInput');
-            if(inputEl) inputEl.value = userProfile.name || '';
             if(window.lucide) lucide.createIcons();
         }
 
@@ -933,10 +956,28 @@
         }
         function saveProfile() {
             const input = document.getElementById('profileNameInput');
-            userProfile.name = input ? (input.value || 'Christian') : 'Christian';
-            localStorage.setItem('lensconnect_user', JSON.stringify(userProfile));
+            if (input && !input.disabled) {
+                const newName = input.value.trim();
+                if (newName) {
+                    userProfile.name = newName;
+                    userProfile.nameLocked = true; // Lock username permanently after set
+                    localStorage.setItem('lensconnect_user', JSON.stringify(userProfile));
+                }
+            }
             initUserDisplay();
             closeProfileModal();
+        }
+
+        function openImageLightbox(src) {
+            const img = document.getElementById('lightboxImage');
+            if(img) img.src = src;
+            const modal = document.getElementById('imageLightboxModal');
+            if(modal) modal.style.display = 'flex';
+        }
+
+        function closeImageLightbox() {
+            const modal = document.getElementById('imageLightboxModal');
+            if(modal) modal.style.display = 'none';
         }
 
         function initMap() {
@@ -1016,13 +1057,22 @@
             }
         }
 
+        function startSpotCreationFromList() {
+            if(!currentUserEmail) {
+                alert('Bitte melde dich an, um einen Spot hinzuzufügen.');
+                return;
+            }
+            switchView('map');
+            enableMapPinMode();
+        }
+
         function plotMapMarkers() {
             if(!markersLayer) return;
             markersLayer.clearLayers();
             spots.forEach(spot => {
                 if(spot.lat && spot.lng) {
                     const marker = L.marker([spot.lat, spot.lng]);
-                    let imgHtml = spot.image ? `<div class="w-full aspect-[4/3] mt-1 overflow-hidden rounded-lg border border-slate-200 bg-slate-100"><img src="${spot.image}" class="w-full h-full object-cover"></div>` : '';
+                    let imgHtml = spot.image ? `<div class="w-full mt-1 overflow-hidden rounded-lg border border-slate-200 bg-slate-950 flex items-center justify-center cursor-pointer" onclick="openImageLightbox('${spot.image}')"><img src="${spot.image}" class="max-h-48 w-full object-contain"></div>` : '';
                     
                     let ownerButtonsHtml = '';
                     if (canModify(spot.author)) {
@@ -1078,7 +1128,7 @@
                     const canvas = document.createElement('canvas');
                     let width = img.width;
                     let height = img.height;
-                    const maxDim = 800;
+                    const maxDim = 1200;
 
                     if (width > height) {
                         if (width > maxDim) {
@@ -1097,7 +1147,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    compressedSpotImage = canvas.toDataURL('image/jpeg', 0.7);
+                    compressedSpotImage = canvas.toDataURL('image/jpeg', 0.8);
 
                     const preview = document.getElementById('imagePreview');
                     const previewContainer = document.getElementById('imagePreviewContainer');
@@ -1122,7 +1172,7 @@
                     const canvas = document.createElement('canvas');
                     let width = img.width;
                     let height = img.height;
-                    const maxDim = 800;
+                    const maxDim = 1200;
 
                     if (width > height) {
                         if (width > maxDim) {
@@ -1141,7 +1191,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    compressedContribImage = canvas.toDataURL('image/jpeg', 0.7);
+                    compressedContribImage = canvas.toDataURL('image/jpeg', 0.8);
 
                     const preview = document.getElementById('contribImagePreview');
                     const previewContainer = document.getElementById('contribImagePreviewContainer');
@@ -1321,7 +1371,7 @@
                 
                 let tagsHtml = spot.tags ? `<div class="flex flex-wrap gap-1 mt-1">${spot.tags.split(',').map(t => `<span class="text-[10px] bg-slate-900 text-brand-400 px-2 py-0.5 rounded border border-slate-700/80">#${t.trim()}</span>`).join('')}</div>` : '';
 
-                let imgHtml = spot.image ? `<div class="w-full aspect-[4/3] mt-2 mb-2 overflow-hidden rounded-xl border border-slate-700 bg-slate-900"><img src="${spot.image}" class="w-full h-full object-cover"></div>` : '';
+                let imgHtml = spot.image ? `<div class="w-full max-h-96 mt-2 mb-2 overflow-hidden rounded-xl border border-slate-700 bg-slate-950 flex items-center justify-center cursor-pointer" onclick="openImageLightbox('${spot.image}')"><img src="${spot.image}" class="max-h-96 w-full object-contain"></div>` : '';
 
                 let contributionsHtml = `
                     <div id="contrib-section-${spot.id}" class="hidden mt-3 pt-3 border-t border-slate-700/50 space-y-2">
@@ -1330,7 +1380,7 @@
                 `;
                 if(spot.contributions && spot.contributions.length > 0) {
                     spot.contributions.forEach(c => {
-                        let cImg = c.image ? `<img src="${c.image}" class="w-full h-20 object-cover rounded-lg mt-1 border border-slate-700">` : '';
+                        let cImg = c.image ? `<div class="cursor-pointer bg-slate-950 rounded-lg mt-1 overflow-hidden flex items-center justify-center" onclick="openImageLightbox('${c.image}')"><img src="${c.image}" class="max-h-48 w-full object-contain"></div>` : '';
                         
                         let cActions = '';
                         if (canModify(c.author)) {
