@@ -118,9 +118,9 @@
     <main class="flex-1 relative overflow-hidden flex min-h-0">
 
         <!-- MAP PICKING BANNER -->
-        <div id="mapPickingBanner" style="display: none;" class="absolute top-4 left-1/2 -translate-x-1/2 z-40 bg-brand-500 text-slate-900 px-4 py-2.5 rounded-2xl shadow-2xl font-medium text-sm flex items-center space-x-3">
+        <div id="mapPickingBanner" style="display: none;" class="absolute top-4 left-1/2 -translate-x-1/2 z-[1005] pointer-events-auto bg-brand-500 text-slate-900 px-4 py-2.5 rounded-2xl shadow-2xl font-medium text-sm flex items-center space-x-3">
             <span>📍 Klicke auf die gewünschte Stelle in der Karte für den Spot.</span>
-            <button onclick="cancelMapPinMode()" class="bg-slate-900 text-white px-3 py-1 rounded-xl text-xs font-bold hover:bg-slate-800">Abbrechen</button>
+            <button onclick="cancelMapPinMode()" class="bg-slate-900 text-white px-3 py-1 rounded-xl text-xs font-bold hover:bg-slate-800 cursor-pointer">Abbrechen</button>
         </div>
 
         <!-- VIEW 0: HOME / STARTSEITE -->
@@ -199,8 +199,8 @@
 
         <!-- VIEW 1: MAP -->
         <div id="view-map" class="view-panel w-full h-full relative hidden flex-col">
-            <div class="absolute top-4 right-4 z-20 flex space-x-2">
-                <button onclick="enableMapPinMode()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold px-4 py-2.5 rounded-2xl text-sm flex items-center space-x-2 shadow-2xl transition">
+            <div class="absolute top-4 right-4 z-[1000] pointer-events-auto flex space-x-2">
+                <button onclick="enableMapPinMode()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold px-4 py-2.5 rounded-2xl text-sm flex items-center space-x-2 shadow-2xl transition cursor-pointer">
                     <i data-lucide="map-pin" class="w-4 h-4"></i>
                     <span>Spot auf Karte setzen</span>
                 </button>
@@ -573,7 +573,6 @@
                 markersLayer = L.layerGroup().addTo(map);
                 plotMapMarkers();
 
-                // Robust Map Click Listener for Pin Dropping
                 map.on('click', function(e) {
                     if(!isPickingLocation) return;
                     
@@ -583,7 +582,6 @@
                     document.getElementById('newSpotLat').value = lat.toFixed(5);
                     document.getElementById('newSpotLng').value = lng.toFixed(5);
 
-                    // Show temporary preview marker on map
                     if(pickingMarker) map.removeLayer(pickingMarker);
                     pickingMarker = L.marker([lat, lng]).addTo(map);
 
