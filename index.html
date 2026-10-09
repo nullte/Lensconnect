@@ -22,7 +22,7 @@
             max-width: none !important;
             max-height: none !important;
         }
-        /* Light Mode High-Readability Theme Overrides */
+        /* Comprehensive Light & Dark Mode Font & Layout Overrides */
         html.light body { background-color: #f1f5f9 !important; color: #0f172a !important; }
         html.light header, html.light .bg-slate-800 { background-color: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         html.light .bg-slate-900, html.light .bg-slate-950 { background-color: #e2e8f0 !important; color: #0f172a !important; }
@@ -33,7 +33,8 @@
         html.light input, html.light select, html.light textarea { background-color: #ffffff !important; color: #0f172a !important; border-color: #94a3b8 !important; }
         html.light input::placeholder, html.light textarea::placeholder { color: #64748b !important; }
         html.light .border-slate-700 { border-color: #cbd5e1 !important; }
-        html.light .bg-slate-900\/60 { background-color: #cbd5e1 !important; }
+        html.light .bg-slate-900\/60 { background-color: #cbd5e1 !important; color: #0f172a !important; }
+        html.light .bg-slate-900\/60 p, html.light .bg-slate-900\/60 span { color: #1e293b !important; }
         /* Keep brand colors distinct */
         html.light .text-brand-400, html.light .text-brand-600 { color: #16a34a !important; }
         html.light .bg-brand-500 { background-color: #22c55e !important; color: #ffffff !important; }
@@ -98,7 +99,7 @@
             <button onclick="openProfileModal()" class="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
                 <div class="w-7 h-7 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs" id="userAvatarInitials">CP</div>
                 <span class="text-sm font-medium hidden sm:inline" id="userNameDisplay">Christian</span>
-                <span class="text-[10px] bg-slate-800 text-brand-400 px-1.5 py-0.5 rounded font-mono border border-slate-700">v0.1.3</span>
+                <span class="text-[10px] bg-slate-800 text-brand-400 px-1.5 py-0.5 rounded font-mono border border-slate-700">v0.1.4</span>
             </button>
             <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition cursor-pointer">
                 <i data-lucide="moon" class="w-4 h-4" id="themeIcon"></i>
@@ -834,12 +835,12 @@
                     spot.contributions.forEach(c => {
                         let cImg = c.image ? `<img src="${c.image}" class="w-full h-24 object-cover rounded-lg mt-1 border border-slate-700">` : '';
                         contributionsHtml += `
-                            <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/50 text-xs space-y-1">
-                                <div class="flex justify-between font-semibold text-slate-300">
+                            <div class="bg-slate-900/65 p-2.5 rounded-xl border border-slate-700/50 text-xs space-y-1">
+                                <div class="flex justify-between font-semibold text-slate-200">
                                     <span>${c.author}</span>
-                                    <span class="text-[10px] text-slate-500">${c.time}</span>
+                                    <span class="text-[10px] text-slate-400">${c.time}</span>
                                 </div>
-                                <p class="text-slate-300">${c.text}</p>
+                                <p class="text-slate-200">${c.text}</p>
                                 ${cImg}
                             </div>
                         `;
@@ -854,12 +855,12 @@
                             <h3 class="font-semibold text-white text-base">${spot.title}</h3>
                             <span class="text-xs bg-slate-900 text-brand-400 px-2.5 py-1 rounded-lg border border-slate-700">${spot.category}</span>
                         </div>
-                        <p class="text-xs text-slate-400 line-clamp-3">${spot.desc}</p>
+                        <p class="text-xs text-slate-300 line-clamp-3">${spot.desc}</p>
                         ${tagsHtml}
                         ${contributionsHtml}
                     </div>
                     <div class="pt-3 border-t border-slate-700/50 flex flex-wrap gap-2 justify-between items-center text-xs">
-                        <span class="text-slate-500">Erstellt von: ${spot.author || 'Christian'}</span>
+                        <span class="text-slate-400">Erstellt von: ${spot.author || 'Christian'}</span>
                         <div class="flex items-center space-x-2">
                             <button onclick="openSpotContributionModal(${spot.id})" class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/25 hover:bg-brand-500/20 transition cursor-pointer flex items-center space-x-1">
                                 <i data-lucide="plus" class="w-3 h-3"></i>
@@ -1052,7 +1053,7 @@
                             ${badgeSub}
                         </div>
                         <h3 class="font-semibold text-white text-base">${item.title}</h3>
-                        <p class="text-xs text-slate-400 line-clamp-3">${item.desc}</p>
+                        <p class="text-xs text-slate-300 line-clamp-3">${item.desc}</p>
                     </div>
                     <div class="pt-3 border-t border-slate-700/50 flex justify-between items-center text-xs text-slate-400">
                         <span>Community Inserat</span>
