@@ -109,7 +109,7 @@
             <button onclick="openProfileModal()" class="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
                 <div class="w-7 h-7 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs" id="userAvatarInitials">CP</div>
                 <span class="text-sm font-medium hidden sm:inline" id="userNameDisplay">Christian</span>
-                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.3.0</span>
+                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.3.1</span>
             </button>
             <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition cursor-pointer">
                 <i data-lucide="moon" class="w-4 h-4" id="themeIcon"></i>
@@ -151,7 +151,7 @@
         </div>
 
         <!-- VIEW 0: HOME / STARTSEITE -->
-        <div id="view-home" class="view-panel w-full h-full flex flex-col overflow-y-auto p-4 lg:p-12 space-y-8">
+        <div id="view-home" class="view-panel w-full h-full flex flex-col overflow-y-auto p-4 lg:p-12 space-y-8 justify-between">
             <div class="max-w-4xl mx-auto w-full space-y-8">
                 <!-- Hero Section -->
                 <div class="bg-slate-800 border border-slate-700 rounded-3xl p-8 lg:p-12 shadow-2xl space-y-6">
@@ -221,6 +221,12 @@
                         <span>Christian.arnold10@gmail.com</span>
                     </a>
                 </div>
+            </div>
+
+            <!-- DISCREET TRANSPARENT IMPRESSUM FOOTER -->
+            <div class="max-w-4xl mx-auto w-full mt-12 pt-4 border-t border-slate-700/30 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400/60 gap-2 px-2 shrink-0">
+                <span id="impressumTextDisplay">Impressum: Christian Arnold, Neubaugasse 16, 9601 Arnoldstein | E-Mail: christian.arnold10@gmail.com</span>
+                <button onclick="openImpressumModal()" class="hover:text-slate-300 transition underline cursor-pointer">Impressum ändern</button>
             </div>
         </div>
 
@@ -468,6 +474,34 @@
         </div>
     </div>
 
+    <!-- MODAL: IMPRESSUM -->
+    <div id="impressumModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-bold text-white">Impressum bearbeiten</h3>
+                <button onclick="closeImpressumModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Name / Firma</label>
+                    <input type="text" id="impNameInput" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Adresse</label>
+                    <input type="text" id="impAddressInput" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">E-Mail</label>
+                    <input type="text" id="impEmailInput" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                </div>
+            </div>
+            <div class="flex justify-between items-center pt-2">
+                <button onclick="closeImpressumModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition cursor-pointer">Abbrechen</button>
+                <button onclick="saveImpressum()" class="px-5 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold transition cursor-pointer">Speichern</button>
+            </div>
+        </div>
+    </div>
+
     <!-- APP LOGIC -->
     <script>
         // PWA Setup (Dynamic Manifest & Service Worker Registration)
@@ -549,6 +583,12 @@
 
         let userProfile = JSON.parse(localStorage.getItem('lensconnect_user')) || { name: 'Christian' };
 
+        let impressumData = JSON.parse(localStorage.getItem('lensconnect_impressum')) || {
+            name: 'Christian Arnold',
+            address: 'Neubaugasse 16, 9601 Arnoldstein',
+            email: 'christian.arnold10@gmail.com'
+        };
+
         window.onload = function() {
             try {
                 if(localStorage.getItem('lensconnect_theme') === 'light') {
@@ -558,6 +598,7 @@
                 }
                 if(window.lucide) lucide.createIcons();
                 initUserDisplay();
+                renderImpressum();
                 renderSpots();
                 renderMarket();
                 renderCommunity();
@@ -590,6 +631,8 @@
             if(mm) mm.style.display = 'none';
             const pm = document.getElementById('profileModal');
             if(pm) pm.style.display = 'none';
+            const im = document.getElementById('impressumModal');
+            if(im) im.style.display = 'none';
             if(isPickingLocation) cancelMapPinMode();
             if(pickingMarker && map) {
                 map.removeLayer(pickingMarker);
@@ -640,6 +683,36 @@
             if(inputEl) inputEl.value = name;
             const initialsEl = document.getElementById('userAvatarInitials');
             if(initialsEl) initialsEl.textContent = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
+        }
+
+        function renderImpressum() {
+            const el = document.getElementById('impressumTextDisplay');
+            if(el) {
+                el.textContent = `Impressum: ${impressumData.name}, ${impressumData.address} | E-Mail: ${impressumData.email}`;
+            }
+        }
+
+        function openImpressumModal() {
+            document.getElementById('impNameInput').value = impressumData.name || '';
+            document.getElementById('impAddressInput').value = impressumData.address || '';
+            document.getElementById('impEmailInput').value = impressumData.email || '';
+
+            history.pushState({ view: currentView, modal: 'impressum' }, '', '');
+            const m = document.getElementById('impressumModal');
+            if(m) m.style.display = 'flex';
+        }
+
+        function closeImpressumModal() {
+            history.back();
+        }
+
+        function saveImpressum() {
+            impressumData.name = document.getElementById('impNameInput').value || '';
+            impressumData.address = document.getElementById('impAddressInput').value || '';
+            impressumData.email = document.getElementById('impEmailInput').value || '';
+            localStorage.setItem('lensconnect_impressum', JSON.stringify(impressumData));
+            renderImpressum();
+            closeImpressumModal();
         }
 
         function openProfileModal() {
