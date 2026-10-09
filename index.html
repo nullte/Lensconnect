@@ -29,7 +29,7 @@
         html.light .bg-slate-900, html.light .bg-slate-950, html.light [class*="bg-slate-900"] { background-color: #e2e8f0 !important; color: #0f172a !important; }
         html.light .text-white, html.light h1, html.light h3, html.light span { color: #0f172a !important; }
         html.light .text-slate-100 { color: #0f172a !important; }
-        html.light .text-slate-300, html.light .text-slate-400 { color: #334155 !important; }
+        html.light .text-slate-200, html.light .text-slate-300, html.light .text-slate-400 { color: #334155 !important; }
         html.light .text-slate-500 { color: #475569 !important; }
         html.light input, html.light select, html.light textarea { background-color: #ffffff !important; color: #0f172a !important; border-color: #94a3b8 !important; }
         html.light input::placeholder, html.light textarea::placeholder { color: #64748b !important; }
@@ -100,7 +100,7 @@
             <button onclick="openProfileModal()" class="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
                 <div class="w-7 h-7 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs" id="userAvatarInitials">CP</div>
                 <span class="text-sm font-medium hidden sm:inline" id="userNameDisplay">Christian</span>
-                <span class="text-[10px] bg-slate-800 text-brand-400 px-1.5 py-0.5 rounded font-mono border border-slate-700">v0.1.5</span>
+                <span class="text-[10px] bg-slate-900 text-brand-400 px-1.5 py-0.5 rounded font-mono border border-slate-700 shadow-sm">v0.1.6</span>
             </button>
             <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition cursor-pointer">
                 <i data-lucide="moon" class="w-4 h-4" id="themeIcon"></i>
@@ -145,15 +145,15 @@
         <div id="view-home" class="view-panel w-full h-full flex flex-col overflow-y-auto p-4 lg:p-12 space-y-8">
             <div class="max-w-4xl mx-auto w-full space-y-8">
                 <!-- Hero Section -->
-                <div class="bg-gradient-to-br from-slate-800 to-slate-800/80 border border-slate-700/80 rounded-3xl p-8 lg:p-12 shadow-2xl space-y-6">
-                    <div class="inline-flex items-center space-x-2 bg-brand-500/10 text-brand-400 px-3.5 py-1 rounded-full border border-brand-500/20 text-xs font-semibold">
+                <div class="bg-slate-800 border border-slate-700 rounded-3xl p-8 lg:p-12 shadow-2xl space-y-6">
+                    <div class="inline-flex items-center space-x-2 bg-brand-500/15 text-brand-400 px-3.5 py-1 rounded-full border border-brand-500/30 text-xs font-semibold">
                         <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
                         <span>Willkommen bei LensConnect</span>
                     </div>
                     <h1 class="text-3xl lg:text-5xl font-extrabold text-white tracking-tight">
                         Die Community-Plattform für <span class="bg-gradient-to-r from-brand-400 to-emerald-200 bg-clip-text text-transparent">Fotografen & Models</span>
                     </h1>
-                    <p class="text-slate-300 text-base lg:text-lg leading-relaxed">
+                    <p class="text-slate-200 text-base lg:text-lg leading-relaxed">
                         LensConnect ist dein zentraler Hub, um versteckte Fotospots zu entdecken, präzise Lichtverhältnisse zu berechnen, sich auf dem Marktplatz für Shootings und Studios zu vernetzen und Foto-Projekte in der Community zu teilen.
                     </p>
                     <div class="flex flex-wrap gap-4 pt-2">
@@ -161,7 +161,7 @@
                             <i data-lucide="map" class="w-4 h-4"></i>
                             <span>Karte erkunden</span>
                         </button>
-                        <button onclick="switchView('spots')" class="bg-slate-700/80 hover:bg-slate-700 text-white font-semibold px-6 py-3 rounded-2xl text-sm flex items-center space-x-2 border border-slate-600 transition cursor-pointer">
+                        <button onclick="switchView('spots')" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold px-6 py-3 rounded-2xl text-sm flex items-center space-x-2 border border-slate-600 transition cursor-pointer">
                             <i data-lucide="compass" class="w-4 h-4"></i>
                             <span>Spots ansehen</span>
                         </button>
@@ -172,42 +172,42 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-slate-800 border border-slate-700 rounded-3xl p-6 lg:p-8 space-y-4 shadow-xl flex flex-col justify-between">
                         <div class="space-y-3">
-                            <div class="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-400 flex items-center justify-center font-bold">
+                            <div class="w-10 h-10 rounded-xl bg-brand-500/15 text-brand-400 flex items-center justify-center font-bold border border-brand-500/30">
                                 <i data-lucide="users" class="w-5 h-5"></i>
                             </div>
                             <h3 class="text-xl font-bold text-white">Mitarbeit & Ideen</h3>
-                            <p class="text-slate-300 text-sm leading-relaxed">
+                            <p class="text-slate-200 text-sm leading-relaxed">
                                 Dieses Projekt lebt von der Gemeinschaft! Jeder ist herzlich eingeladen, mitzuarbeiten, neue Features vorzuschlagen oder eigene Ideen einzubringen, um LensConnect noch besser zu machen.
                             </p>
                         </div>
-                        <div class="pt-4 border-t border-slate-700/60 text-xs text-slate-400">
+                        <div class="pt-4 border-t border-slate-700 text-xs text-slate-400">
                             Gemeinsam erschaffen wir das beste Tool für Fotografen & Models.
                         </div>
                     </div>
 
                     <div class="bg-slate-800 border border-slate-700 rounded-3xl p-6 lg:p-8 space-y-4 shadow-xl flex flex-col justify-between">
                         <div class="space-y-3">
-                            <div class="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-400 flex items-center justify-center font-bold">
+                            <div class="w-10 h-10 rounded-xl bg-brand-500/15 text-brand-400 flex items-center justify-center font-bold border border-brand-500/30">
                                 <i data-lucide="code" class="w-5 h-5"></i>
                             </div>
                             <h3 class="text-xl font-bold text-white">Fotografen & Programmierer gesucht</h3>
-                            <p class="text-slate-300 text-sm leading-relaxed">
+                            <p class="text-slate-200 text-sm leading-relaxed">
                                 Wir suchen vor allem engagierte <strong>Fotografen & Models</strong> für wertvollen Content sowie <strong>Programmierer / Entwickler</strong>, die Lust haben, an der Codebasis mitzuwirken und die App weiterzuentwickeln.
                             </p>
                         </div>
-                        <div class="pt-4 border-t border-slate-700/60 text-xs text-slate-400">
+                        <div class="pt-4 border-t border-slate-700 text-xs text-slate-400">
                             Egal ob Code-Beitrag oder Spot-Tipp – jede Hilfe zählt!
                         </div>
                     </div>
                 </div>
 
                 <!-- Kontakt / Feedback Box -->
-                <div class="bg-gradient-to-r from-brand-500/10 via-slate-800 to-slate-800 border border-brand-500/30 rounded-3xl p-6 lg:p-8 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
+                <div class="bg-slate-800 border border-brand-500/40 rounded-3xl p-6 lg:p-8 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
                     <div class="space-y-1 text-center sm:text-left">
                         <h3 class="text-lg font-bold text-white">Lust mitzuwirken oder Fragen?</h3>
-                        <p class="text-slate-300 text-sm">Schreib mir direkt eine E-Mail mit deinen Vorschlägen oder deinem Feedback!</p>
+                        <p class="text-slate-200 text-sm">Schreib mir direkt eine E-Mail mit deinen Vorschlägen oder deinem Feedback!</p>
                     </div>
-                    <a href="mailto:Christian.arnold10@gmail.com" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold px-5 py-3 rounded-2xl text-sm flex items-center space-x-2 shrink-0 transition shadow-lg shadow-brand-500/10">
+                    <a href="mailto:Christian.arnold10@gmail.com" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold px-5 py-3 rounded-2xl text-sm flex items-center space-x-2 shrink-0 transition shadow-lg shadow-brand-500/20">
                         <i data-lucide="mail" class="w-4 h-4"></i>
                         <span>Christian.arnold10@gmail.com</span>
                     </a>
