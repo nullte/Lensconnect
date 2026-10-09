@@ -109,7 +109,7 @@
             <button onclick="openProfileModal()" class="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
                 <div class="w-7 h-7 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs" id="userAvatarInitials">CP</div>
                 <span class="text-sm font-medium hidden sm:inline" id="userNameDisplay">Christian</span>
-                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.2.3</span>
+                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.2.4</span>
             </button>
             <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition cursor-pointer">
                 <i data-lucide="moon" class="w-4 h-4" id="themeIcon"></i>
@@ -535,7 +535,7 @@
         let map = null;
         let markersLayer = null;
         let pickingMarker = null;
-        let spotOpenedFromMap = false;
+        let previousView = 'home';
         let compressedSpotImage = '';
         let editingSpotId = null;
         let activeContribSpotId = null;
@@ -691,12 +691,14 @@
             spots.forEach(spot => {
                 if(spot.lat && spot.lng) {
                     const marker = L.marker([spot.lat, spot.lng]);
+                    let imgHtml = spot.image ? `<img src="${spot.image}" class="w-full h-24 object-cover rounded-md border border-slate-200 mt-1">` : '';
                     marker.bindPopup(`
                         <div class="space-y-2 p-1 min-w-[210px]">
                             <div class="flex justify-between items-start">
                                 <b class="text-sm text-slate-900">${spot.title}</b>
                             </div>
                             <span class="inline-block text-[10px] bg-brand-500/15 text-brand-700 px-2 py-0.5 rounded font-semibold">${spot.category}</span>
+                            ${imgHtml}
                             <p class="text-xs text-slate-700">${spot.desc}</p>
                             <span class="text-[10px] text-slate-500 block">Von: ${spot.author || 'Christian'}</span>
                             <div class="pt-2 border-t border-slate-200 grid grid-cols-2 gap-1.5">
@@ -1016,8 +1018,8 @@
         function filterSpots() { renderSpots(); }
 
         function openNewSpotModal(fromMap = false) {
+            previousView = currentView;
             editingSpotId = null;
-            spotOpenedFromMap = fromMap;
             compressedSpotImage = '';
             const modalTitle = document.getElementById('spotModalTitle');
             if(modalTitle) modalTitle.textContent = 'Neuen Fotospot hinzufügen';
@@ -1035,8 +1037,8 @@
         }
 
         function openEditSpotModal(id) {
+            previousView = currentView;
             editingSpotId = id;
-            spotOpenedFromMap = false;
             const spot = spots.find(s => s.id === id);
             if(!spot) return;
 
@@ -1075,12 +1077,7 @@
                 pickingMarker = null;
             }
             cancelMapPinMode();
-            if(spotOpenedFromMap) {
-                switchView('map');
-            } else {
-                switchView('spots');
-            }
-            spotOpenedFromMap = false;
+            switchView(previousView);
             editingSpotId = null;
         }
 
@@ -1127,12 +1124,7 @@
             renderSpots();
             plotMapMarkers();
             
-            if(spotOpenedFromMap) {
-                switchView('map');
-            } else {
-                switchView('spots');
-            }
-            spotOpenedFromMap = false;
+            switchView(previousView);
         }
 
         // Market Logic
