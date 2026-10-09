@@ -83,7 +83,7 @@
             <button onclick="openProfileModal()" class="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition">
                 <div class="w-7 h-7 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs" id="userAvatarInitials">CP</div>
                 <span class="text-sm font-medium hidden sm:inline" id="userNameDisplay">Christian</span>
-                <span class="text-[10px] bg-slate-800 text-brand-400 px-1.5 py-0.5 rounded font-mono border border-slate-700">v1.4</span>
+                <span class="text-[10px] bg-slate-800 text-brand-400 px-1.5 py-0.5 rounded font-mono border border-slate-700">v1.5</span>
             </button>
             <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition">
                 <i data-lucide="moon" class="w-4 h-4" id="themeIcon"></i>
@@ -203,7 +203,7 @@
             <div class="absolute top-4 right-4 z-[1000] pointer-events-auto flex space-x-2">
                 <button onclick="enableMapPinMode()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold px-4 py-2.5 rounded-2xl text-sm flex items-center space-x-2 shadow-2xl transition cursor-pointer">
                     <i data-lucide="map-pin" class="w-4 h-4"></i>
-                    <span>Spot auf Karte setzen</span>
+                    <span>Spot hinzufügen</span>
                 </button>
             </div>
             <div id="leafletMap" class="w-full h-full bg-slate-950"></div>
@@ -350,7 +350,7 @@
 
     <!-- MODAL: NEW SPOT -->
     <div id="newSpotModal" style="display: none;" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white">Neuen Fotospot hinzufügen</h3>
                 <button onclick="closeNewSpotModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -363,8 +363,18 @@
                     <option value="Architektur">Architektur</option>
                     <option value="Porträt">Porträt</option>
                 </select>
+                <input type="text" id="newSpotTags" placeholder="Tags (kommagetrennt, z.B. Sonnenuntergang, Drohne)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
                 <textarea id="newSpotDesc" placeholder="Beschreibung..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-20 resize-none focus:outline-none focus:border-brand-500"></textarea>
                 
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Foto hochladen (wird automatisch komprimiert)</label>
+                    <input type="file" id="newSpotImageFile" accept="image/*" onchange="handleImageUpload(event)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-300 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-500 file:text-slate-900 hover:file:bg-brand-600 cursor-pointer">
+                    <div id="imagePreviewContainer" class="mt-2 hidden">
+                        <img id="imagePreview" class="h-24 rounded-xl object-cover border border-slate-700" alt="Vorschau">
+                        <span class="text-[10px] text-brand-400 mt-1 block">Bild komprimiert & bereit!</span>
+                    </div>
+                </div>
+
                 <div class="space-y-1">
                     <label class="block text-xs text-slate-400">Koordinaten (Lat / Lng)</label>
                     <div class="flex items-center space-x-2">
@@ -374,7 +384,7 @@
                 </div>
             </div>
             <div class="flex justify-between items-center pt-2">
-                <button onclick="closeNewSpotModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition cursor-pointer">Zurück</button>
+                <button onclick="closeNewSpotModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition cursor-pointer">Abbrechen</button>
                 <button onclick="saveNewSpot()" class="px-5 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold transition cursor-pointer">Speichern</button>
             </div>
         </div>
@@ -433,8 +443,8 @@
                 <textarea id="marketDesc" placeholder="Beschreibung..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-20 resize-none"></textarea>
             </div>
             <div class="flex justify-between items-center pt-2">
-                <button onclick="closeNewMarketModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition cursor-pointer">Zurück</button>
-                <button onclick="saveNewMarketItem()" class="px-5 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold transition cursor-pointer">Inserieren</button>
+                <button onclick="closeNewMarketModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition">Zurück</button>
+                <button onclick="saveNewMarketItem()" class="px-5 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold transition">Inserieren</button>
             </div>
         </div>
     </div>
@@ -475,13 +485,14 @@
         let markersLayer = null;
         let pickingMarker = null;
         let spotOpenedFromMap = false;
+        let compressedSpotImage = '';
         let currentCategoryFilter = 'all';
         let currentMarketFilter = 'all';
         let isPickingLocation = false;
 
         let spots = JSON.parse(localStorage.getItem('lensconnect_spots')) || [
-            { id: 1, title: 'Burgruine Landskron', category: 'Urbex / Lost Place', lat: 46.621, lng: 13.904, desc: 'Toller Ausblick über den Villacher Raum, perfekt bei Sonnenuntergang.' },
-            { id: 2, title: 'Wörthersee Ostbucht', category: 'Landschaft', lat: 46.622, lng: 14.286, desc: 'Spiegelungen und Stege zur blauen Stunde.' }
+            { id: 1, title: 'Burgruine Landskron', category: 'Urbex / Lost Place', tags: 'Ruine, Aussicht', lat: 46.621, lng: 13.904, desc: 'Toller Ausblick über den Villacher Raum, perfekt bei Sonnenuntergang.', author: 'Christian', image: '' },
+            { id: 2, title: 'Wörthersee Ostbucht', category: 'Landschaft', tags: 'See, Spiegelung', lat: 46.622, lng: 14.286, desc: 'Spiegelungen und Stege zur blauen Stunde.', author: 'Christian', image: '' }
         ];
 
         let marketItems = JSON.parse(localStorage.getItem('lensconnect_market')) || [
@@ -619,10 +630,54 @@
             spots.forEach(spot => {
                 if(spot.lat && spot.lng) {
                     const marker = L.marker([spot.lat, spot.lng]);
-                    marker.bindPopup(`<b>${spot.title}</b><br><span class="text-xs text-brand-600">${spot.category}</span><p class="mt-1 text-xs">${spot.desc}</p>`);
+                    marker.bindPopup(`<b>${spot.title}</b><br><span class="text-xs text-brand-600">${spot.category}</span><p class="mt-1 text-xs">${spot.desc}</p><span class="text-[10px] text-slate-500 block mt-1">Von: ${spot.author || 'Christian'}</span>`);
                     markersLayer.addLayer(marker);
                 }
             });
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const maxDim = 800;
+
+                    if (width > height) {
+                        if (width > maxDim) {
+                            height *= maxDim / width;
+                            width = maxDim;
+                        }
+                    } else {
+                        if (height > maxDim) {
+                            width *= maxDim / height;
+                            height = maxDim;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    compressedSpotImage = canvas.toDataURL('image/jpeg', 0.7);
+
+                    const preview = document.getElementById('imagePreview');
+                    const previewContainer = document.getElementById('imagePreviewContainer');
+                    if(preview && previewContainer) {
+                        preview.src = compressedSpotImage;
+                        previewContainer.classList.remove('hidden');
+                    }
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         }
 
         function renderSpots() {
@@ -634,20 +689,26 @@
 
             spots.forEach(spot => {
                 if(currentCategoryFilter !== 'all' && spot.category !== currentCategoryFilter) return;
-                if(searchVal && !spot.title.toLowerCase().includes(searchVal) && !spot.desc.toLowerCase().includes(searchVal)) return;
+                if(searchVal && !spot.title.toLowerCase().includes(searchVal) && !spot.desc.toLowerCase().includes(searchVal) && !spot.tags?.toLowerCase().includes(searchVal)) return;
 
                 const card = document.createElement('div');
                 card.className = "bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg space-y-3 flex flex-col justify-between hover:border-brand-500/50 transition";
+                
+                let imgHtml = spot.image ? `<img src="${spot.image}" class="w-full h-36 object-cover rounded-xl mb-2 border border-slate-700">` : '';
+                let tagsHtml = spot.tags ? `<div class="flex flex-wrap gap-1 mt-1">${spot.tags.split(',').map(t => `<span class="text-[10px] bg-slate-900 text-brand-400 px-2 py-0.5 rounded border border-slate-700/80">#${t.trim()}</span>`).join('')}</div>` : '';
+
                 card.innerHTML = `
                     <div class="space-y-2">
+                        ${imgHtml}
                         <div class="flex justify-between items-start">
                             <h3 class="font-semibold text-white text-base">${spot.title}</h3>
                             <span class="text-xs bg-slate-900 text-brand-400 px-2.5 py-1 rounded-lg border border-slate-700">${spot.category}</span>
                         </div>
                         <p class="text-xs text-slate-400 line-clamp-3">${spot.desc}</p>
+                        ${tagsHtml}
                     </div>
                     <div class="pt-3 border-t border-slate-700/50 flex justify-between items-center text-xs">
-                        <span class="text-slate-500">Lat: ${spot.lat?.toFixed(2)}, Lng: ${spot.lng?.toFixed(2)}</span>
+                        <span class="text-slate-500">Von: ${spot.author || 'Christian'}</span>
                         <button onclick="focusSpotOnMap(${spot.lat}, ${spot.lng})" class="text-brand-400 hover:underline font-medium flex items-center space-x-1 cursor-pointer">
                             <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
                             <span>Auf Karte zeigen</span>
@@ -685,6 +746,12 @@
 
         function openNewSpotModal(fromMap = false) {
             spotOpenedFromMap = fromMap;
+            compressedSpotImage = '';
+            const fileInput = document.getElementById('newSpotImageFile');
+            if(fileInput) fileInput.value = '';
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            if(previewContainer) previewContainer.classList.add('hidden');
+            
             const m = document.getElementById('newSpotModal');
             if(m) m.style.display = 'flex';
         }
@@ -713,9 +780,12 @@
                 id: Date.now(),
                 title: titleEl.value,
                 category: document.getElementById('newSpotCategory').value,
+                tags: document.getElementById('newSpotTags').value,
                 desc: document.getElementById('newSpotDesc').value,
                 lat: parseFloat(document.getElementById('newSpotLat').value) || (map ? map.getCenter().lat : 46.61),
-                lng: parseFloat(document.getElementById('newSpotLng').value) || (map ? map.getCenter().lng : 14.30)
+                lng: parseFloat(document.getElementById('newSpotLng').value) || (map ? map.getCenter().lng : 14.30),
+                author: userProfile.name || 'Christian',
+                image: compressedSpotImage
             };
             spots.push(newSpot);
             localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
@@ -727,7 +797,12 @@
             if(m) m.style.display = 'none';
             cancelMapPinMode();
             renderSpots();
-            switchView('spots');
+            
+            if(spotOpenedFromMap) {
+                switchView('map');
+            } else {
+                switchView('spots');
+            }
             spotOpenedFromMap = false;
         }
 
