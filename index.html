@@ -216,7 +216,7 @@
                         <h1 class="text-2xl font-bold text-white">Entdeckte Fotospots</h1>
                         <p class="text-sm text-slate-400">Durchstöbere alle gespeicherten Locations.</p>
                     </div>
-                    <button onclick="openNewSpotModal()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-medium px-4 py-2 rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow">
+                    <button onclick="openNewSpotModal(false)" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-medium px-4 py-2 rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow">
                         <i data-lucide="plus" class="w-4 h-4"></i>
                         <span>Spot hinzufügen</span>
                     </button>
@@ -348,39 +348,39 @@
     </main>
 
     <!-- MODAL: NEW SPOT -->
-    <div id="newSpotModal" style="display: none;" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm items-center justify-center p-4">
+    <div id="newSpotModal" style="display: none;" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white">Neuen Fotospot hinzufügen</h3>
-                <button onclick="closeNewSpotModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="closeNewSpotModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="space-y-3">
-                <input type="text" id="newSpotTitle" placeholder="Spot Titel (z.B. Burgruine)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
-                <select id="newSpotCategory" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                <input type="text" id="newSpotTitle" placeholder="Spot Titel (z.B. Burgruine)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
+                <select id="newSpotCategory" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
                     <option value="Landschaft">Landschaft</option>
                     <option value="Urbex / Lost Place">Urbex / Lost Place</option>
                     <option value="Architektur">Architektur</option>
                     <option value="Porträt">Porträt</option>
                 </select>
-                <textarea id="newSpotDesc" placeholder="Beschreibung..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-20 resize-none"></textarea>
+                <textarea id="newSpotDesc" placeholder="Beschreibung..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-20 resize-none focus:outline-none focus:border-brand-500"></textarea>
                 
                 <div class="space-y-1">
                     <label class="block text-xs text-slate-400">Koordinaten (Lat / Lng)</label>
                     <div class="flex items-center space-x-2">
-                        <input type="number" step="any" id="newSpotLat" placeholder="Lat" class="w-1/2 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
-                        <input type="number" step="any" id="newSpotLng" placeholder="Lng" class="w-1/2 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                        <input type="number" step="any" id="newSpotLat" placeholder="Lat" class="w-1/2 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
+                        <input type="number" step="any" id="newSpotLng" placeholder="Lng" class="w-1/2 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
                     </div>
                 </div>
             </div>
             <div class="flex justify-between items-center pt-2">
-                <button onclick="closeNewSpotModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition">Zurück</button>
-                <button onclick="saveNewSpot()" class="px-5 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold transition">Speichern</button>
+                <button onclick="closeNewSpotModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition cursor-pointer">Zurück</button>
+                <button onclick="saveNewSpot()" class="px-5 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold transition cursor-pointer">Speichern</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL: NEW MARKET ENTRY -->
-    <div id="newMarketModal" style="display: none;" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm items-center justify-center p-4">
+    <div id="newMarketModal" style="display: none;" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white">Neues Inserat erstellen</h3>
@@ -439,7 +439,7 @@
     </div>
 
     <!-- MODAL: PROFILE -->
-    <div id="profileModal" style="display: none;" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm items-center justify-center p-4">
+    <div id="profileModal" style="display: none;" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white">Profil verwalten</h3>
@@ -473,6 +473,7 @@
         let map = null;
         let markersLayer = null;
         let pickingMarker = null;
+        let spotOpenedFromMap = false;
         let currentCategoryFilter = 'all';
         let currentMarketFilter = 'all';
         let isPickingLocation = false;
@@ -586,7 +587,7 @@
                     pickingMarker = L.marker([lat, lng]).addTo(map);
 
                     cancelMapPinMode();
-                    openNewSpotModal();
+                    openNewSpotModal(true);
                 });
             } catch(e) { console.error("Map init error:", e); }
         }
@@ -677,10 +678,12 @@
 
         function filterSpots() { renderSpots(); }
 
-        function openNewSpotModal() {
+        function openNewSpotModal(fromMap = false) {
+            spotOpenedFromMap = fromMap;
             const m = document.getElementById('newSpotModal');
             if(m) m.style.display = 'flex';
         }
+
         function closeNewSpotModal() {
             const m = document.getElementById('newSpotModal');
             if(m) m.style.display = 'none';
@@ -689,7 +692,14 @@
                 pickingMarker = null;
             }
             cancelMapPinMode();
+            if(spotOpenedFromMap) {
+                switchView('map');
+            } else {
+                switchView('spots');
+            }
+            spotOpenedFromMap = false;
         }
+
         function saveNewSpot() {
             const titleEl = document.getElementById('newSpotTitle');
             if(!titleEl || !titleEl.value) { alert('Bitte Titel angeben'); return; }
@@ -708,9 +718,12 @@
                 map.removeLayer(pickingMarker);
                 pickingMarker = null;
             }
-            closeNewSpotModal();
+            const m = document.getElementById('newSpotModal');
+            if(m) m.style.display = 'none';
+            cancelMapPinMode();
             renderSpots();
             switchView('spots');
+            spotOpenedFromMap = false;
         }
 
         // Market Logic
