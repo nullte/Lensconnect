@@ -103,7 +103,7 @@
             <button onclick="openProfileModal()" class="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
                 <div class="w-7 h-7 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs" id="userAvatarInitials">CP</div>
                 <span class="text-sm font-medium hidden sm:inline" id="userNameDisplay">Christian</span>
-                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.2.8</span>
+                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.2.9</span>
             </button>
             <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition cursor-pointer">
                 <i data-lucide="moon" class="w-4 h-4" id="themeIcon"></i>
@@ -937,6 +937,8 @@
                 
                 let tagsHtml = spot.tags ? `<div class="flex flex-wrap gap-1 mt-1">${spot.tags.split(',').map(t => `<span class="text-[10px] bg-slate-900 text-brand-400 px-2 py-0.5 rounded border border-slate-700/80">#${t.trim()}</span>`).join('')}</div>` : '';
 
+                let imgHtml = spot.image ? `<div class="w-full aspect-[4/3] mt-2 mb-2 overflow-hidden rounded-xl border border-slate-700 bg-slate-900"><img src="${spot.image}" class="w-full h-full object-cover"></div>` : '';
+
                 let contributionsHtml = `
                     <div id="contrib-section-${spot.id}" class="hidden mt-3 pt-3 border-t border-slate-700/50 space-y-2">
                         <span class="text-xs font-bold text-brand-400">Berichte (${spot.contributions ? spot.contributions.length : 0}):</span>
@@ -970,6 +972,7 @@
                             <h3 class="font-semibold text-white text-base">${spot.title}</h3>
                             <span class="text-xs bg-slate-900 text-brand-400 px-2.5 py-1 rounded-lg border border-slate-700">${spot.category}</span>
                         </div>
+                        ${imgHtml}
                         <p class="text-xs text-slate-300 line-clamp-3">${spot.desc}</p>
                         ${tagsHtml}
                         ${contributionsHtml}
