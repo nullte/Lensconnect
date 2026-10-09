@@ -109,7 +109,7 @@
             <button onclick="openProfileModal()" class="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
                 <div class="w-7 h-7 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs" id="userAvatarInitials">CP</div>
                 <span class="text-sm font-medium hidden sm:inline" id="userNameDisplay">Christian</span>
-                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.1.9</span>
+                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.2.0</span>
             </button>
             <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition cursor-pointer">
                 <i data-lucide="moon" class="w-4 h-4" id="themeIcon"></i>
@@ -378,7 +378,7 @@
     <div id="newSpotModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center">
-                <h3 class="text-lg font-bold text-white">Neuen Fotospot hinzufügen</h3>
+                <h3 class="text-lg font-bold text-white" id="spotModalTitle">Neuen Fotospot hinzufügen</h3>
                 <button onclick="closeNewSpotModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="space-y-3">
@@ -390,14 +390,14 @@
                     <option value="Porträt">Porträt</option>
                 </select>
                 <input type="text" id="newSpotTags" placeholder="Tags (kommagetrennt, z.B. Sonnenuntergang, Drohne)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
-                <textarea id="newSpotDesc" placeholder="Beschreibung..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-20 resize-none focus:outline-none focus:border-brand-500"></textarea>
+                <textarea id="newSpotDesc" placeholder="Kurze Beschreibung..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-20 resize-none focus:outline-none focus:border-brand-500"></textarea>
                 
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Foto hochladen (wird automatisch komprimiert)</label>
+                    <label class="block text-xs text-slate-400 mb-1">Foto hochladen (optional)</label>
                     <input type="file" id="newSpotImageFile" accept="image/*" onchange="handleImageUpload(event)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-300 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-500 file:text-slate-900 hover:file:bg-brand-600 cursor-pointer">
                     <div id="imagePreviewContainer" class="mt-2 hidden">
                         <img id="imagePreview" class="h-24 rounded-xl object-cover border border-slate-700" alt="Vorschau">
-                        <span class="text-[10px] text-brand-400 mt-1 block">Bild komprimiert & bereit!</span>
+                        <span class="text-[10px] text-brand-400 mt-1 block">Bild bereit!</span>
                     </div>
                 </div>
 
@@ -420,23 +420,23 @@
     <div id="spotContributionModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center">
-                <h3 class="text-lg font-bold text-white">Beitrag zum Spot hinzufügen</h3>
+                <h3 class="text-lg font-bold text-white">Bericht zum Spot erfassen</h3>
                 <button onclick="closeSpotContributionModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="space-y-3">
                 <textarea id="contribText" placeholder="Teile Bedingungen, Uhrzeiten, Licht-Tipps oder Fotos zu diesem Spot..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-28 resize-none focus:outline-none focus:border-brand-500"></textarea>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Foto hinzufügen (optional, wird automatisch komprimiert)</label>
+                    <label class="block text-xs text-slate-400 mb-1">Foto hinzufügen (optional)</label>
                     <input type="file" id="contribImageFile" accept="image/*" onchange="handleContribImageUpload(event)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-300 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-500 file:text-slate-900 hover:file:bg-brand-600 cursor-pointer">
                     <div id="contribImagePreviewContainer" class="mt-2 hidden">
                         <img id="contribImagePreview" class="h-24 rounded-xl object-cover border border-slate-700" alt="Vorschau">
-                        <span class="text-[10px] text-brand-400 mt-1 block">Bild komprimiert & bereit!</span>
+                        <span class="text-[10px] text-brand-400 mt-1 block">Bild bereit!</span>
                     </div>
                 </div>
             </div>
             <div class="flex justify-between items-center pt-2">
                 <button onclick="closeSpotContributionModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition cursor-pointer">Abbrechen</button>
-                <button onclick="saveSpotContribution()" class="px-5 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold transition cursor-pointer">Beitrag speichern</button>
+                <button onclick="saveSpotContribution()" class="px-5 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold transition cursor-pointer">Bericht speichern</button>
             </div>
         </div>
     </div>
@@ -537,6 +537,7 @@
         let pickingMarker = null;
         let spotOpenedFromMap = false;
         let compressedSpotImage = '';
+        let editingSpotId = null;
         let activeContribSpotId = null;
         let compressedContribImage = '';
         let currentCategoryFilter = 'all';
@@ -822,6 +823,21 @@
             renderSpots();
         }
 
+        function toggleSpotContributions(id) {
+            const el = document.getElementById(`contrib-section-${id}`);
+            if(el) {
+                el.classList.toggle('hidden');
+            }
+        }
+
+        function deleteSpot(id) {
+            if(confirm('Möchtest du diesen Spot wirklich löschen?')) {
+                spots = spots.filter(s => s.id !== id);
+                localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
+                renderSpots();
+            }
+        }
+
         function renderSpots() {
             const container = document.getElementById('spotListContainer');
             if(!container) return;
@@ -836,14 +852,16 @@
                 const card = document.createElement('div');
                 card.className = "bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg space-y-3 flex flex-col justify-between hover:border-brand-500/50 transition";
                 
-                let imgHtml = spot.image ? `<img src="${spot.image}" class="w-full h-36 object-cover rounded-xl mb-2 border border-slate-700">` : '';
                 let tagsHtml = spot.tags ? `<div class="flex flex-wrap gap-1 mt-1">${spot.tags.split(',').map(t => `<span class="text-[10px] bg-slate-900 text-brand-400 px-2 py-0.5 rounded border border-slate-700/80">#${t.trim()}</span>`).join('')}</div>` : '';
 
-                let contributionsHtml = '';
+                let contributionsHtml = `
+                    <div id="contrib-section-${spot.id}" class="hidden mt-3 pt-3 border-t border-slate-700/50 space-y-2">
+                        <span class="text-xs font-bold text-brand-400">Berichte (${spot.contributions ? spot.contributions.length : 0}):</span>
+                        <div class="space-y-2 max-h-40 overflow-y-auto">
+                `;
                 if(spot.contributions && spot.contributions.length > 0) {
-                    contributionsHtml = `<div class="mt-3 pt-3 border-t border-slate-700/50 space-y-2"><span class="text-xs font-bold text-brand-400">Beiträge & Updates (${spot.contributions.length}):</span>`;
                     spot.contributions.forEach(c => {
-                        let cImg = c.image ? `<img src="${c.image}" class="w-full h-24 object-cover rounded-lg mt-1 border border-slate-700">` : '';
+                        let cImg = c.image ? `<img src="${c.image}" class="w-full h-20 object-cover rounded-lg mt-1 border border-slate-700">` : '';
                         contributionsHtml += `
                             <div class="bg-slate-900/65 p-2.5 rounded-xl border border-slate-700/50 text-xs space-y-1">
                                 <div class="flex justify-between font-semibold text-slate-200">
@@ -855,12 +873,13 @@
                             </div>
                         `;
                     });
-                    contributionsHtml += `</div>`;
+                } else {
+                    contributionsHtml += `<p class="text-xs text-slate-400">Noch keine Berichte vorhanden.</p>`;
                 }
+                contributionsHtml += `</div></div>`;
 
                 card.innerHTML = `
                     <div class="space-y-2">
-                        ${imgHtml}
                         <div class="flex justify-between items-start">
                             <h3 class="font-semibold text-white text-base">${spot.title}</h3>
                             <span class="text-xs bg-slate-900 text-brand-400 px-2.5 py-1 rounded-lg border border-slate-700">${spot.category}</span>
@@ -869,17 +888,14 @@
                         ${tagsHtml}
                         ${contributionsHtml}
                     </div>
-                    <div class="pt-3 border-t border-slate-700/50 flex flex-wrap gap-2 justify-between items-center text-xs">
-                        <span class="text-slate-400">Erstellt von: ${spot.author || 'Christian'}</span>
-                        <div class="flex items-center space-x-2">
-                            <button onclick="openSpotContributionModal(${spot.id})" class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/25 hover:bg-brand-500/20 transition cursor-pointer flex items-center space-x-1">
-                                <i data-lucide="plus" class="w-3 h-3"></i>
-                                <span>Beitrag hinzufügen</span>
-                            </button>
-                            <button onclick="focusSpotOnMap(${spot.lat}, ${spot.lng})" class="text-brand-400 hover:underline font-medium flex items-center space-x-1 cursor-pointer">
-                                <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
-                                <span>Karte</span>
-                            </button>
+                    <div class="pt-3 border-t border-slate-700/50 flex flex-col sm:flex-row gap-2 justify-between items-center text-xs">
+                        <div class="flex items-center space-x-1.5 w-full sm:w-auto">
+                            <button onclick="openEditSpotModal(${spot.id})" class="flex-1 sm:flex-initial bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg transition cursor-pointer font-medium">Bearbeiten</button>
+                            <button onclick="deleteSpot(${spot.id})" class="flex-1 sm:flex-initial bg-red-500/20 text-red-400 hover:bg-red-500/30 px-3 py-1.5 rounded-lg border border-red-500/30 transition cursor-pointer font-medium">Löschen</button>
+                        </div>
+                        <div class="flex items-center space-x-1.5 w-full sm:w-auto">
+                            <button onclick="openSpotContributionModal(${spot.id})" class="flex-1 sm:flex-initial bg-brand-500/10 text-brand-400 px-3 py-1.5 rounded-lg border border-brand-500/25 hover:bg-brand-500/20 transition cursor-pointer font-medium">Bericht erfassen</button>
+                            <button onclick="toggleSpotContributions(${spot.id})" class="flex-1 sm:flex-initial bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg transition cursor-pointer font-medium">Berichte lesen (${spot.contributions ? spot.contributions.length : 0})</button>
                         </div>
                     </div>
                 `;
@@ -913,13 +929,53 @@
         function filterSpots() { renderSpots(); }
 
         function openNewSpotModal(fromMap = false) {
+            editingSpotId = null;
             spotOpenedFromMap = fromMap;
             compressedSpotImage = '';
+            const modalTitle = document.getElementById('spotModalTitle');
+            if(modalTitle) modalTitle.textContent = 'Neuen Fotospot hinzufügen';
+            
+            document.getElementById('newSpotTitle').value = '';
+            document.getElementById('newSpotTags').value = '';
+            document.getElementById('newSpotDesc').value = '';
             const fileInput = document.getElementById('newSpotImageFile');
             if(fileInput) fileInput.value = '';
             const previewContainer = document.getElementById('imagePreviewContainer');
             if(previewContainer) previewContainer.classList.add('hidden');
             
+            const m = document.getElementById('newSpotModal');
+            if(m) m.style.display = 'flex';
+        }
+
+        function openEditSpotModal(id) {
+            editingSpotId = id;
+            spotOpenedFromMap = false;
+            const spot = spots.find(s => s.id === id);
+            if(!spot) return;
+
+            const modalTitle = document.getElementById('spotModalTitle');
+            if(modalTitle) modalTitle.textContent = 'Fotospot bearbeiten';
+
+            document.getElementById('newSpotTitle').value = spot.title;
+            document.getElementById('newSpotCategory').value = spot.category;
+            document.getElementById('newSpotTags').value = spot.tags || '';
+            document.getElementById('newSpotDesc').value = spot.desc || '';
+            document.getElementById('newSpotLat').value = spot.lat || '';
+            document.getElementById('newSpotLng').value = spot.lng || '';
+            compressedSpotImage = spot.image || '';
+
+            if(spot.image) {
+                const preview = document.getElementById('imagePreview');
+                const previewContainer = document.getElementById('imagePreviewContainer');
+                if(preview && previewContainer) {
+                    preview.src = spot.image;
+                    previewContainer.classList.remove('hidden');
+                }
+            } else {
+                const previewContainer = document.getElementById('imagePreviewContainer');
+                if(previewContainer) previewContainer.classList.add('hidden');
+            }
+
             const m = document.getElementById('newSpotModal');
             if(m) m.style.display = 'flex';
         }
@@ -938,25 +994,41 @@
                 switchView('spots');
             }
             spotOpenedFromMap = false;
+            editingSpotId = null;
         }
 
         function saveNewSpot() {
             const titleEl = document.getElementById('newSpotTitle');
             if(!titleEl || !titleEl.value) { alert('Bitte Titel angeben'); return; }
             
-            const newSpot = {
-                id: Date.now(),
-                title: titleEl.value,
-                category: document.getElementById('newSpotCategory').value,
-                tags: document.getElementById('newSpotTags').value,
-                desc: document.getElementById('newSpotDesc').value,
-                lat: parseFloat(document.getElementById('newSpotLat').value) || (map ? map.getCenter().lat : 46.61),
-                lng: parseFloat(document.getElementById('newSpotLng').value) || (map ? map.getCenter().lng : 14.30),
-                author: userProfile.name || 'Christian',
-                image: compressedSpotImage,
-                contributions: []
-            };
-            spots.push(newSpot);
+            if(editingSpotId) {
+                const spot = spots.find(s => s.id === editingSpotId);
+                if(spot) {
+                    spot.title = titleEl.value;
+                    spot.category = document.getElementById('newSpotCategory').value;
+                    spot.tags = document.getElementById('newSpotTags').value;
+                    spot.desc = document.getElementById('newSpotDesc').value;
+                    spot.lat = parseFloat(document.getElementById('newSpotLat').value) || spot.lat;
+                    spot.lng = parseFloat(document.getElementById('newSpotLng').value) || spot.lng;
+                    if(compressedSpotImage) spot.image = compressedSpotImage;
+                }
+                editingSpotId = null;
+            } else {
+                const newSpot = {
+                    id: Date.now(),
+                    title: titleEl.value,
+                    category: document.getElementById('newSpotCategory').value,
+                    tags: document.getElementById('newSpotTags').value,
+                    desc: document.getElementById('newSpotDesc').value,
+                    lat: parseFloat(document.getElementById('newSpotLat').value) || (map ? map.getCenter().lat : 46.61),
+                    lng: parseFloat(document.getElementById('newSpotLng').value) || (map ? map.getCenter().lng : 14.30),
+                    author: userProfile.name || 'Christian',
+                    image: compressedSpotImage,
+                    contributions: []
+                };
+                spots.push(newSpot);
+            }
+
             localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
             if(pickingMarker && map) {
                 map.removeLayer(pickingMarker);
