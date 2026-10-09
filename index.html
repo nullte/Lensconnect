@@ -109,7 +109,7 @@
             <button onclick="openProfileModal()" class="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
                 <div class="w-7 h-7 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs" id="userAvatarInitials">CP</div>
                 <span class="text-sm font-medium hidden sm:inline" id="userNameDisplay">Christian</span>
-                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.2.1</span>
+                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.2.2</span>
             </button>
             <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition cursor-pointer">
                 <i data-lucide="moon" class="w-4 h-4" id="themeIcon"></i>
@@ -690,22 +690,35 @@
                 if(spot.lat && spot.lng) {
                     const marker = L.marker([spot.lat, spot.lng]);
                     marker.bindPopup(`
-                        <div class="space-y-2 p-1 min-w-[200px]">
+                        <div class="space-y-2 p-1 min-w-[210px]">
                             <div class="flex justify-between items-start">
                                 <b class="text-sm text-slate-900">${spot.title}</b>
                             </div>
                             <span class="inline-block text-[10px] bg-brand-500/15 text-brand-700 px-2 py-0.5 rounded font-semibold">${spot.category}</span>
                             <p class="text-xs text-slate-700">${spot.desc}</p>
                             <span class="text-[10px] text-slate-500 block">Von: ${spot.author || 'Christian'}</span>
-                            <div class="pt-2 border-t border-slate-200 flex items-center gap-2">
-                                <button onclick="openEditSpotModal(${spot.id})" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs py-1.5 px-2 rounded font-medium cursor-pointer">Bearbeiten</button>
-                                <button onclick="openSpotContributionModal(${spot.id})" class="flex-1 bg-brand-500 hover:bg-brand-600 text-slate-900 text-xs py-1.5 px-2 rounded font-medium cursor-pointer">Beitrag hinzufügen</button>
+                            <div class="pt-2 border-t border-slate-200 grid grid-cols-2 gap-1.5">
+                                <button onclick="openEditSpotModal(${spot.id})" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-[11px] py-1 px-1.5 rounded font-medium cursor-pointer text-center">Bearbeiten</button>
+                                <button onclick="deleteSpot(${spot.id})" class="bg-red-100 hover:bg-red-200 text-red-700 text-[11px] py-1 px-1.5 rounded font-medium cursor-pointer text-center">Löschen</button>
+                                <button onclick="openSpotContributionModal(${spot.id})" class="bg-brand-500 hover:bg-brand-600 text-slate-900 text-[11px] py-1 px-1.5 rounded font-medium cursor-pointer text-center">Bericht erfassen</button>
+                                <button onclick="gotoSpotContributions(${spot.id})" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-[11px] py-1 px-1.5 rounded font-medium cursor-pointer text-center">Berichte (${spot.contributions ? spot.contributions.length : 0})</button>
                             </div>
                         </div>
                     `);
                     markersLayer.addLayer(marker);
                 }
             });
+        }
+
+        function gotoSpotContributions(id) {
+            switchView('spots');
+            setTimeout(() => {
+                const el = document.getElementById(`contrib-section-${id}`);
+                if(el && el.classList.contains('hidden')) {
+                    el.classList.remove('hidden');
+                }
+                el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 200);
         }
 
         function handleImageUpload(event) {
