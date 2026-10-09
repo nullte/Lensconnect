@@ -45,19 +45,23 @@
 
         <!-- Navigation Tabs -->
         <nav class="hidden md:flex items-center space-x-1 bg-slate-900/50 p-1 rounded-xl border border-slate-700/50">
-            <button onclick="switchView('map')" id="nav-map" class="nav-btn px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center space-x-2 bg-brand-500 text-slate-900 shadow">
+            <button onclick="switchView('map')" id="nav-map" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center space-x-1.5 bg-brand-500 text-slate-900 shadow">
                 <i data-lucide="map" class="w-4 h-4"></i>
-                <span>Map & Spots</span>
+                <span>Map</span>
             </button>
-            <button onclick="switchView('market')" id="nav-market" class="nav-btn px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800">
+            <button onclick="switchView('spots')" id="nav-spots" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center space-x-1.5 text-slate-400 hover:text-white hover:bg-slate-800">
+                <i data-lucide="compass" class="w-4 h-4"></i>
+                <span>Spots</span>
+            </button>
+            <button onclick="switchView('market')" id="nav-market" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center space-x-1.5 text-slate-400 hover:text-white hover:bg-slate-800">
                 <i data-lucide="store" class="w-4 h-4"></i>
-                <span>Marktplatz</span>
+                <span>Markt</span>
             </button>
-            <button onclick="switchView('tools')" id="nav-tools" class="nav-btn px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800">
+            <button onclick="switchView('tools')" id="nav-tools" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center space-x-1.5 text-slate-400 hover:text-white hover:bg-slate-800">
                 <i data-lucide="sun" class="w-4 h-4"></i>
-                <span>Tools & Licht</span>
+                <span>Tools</span>
             </button>
-            <button onclick="switchView('community')" id="nav-community" class="nav-btn px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800">
+            <button onclick="switchView('community')" id="nav-community" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center space-x-1.5 text-slate-400 hover:text-white hover:bg-slate-800">
                 <i data-lucide="users" class="w-4 h-4"></i>
                 <span>Community</span>
             </button>
@@ -76,62 +80,84 @@
     </header>
 
     <!-- MOBILE BOTTOM NAVIGATION -->
-    <div class="md:hidden bg-slate-800 border-t border-slate-700 h-16 flex items-center justify-around px-2 z-30 shrink-0">
+    <div class="md:hidden bg-slate-800 border-t border-slate-700 h-16 flex items-center justify-around px-1 z-30 shrink-0">
         <button onclick="switchView('map')" id="mob-nav-map" class="mob-nav-btn flex flex-col items-center justify-center flex-1 py-1 text-brand-400">
             <i data-lucide="map" class="w-5 h-5"></i>
-            <span class="text-[10px] mt-1">Map</span>
+            <span class="text-[9px] mt-1">Map</span>
+        </button>
+        <button onclick="switchView('spots')" id="mob-nav-spots" class="mob-nav-btn flex flex-col items-center justify-center flex-1 py-1 text-slate-400">
+            <i data-lucide="compass" class="w-5 h-5"></i>
+            <span class="text-[9px] mt-1">Spots</span>
         </button>
         <button onclick="switchView('market')" id="mob-nav-market" class="mob-nav-btn flex flex-col items-center justify-center flex-1 py-1 text-slate-400">
             <i data-lucide="store" class="w-5 h-5"></i>
-            <span class="text-[10px] mt-1">Markt</span>
+            <span class="text-[9px] mt-1">Markt</span>
         </button>
         <button onclick="switchView('tools')" id="mob-nav-tools" class="mob-nav-btn flex flex-col items-center justify-center flex-1 py-1 text-slate-400">
             <i data-lucide="sun" class="w-5 h-5"></i>
-            <span class="text-[10px] mt-1">Tools</span>
+            <span class="text-[9px] mt-1">Tools</span>
         </button>
         <button onclick="switchView('community')" id="mob-nav-community" class="mob-nav-btn flex flex-col items-center justify-center flex-1 py-1 text-slate-400">
             <i data-lucide="users" class="w-5 h-5"></i>
-            <span class="text-[10px] mt-1">Community</span>
+            <span class="text-[9px] mt-1">Feed</span>
         </button>
     </div>
 
     <!-- MAIN VIEW CONTAINER -->
     <main class="flex-1 relative overflow-hidden flex min-h-0">
 
-        <!-- VIEW 1: MAP & SPOTS (GETEILTER BILDSCHIRM: LINKS LISTE, RECHTS KARTE) -->
-        <div id="view-map" class="view-panel w-full h-full flex flex-col md:flex-row relative">
-            <!-- Linker Bereich: Suche, Filter & Spot-Liste -->
-            <div class="w-full md:w-96 bg-slate-800/90 backdrop-blur border-r border-slate-700 flex flex-col z-10 h-1/2 md:h-full shrink-0">
-                <div class="p-4 border-b border-slate-700 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <h2 class="font-semibold text-white flex items-center space-x-2">
-                            <i data-lucide="compass" class="w-4 h-4 text-brand-400"></i>
-                            <span>Fotospots entdecken</span>
-                        </h2>
-                        <button onclick="openNewSpotModal()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-medium px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1 transition shadow">
-                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                            <span>Spot hinzufügen</span>
-                        </button>
-                    </div>
-                    <div class="relative">
-                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
-                        <input type="text" id="spotSearchInput" oninput="filterSpots()" placeholder="Suche nach Titel, Ort..." class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-brand-500">
-                    </div>
-                    <div class="flex space-x-2 overflow-x-auto pb-1 text-xs">
-                        <button onclick="setCategoryFilter('all')" class="cat-pill px-3 py-1 rounded-full bg-brand-500 text-slate-900 font-medium whitespace-nowrap">Alle</button>
-                        <button onclick="setCategoryFilter('Landschaft')" class="cat-pill px-3 py-1 rounded-full bg-slate-700 text-slate-300 hover:bg-slate-600 whitespace-nowrap">Landschaft</button>
-                        <button onclick="setCategoryFilter('Urbex / Lost Place')" class="cat-pill px-3 py-1 rounded-full bg-slate-700 text-slate-300 hover:bg-slate-600 whitespace-nowrap">Lost Place</button>
-                        <button onclick="setCategoryFilter('Architektur')" class="cat-pill px-3 py-1 rounded-full bg-slate-700 text-slate-300 hover:bg-slate-600 whitespace-nowrap">Architektur</button>
-                        <button onclick="setCategoryFilter('Porträt')" class="cat-pill px-3 py-1 rounded-full bg-slate-700 text-slate-300 hover:bg-slate-600 whitespace-nowrap">Porträt</button>
-                    </div>
-                </div>
-                <div id="spotListContainer" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
-            </div>
-            <!-- Rechter Bereich: Leaflet Karte -->
-            <div id="leafletMap" class="flex-1 h-1/2 md:h-full bg-slate-950"></div>
+        <!-- BANNER FOR MAP PIN PICKING MODE -->
+        <div id="mapPickingBanner" class="absolute top-4 left-1/2 -translate-x-1/2 z-40 bg-brand-500 text-slate-900 px-4 py-2 rounded-2xl shadow-2xl font-medium text-sm flex items-center space-x-3 hidden">
+            <span>📍 Klicke auf die gewünschte Stelle auf der Karte, um den Spot zu platzieren.</span>
+            <button onclick="cancelPickingLocation()" class="bg-slate-900 text-white px-2.5 py-1 rounded-xl text-xs font-bold hover:bg-slate-800">Abbrechen</button>
         </div>
 
-        <!-- VIEW 2: MARKTPLATZ -->
+        <!-- VIEW 1: MAP (REINE KARTE IM VOLLBILD) -->
+        <div id="view-map" class="view-panel w-full h-full relative flex flex-col">
+            <div class="absolute top-4 right-4 z-20 flex space-x-2">
+                <button onclick="openNewSpotModal()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold px-4 py-2.5 rounded-2xl text-sm flex items-center space-x-2 shadow-xl transition">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span>Spot hinzufügen</span>
+                </button>
+            </div>
+            <div id="leafletMap" class="w-full h-full bg-slate-950"></div>
+        </div>
+
+        <!-- VIEW 2: SPOTS LISTE (EIGENER MENÜPUNKT) -->
+        <div id="view-spots" class="view-panel w-full h-full hidden flex-col overflow-y-auto p-4 lg:p-8 space-y-6">
+            <div class="max-w-5xl mx-auto w-full space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-700">
+                    <div>
+                        <h1 class="text-2xl font-bold text-white">Entdeckte Fotospots</h1>
+                        <p class="text-sm text-slate-400">Durchstöbere alle gespeicherten Locations.</p>
+                    </div>
+                    <button onclick="openNewSpotModal()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-medium px-4 py-2 rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Spot hinzufügen</span>
+                    </button>
+                </div>
+
+                <!-- Filter & Search Bar -->
+                <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
+                    <div class="relative w-full sm:w-80">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+                        <input type="text" id="spotSearchInput" oninput="filterSpots()" placeholder="Suche nach Titel, Ort..." class="w-full bg-slate-800 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div class="flex flex-wrap gap-2 text-xs w-full sm:w-auto">
+                        <button onclick="setCategoryFilter('all')" class="cat-pill px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium transition">Alle</button>
+                        <button onclick="setCategoryFilter('Landschaft')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition">Landschaft</button>
+                        <button onclick="setCategoryFilter('Urbex / Lost Place')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition">Lost Place</button>
+                        <button onclick="setCategoryFilter('Architektur')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition">Architektur</button>
+                        <button onclick="setCategoryFilter('Porträt')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition">Porträt</button>
+                    </div>
+                </div>
+
+                <!-- Spot Cards Grid -->
+                <div id="spotListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2"></div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: MARKTPLATZ -->
         <div id="view-market" class="view-panel w-full h-full hidden flex-col overflow-y-auto p-4 lg:p-8 space-y-6">
             <div class="max-w-6xl mx-auto w-full">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-700">
@@ -157,7 +183,7 @@
             </div>
         </div>
 
-        <!-- VIEW 3: TOOLS & LICHT -->
+        <!-- VIEW 4: TOOLS & LICHT -->
         <div id="view-tools" class="view-panel w-full h-full hidden flex-col overflow-y-auto p-4 lg:p-8 space-y-6">
             <div class="max-w-4xl mx-auto w-full space-y-6">
                 <div>
@@ -218,7 +244,7 @@
             </div>
         </div>
 
-        <!-- VIEW 4: COMMUNITY -->
+        <!-- VIEW 5: COMMUNITY -->
         <div id="view-community" class="view-panel w-full h-full hidden flex-col overflow-y-auto p-4 lg:p-8 space-y-6">
             <div class="max-w-4xl mx-auto w-full space-y-6">
                 <div>
@@ -254,9 +280,18 @@
                     <option value="Porträt">Porträt</option>
                 </select>
                 <textarea id="newSpotDesc" placeholder="Beschreibung..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-20 resize-none"></textarea>
-                <div class="grid grid-cols-2 gap-3">
-                    <input type="number" step="any" id="newSpotLat" placeholder="Latitude (optional)" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
-                    <input type="number" step="any" id="newSpotLng" placeholder="Longitude (optional)" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                
+                <!-- Coordinates Picker Field -->
+                <div class="space-y-1">
+                    <label class="block text-xs text-slate-400">Koordinaten (Lat / Lng)</label>
+                    <div class="flex items-center space-x-2">
+                        <input type="number" step="any" id="newSpotLat" placeholder="Lat" class="w-1/2 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                        <input type="number" step="any" id="newSpotLng" placeholder="Lng" class="w-1/2 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                    </div>
+                    <button type="button" onclick="startPickingLocation()" class="w-full mt-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-brand-400 font-medium py-2 rounded-xl text-xs flex items-center justify-center space-x-2 transition">
+                        <i data-lucide="map-pin" class="w-4 h-4"></i>
+                        <span>📍 Pin direkt auf der Karte auswählen</span>
+                    </button>
                 </div>
             </div>
             <div class="flex justify-end space-x-3 pt-2">
@@ -363,6 +398,7 @@
         let markersLayer = null;
         let currentCategoryFilter = 'all';
         let currentMarketFilter = 'all';
+        let isPickingLocation = false;
 
         let spots = JSON.parse(localStorage.getItem('lensconnect_spots')) || [
             { id: 1, title: 'Burgruine Landskron', category: 'Urbex / Lost Place', lat: 46.621, lng: 13.904, desc: 'Toller Ausblick über den Villacher Raum, perfekt bei Sonnenuntergang.' },
@@ -406,12 +442,14 @@
                 target.classList.add('flex');
             }
 
+            // Update Desktop Nav
             document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.className = "nav-btn px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800";
+                btn.className = "nav-btn px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center space-x-1.5 text-slate-400 hover:text-white hover:bg-slate-800";
             });
             const activeNav = document.getElementById('nav-' + viewName);
-            if(activeNav) activeNav.className = "nav-btn px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center space-x-2 bg-brand-500 text-slate-900 shadow";
+            if(activeNav) activeNav.className = "nav-btn px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center space-x-1.5 bg-brand-500 text-slate-900 shadow";
 
+            // Update Mobile Nav
             document.querySelectorAll('.mob-nav-btn').forEach(btn => btn.className = "mob-nav-btn flex flex-col items-center justify-center flex-1 py-1 text-slate-400");
             const activeMob = document.getElementById('mob-nav-' + viewName);
             if(activeMob) activeMob.className = "mob-nav-btn flex flex-col items-center justify-center flex-1 py-1 text-brand-400";
@@ -451,26 +489,42 @@
             if(map || !document.getElementById('leafletMap')) return;
             try {
                 map = L.map('leafletMap').setView([46.61, 14.30], 10);
-                // Official OpenStreetMap tiles (100% free, no API key required)
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; OpenStreetMap contributors',
                     maxZoom: 19
                 }).addTo(map);
+
                 markersLayer = L.layerGroup().addTo(map);
                 plotMapMarkers();
+
+                // Map click listener for picking coordinates
+                map.on('click', function(e) {
+                    if(isPickingLocation) {
+                        document.getElementById('newSpotLat').value = e.latlng.lat.toFixed(5);
+                        document.getElementById('newSpotLng').value = e.latlng.lng.toFixed(5);
+                        cancelPickingLocation();
+                        openNewSpotModal();
+                    }
+                });
             } catch(e) { console.error("Map init error:", e); }
+        }
+
+        function startPickingLocation() {
+            closeNewSpotModal();
+            isPickingLocation = true;
+            switchView('map');
+            document.getElementById('mapPickingBanner').classList.remove('hidden');
+        }
+
+        function cancelPickingLocation() {
+            isPickingLocation = false;
+            document.getElementById('mapPickingBanner').classList.add('hidden');
         }
 
         function plotMapMarkers() {
             if(!markersLayer) return;
             markersLayer.clearLayers();
-            const searchInput = document.getElementById('spotSearchInput');
-            const searchVal = searchInput ? searchInput.value.toLowerCase() : '';
-            
             spots.forEach(spot => {
-                if(currentCategoryFilter !== 'all' && spot.category !== currentCategoryFilter) return;
-                if(searchVal && !spot.title.toLowerCase().includes(searchVal) && !spot.desc.toLowerCase().includes(searchVal)) return;
-
                 if(spot.lat && spot.lng) {
                     const marker = L.marker([spot.lat, spot.lng]);
                     marker.bindPopup(`<b>${spot.title}</b><br><span class="text-xs text-brand-600">${spot.category}</span><p class="mt-1 text-xs">${spot.desc}</p>`);
@@ -491,29 +545,45 @@
                 if(searchVal && !spot.title.toLowerCase().includes(searchVal) && !spot.desc.toLowerCase().includes(searchVal)) return;
 
                 const card = document.createElement('div');
-                card.className = "bg-slate-900 border border-slate-700/70 p-3.5 rounded-xl hover:border-brand-500/50 transition cursor-pointer space-y-2";
-                card.onclick = () => {
-                    if(spot.lat && spot.lng && map) map.setView([spot.lat, spot.lng], 14);
-                };
+                card.className = "bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg space-y-3 flex flex-col justify-between hover:border-brand-500/50 transition";
                 card.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <h4 class="font-semibold text-sm text-white">${spot.title}</h4>
-                        <span class="text-[10px] bg-slate-800 text-brand-400 px-2 py-0.5 rounded-md border border-slate-700">${spot.category}</span>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-start">
+                            <h3 class="font-semibold text-white text-base">${spot.title}</h3>
+                            <span class="text-xs bg-slate-900 text-brand-400 px-2.5 py-1 rounded-lg border border-slate-700">${spot.category}</span>
+                        </div>
+                        <p class="text-xs text-slate-400 line-clamp-3">${spot.desc}</p>
                     </div>
-                    <p class="text-xs text-slate-400 line-clamp-2">${spot.desc}</p>
+                    <div class="pt-3 border-t border-slate-700/50 flex justify-between items-center text-xs">
+                        <span class="text-slate-500">Lat: ${spot.lat?.toFixed(2)}, Lng: ${spot.lng?.toFixed(2)}</span>
+                        <button onclick="focusSpotOnMap(${spot.lat}, ${spot.lng})" class="text-brand-400 hover:underline font-medium flex items-center space-x-1">
+                            <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+                            <span>Auf Karte zeigen</span>
+                        </button>
+                    </div>
                 `;
                 container.appendChild(card);
             });
+            if(window.lucide) lucide.createIcons();
             plotMapMarkers();
+        }
+
+        function focusSpotOnMap(lat, lng) {
+            switchView('map');
+            if(map && lat && lng) {
+                setTimeout(() => {
+                    map.setView([lat, lng], 14);
+                }, 150);
+            }
         }
 
         function setCategoryFilter(cat) {
             currentCategoryFilter = cat;
             document.querySelectorAll('.cat-pill').forEach(btn => {
                 if(btn.textContent.trim().toLowerCase() === cat.toLowerCase() || (cat === 'all' && btn.textContent.trim() === 'Alle')) {
-                    btn.className = "cat-pill px-3 py-1 rounded-full bg-brand-500 text-slate-900 font-medium whitespace-nowrap";
+                    btn.className = "cat-pill px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium transition";
                 } else {
-                    btn.className = "cat-pill px-3 py-1 rounded-full bg-slate-700 text-slate-300 hover:bg-slate-600 whitespace-nowrap";
+                    btn.className = "cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition";
                 }
             });
             renderSpots();
@@ -545,6 +615,7 @@
             localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
             closeNewSpotModal();
             renderSpots();
+            switchView('spots');
         }
 
         // Market Logic
