@@ -216,7 +216,7 @@
                         <h1 class="text-2xl font-bold text-white">Entdeckte Fotospots</h1>
                         <p class="text-sm text-slate-400">Durchstöbere alle gespeicherten Locations.</p>
                     </div>
-                    <button onclick="openNewSpotModal(false)" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-medium px-4 py-2 rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow">
+                    <button onclick="openNewSpotModal(false)" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-medium px-4 py-2 rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow cursor-pointer">
                         <i data-lucide="plus" class="w-4 h-4"></i>
                         <span>Spot hinzufügen</span>
                     </button>
@@ -228,11 +228,11 @@
                         <input type="text" id="spotSearchInput" oninput="filterSpots()" placeholder="Suche nach Titel, Ort..." class="w-full bg-slate-800 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-brand-500">
                     </div>
                     <div class="flex flex-wrap gap-2 text-xs w-full sm:w-auto">
-                        <button onclick="setCategoryFilter('all')" class="cat-pill px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium transition">Alle</button>
-                        <button onclick="setCategoryFilter('Landschaft')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition">Landschaft</button>
-                        <button onclick="setCategoryFilter('Urbex / Lost Place')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition">Lost Place</button>
-                        <button onclick="setCategoryFilter('Architektur')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition">Architektur</button>
-                        <button onclick="setCategoryFilter('Porträt')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition">Porträt</button>
+                        <button onclick="setCategoryFilter('all')" class="cat-pill px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium transition cursor-pointer">Alle</button>
+                        <button onclick="setCategoryFilter('Landschaft')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Landschaft</button>
+                        <button onclick="setCategoryFilter('Urbex / Lost Place')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Lost Place</button>
+                        <button onclick="setCategoryFilter('Architektur')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Architektur</button>
+                        <button onclick="setCategoryFilter('Porträt')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Porträt</button>
                     </div>
                 </div>
 
@@ -248,18 +248,18 @@
                         <h1 class="text-2xl font-bold text-white">Community Marktplatz</h1>
                         <p class="text-sm text-slate-400">Fotoshootings, Profi-Studios, Heim-Studios & Locations.</p>
                     </div>
-                    <button onclick="openNewMarketModal()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-medium px-4 py-2 rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow-lg shadow-brand-500/10">
+                    <button onclick="openNewMarketModal()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-medium px-4 py-2 rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow-lg shadow-brand-500/10 cursor-pointer">
                         <i data-lucide="plus-circle" class="w-4 h-4"></i>
                         <span>Inserat erstellen</span>
                     </button>
                 </div>
 
                 <div class="flex flex-wrap gap-2 pt-4">
-                    <button onclick="filterMarket('all')" class="market-filter-btn px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium text-xs transition">Alle anzeigen</button>
-                    <button onclick="filterMarket('biete')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition">Biete</button>
-                    <button onclick="filterMarket('suche')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition">Suche</button>
-                    <button onclick="filterMarket('shooting')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition">Fotoshootings</button>
-                    <button onclick="filterMarket('location')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition">Locations / Studios</button>
+                    <button onclick="filterMarket('all')" class="market-filter-btn px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium text-xs transition cursor-pointer">Alle anzeigen</button>
+                    <button onclick="filterMarket('biete')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Biete</button>
+                    <button onclick="filterMarket('suche')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Suche</button>
+                    <button onclick="filterMarket('shooting')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Fotoshootings</button>
+                    <button onclick="filterMarket('location')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Locations / Studios</button>
                 </div>
 
                 <div id="marketGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-6"></div>
@@ -321,7 +321,7 @@
                             </select>
                         </div>
                     </div>
-                    <button onclick="calculateND()" class="w-full bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold py-2.5 rounded-xl text-sm transition">Berechnen</button>
+                    <button onclick="calculateND()" class="w-full bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold py-2.5 rounded-xl text-sm transition cursor-pointer">Berechnen</button>
                     <div id="ndResult" class="text-center font-bold text-brand-400 text-lg pt-2"></div>
                 </div>
             </div>
@@ -338,7 +338,7 @@
                     <textarea id="communityPostInput" placeholder="Teile dein neueste Foto-Projekt..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-brand-500 resize-none h-24"></textarea>
                     <div class="flex justify-between items-center">
                         <span class="text-xs text-slate-400">Komprimierung aktiv.</span>
-                        <button onclick="submitCommunityPost()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold px-4 py-2 rounded-xl text-sm transition">Beitrag posten</button>
+                        <button onclick="submitCommunityPost()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold px-4 py-2 rounded-xl text-sm transition cursor-pointer">Beitrag posten</button>
                     </div>
                 </div>
                 <div id="communityFeedContainer" class="space-y-4"></div>
@@ -384,7 +384,7 @@
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white">Neues Inserat erstellen</h3>
-                <button onclick="closeNewMarketModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="closeNewMarketModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="space-y-4">
                 <div>
@@ -432,8 +432,8 @@
                 <textarea id="marketDesc" placeholder="Beschreibung..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-20 resize-none"></textarea>
             </div>
             <div class="flex justify-between items-center pt-2">
-                <button onclick="closeNewMarketModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition">Zurück</button>
-                <button onclick="saveNewMarketItem()" class="px-5 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold transition">Inserieren</button>
+                <button onclick="closeNewMarketModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition cursor-pointer">Zurück</button>
+                <button onclick="saveNewMarketItem()" class="px-5 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold transition cursor-pointer">Inserieren</button>
             </div>
         </div>
     </div>
@@ -443,7 +443,7 @@
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white">Profil verwalten</h3>
-                <button onclick="closeProfileModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="closeProfileModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="space-y-3">
                 <div>
@@ -452,8 +452,8 @@
                 </div>
             </div>
             <div class="flex justify-between items-center pt-2">
-                <button onclick="closeProfileModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition">Zurück</button>
-                <button onclick="saveProfile()" class="px-5 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold transition">Speichern</button>
+                <button onclick="closeProfileModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition cursor-pointer">Zurück</button>
+                <button onclick="saveProfile()" class="px-5 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold transition cursor-pointer">Speichern</button>
             </div>
         </div>
     </div>
@@ -498,7 +498,6 @@
             try {
                 if(window.lucide) lucide.createIcons();
                 initUserDisplay();
-                initMap();
                 renderSpots();
                 renderMarket();
                 renderCommunity();
@@ -531,8 +530,12 @@
             const activeMob = document.getElementById('mob-nav-' + viewName);
             if(activeMob) activeMob.className = "mob-nav-btn flex flex-col items-center justify-center flex-1 py-1 text-brand-400";
 
-            if(viewName === 'map' && map) {
-                setTimeout(() => map.invalidateSize(), 150);
+            if(viewName === 'map') {
+                if(!map) {
+                    initMap();
+                } else {
+                    setTimeout(() => map.invalidateSize(), 150);
+                }
             }
         }
 
@@ -593,6 +596,7 @@
         }
 
         function enableMapPinMode() {
+            if(!map) initMap();
             isPickingLocation = true;
             document.getElementById('mapPickingBanner').style.display = 'flex';
             if(map && map.getContainer()) {
@@ -643,7 +647,7 @@
                     </div>
                     <div class="pt-3 border-t border-slate-700/50 flex justify-between items-center text-xs">
                         <span class="text-slate-500">Lat: ${spot.lat?.toFixed(2)}, Lng: ${spot.lng?.toFixed(2)}</span>
-                        <button onclick="focusSpotOnMap(${spot.lat}, ${spot.lng})" class="text-brand-400 hover:underline font-medium flex items-center space-x-1">
+                        <button onclick="focusSpotOnMap(${spot.lat}, ${spot.lng})" class="text-brand-400 hover:underline font-medium flex items-center space-x-1 cursor-pointer">
                             <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
                             <span>Auf Karte zeigen</span>
                         </button>
@@ -668,9 +672,9 @@
             currentCategoryFilter = cat;
             document.querySelectorAll('.cat-pill').forEach(btn => {
                 if(btn.textContent.trim().toLowerCase() === cat.toLowerCase() || (cat === 'all' && btn.textContent.trim() === 'Alle')) {
-                    btn.className = "cat-pill px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium transition";
+                    btn.className = "cat-pill px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium transition cursor-pointer";
                 } else {
-                    btn.className = "cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition";
+                    btn.className = "cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer";
                 }
             });
             renderSpots();
@@ -778,10 +782,10 @@
         function filterMarket(filter) {
             currentMarketFilter = filter;
             document.querySelectorAll('.market-filter-btn').forEach(btn => {
-                btn.className = "market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition";
+                btn.className = "market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer";
             });
             if(event && event.target) {
-                event.target.className = "market-filter-btn px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium text-xs transition";
+                event.target.className = "market-filter-btn px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium text-xs transition cursor-pointer";
             }
             renderMarket();
         }
@@ -818,7 +822,7 @@
                     </div>
                     <div class="pt-3 border-t border-slate-700/50 flex justify-between items-center text-xs text-slate-400">
                         <span>Community Inserat</span>
-                        <button onclick="alert('Kontakt-Funktion')" class="text-brand-400 hover:underline font-medium">Kontaktieren</button>
+                        <button onclick="alert('Kontakt-Funktion')" class="text-brand-400 hover:underline font-medium cursor-pointer">Kontaktieren</button>
                     </div>
                 `;
                 grid.appendChild(card);
