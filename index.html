@@ -103,7 +103,7 @@
             <button onclick="openProfileModal()" class="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
                 <div class="w-7 h-7 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs" id="userAvatarInitials">CP</div>
                 <span class="text-sm font-medium hidden sm:inline" id="userNameDisplay">Christian</span>
-                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.2.6</span>
+                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.2.7</span>
             </button>
             <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition cursor-pointer">
                 <i data-lucide="moon" class="w-4 h-4" id="themeIcon"></i>
@@ -221,6 +221,10 @@
         <!-- VIEW 1: MAP -->
         <div id="view-map" class="view-panel w-full flex-1 relative hidden flex-col">
             <div class="absolute top-4 right-4 z-[1000] pointer-events-auto flex space-x-2">
+                <button onclick="locateUserOnMap()" class="bg-slate-800 hover:bg-slate-700 text-white font-semibold px-4 py-2.5 rounded-2xl text-sm flex items-center space-x-2 shadow-2xl border border-slate-700 transition cursor-pointer">
+                    <i data-lucide="crosshair" class="w-4 h-4 text-brand-400"></i>
+                    <span>Mein Standort</span>
+                </button>
                 <button onclick="enableMapPinMode()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold px-4 py-2.5 rounded-2xl text-sm flex items-center space-x-2 shadow-2xl transition cursor-pointer">
                     <i data-lucide="map-pin" class="w-4 h-4"></i>
                     <span>Spot hinzufügen</span>
@@ -468,6 +472,7 @@
         let map = null;
         let markersLayer = null;
         let pickingMarker = null;
+        let userLocationMarker = null;
         let compressedSpotImage = '';
         let editingSpotId = null;
         let activeContribSpotId = null;
@@ -633,6 +638,32 @@
             } catch(e) { console.error("Map init error:", e); }
         }
 
+        function locateUserOnMap() {
+            if(!navigator.geolocation) {
+                alert('Geolocation wird von deinem Browser nicht unterstützt.');
+                return;
+            }
+            navigator.geolocation.getCurrentPosition((position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                if(map) {
+                    map.setView([lat, lng], 15);
+                    if(userLocationMarker) {
+                        map.removeLayer(userLocationMarker);
+                    }
+                    userLocationMarker = L.marker([lat, lng], {
+                        icon: L.divIcon({
+                            className: 'custom-user-pin',
+                            html: '<div style="background-color: #22c55e; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.6);"></div>',
+                            iconSize: [16, 16]
+                        })
+                    }).addTo(map).bindPopup('Dein aktueller Standort').openPopup();
+                }
+            }, (error) => {
+                alert('Standort konnte nicht ermittelt werden. Bitte Berechtigungen prüfen.');
+            }, { enableHighAccuracy: true });
+        }
+
         function enableMapPinMode() {
             if(!map) initMap();
             isPickingLocation = true;
@@ -671,6 +702,9 @@
                                 <button onclick="deleteSpot(${spot.id})" class="bg-red-100 hover:bg-red-200 text-red-700 text-[11px] py-1 px-1.5 rounded font-medium cursor-pointer text-center">Löschen</button>
                                 <button onclick="openSpotContributionModal(${spot.id})" class="bg-brand-500 hover:bg-brand-600 text-slate-900 text-[11px] py-1 px-1.5 rounded font-medium cursor-pointer text-center">Bericht erfassen</button>
                                 <button onclick="gotoSpotContributions(${spot.id})" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-[11px] py-1 px-1.5 rounded font-medium cursor-pointer text-center">Berichte (${spot.contributions ? spot.contributions.length : 0})</button>
+                            </div>
+                            <div class="pt-1">
+                                <a href="https://www.google.com/maps/search/?api=1&query=${spot.lat},${spot.lng}" target="_blank" class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-[11px] py-1.5 px-2 rounded font-medium text-center transition shadow">🧭 Da hin navigieren</a>
                             </div>
                         </div>
                     `);
