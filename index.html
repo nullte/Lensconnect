@@ -109,7 +109,7 @@
             <button onclick="openProfileModal()" class="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
                 <div class="w-7 h-7 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs" id="userAvatarInitials">CP</div>
                 <span class="text-sm font-medium hidden sm:inline" id="userNameDisplay">Christian</span>
-                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.2.4</span>
+                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.2.5</span>
             </button>
             <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition cursor-pointer">
                 <i data-lucide="moon" class="w-4 h-4" id="themeIcon"></i>
@@ -575,13 +575,43 @@
                 renderMarket();
                 renderCommunity();
                 initTools();
-                switchView('home');
+
+                // Initialize History API state
+                history.replaceState({ view: 'home', modal: null }, '', '');
+                history.pushState({ view: 'home', modal: null }, '', '');
+
+                switchView('home', false);
             } catch(err) {
                 console.error("Init error:", err);
             }
         };
 
-        function switchView(viewName) {
+        // History API popstate listener to manage Back button without leaving page
+        window.addEventListener('popstate', (event) => {
+            hideAllModals();
+            const state = event.state;
+            if (state && state.view && state.view !== currentView) {
+                switchView(state.view, false);
+            }
+        });
+
+        function hideAllModals() {
+            const sm = document.getElementById('newSpotModal');
+            if(sm) sm.style.display = 'none';
+            const cm = document.getElementById('spotContributionModal');
+            if(cm) cm.style.display = 'none';
+            const mm = document.getElementById('newMarketModal');
+            if(mm) mm.style.display = 'none';
+            const pm = document.getElementById('profileModal');
+            if(pm) pm.style.display = 'none';
+            if(isPickingLocation) cancelMapPinMode();
+            if(pickingMarker && map) {
+                map.removeLayer(pickingMarker);
+                pickingMarker = null;
+            }
+        }
+
+        function switchView(viewName, push = true) {
             currentView = viewName;
             document.querySelectorAll('.view-panel').forEach(el => {
                 el.classList.add('hidden');
@@ -610,6 +640,10 @@
                     setTimeout(() => map.invalidateSize(), 150);
                 }
             }
+
+            if(push) {
+                history.pushState({ view: viewName, modal: null }, '', '');
+            }
         }
 
         function initUserDisplay() {
@@ -623,12 +657,12 @@
         }
 
         function openProfileModal() {
+            history.pushState({ view: currentView, modal: 'profile' }, '', '');
             const m = document.getElementById('profileModal');
             if(m) m.style.display = 'flex';
         }
         function closeProfileModal() {
-            const m = document.getElementById('profileModal');
-            if(m) m.style.display = 'none';
+            history.back();
         }
         function saveProfile() {
             const input = document.getElementById('profileNameInput');
@@ -826,6 +860,7 @@
             const textInput = document.getElementById('contribText');
             if(textInput) textInput.value = '';
             
+            history.pushState({ view: currentView, modal: 'contrib' }, '', '');
             const m = document.getElementById('spotContributionModal');
             if(m) m.style.display = 'flex';
         }
@@ -854,16 +889,13 @@
                 if(previewContainer) previewContainer.classList.add('hidden');
             }
 
+            history.pushState({ view: currentView, modal: 'contrib' }, '', '');
             const m = document.getElementById('spotContributionModal');
             if(m) m.style.display = 'flex';
         }
 
         function closeSpotContributionModal() {
-            const m = document.getElementById('spotContributionModal');
-            if(m) m.style.display = 'none';
-            activeContribSpotId = null;
-            editingContribSpotId = null;
-            editingContribId = null;
+            history.back();
         }
 
         function saveSpotContribution() {
@@ -1018,7 +1050,6 @@
         function filterSpots() { renderSpots(); }
 
         function openNewSpotModal(fromMap = false) {
-            previousView = currentView;
             editingSpotId = null;
             compressedSpotImage = '';
             const modalTitle = document.getElementById('spotModalTitle');
@@ -1032,12 +1063,12 @@
             const previewContainer = document.getElementById('imagePreviewContainer');
             if(previewContainer) previewContainer.classList.add('hidden');
             
+            history.pushState({ view: currentView, modal: 'spot' }, '', '');
             const m = document.getElementById('newSpotModal');
             if(m) m.style.display = 'flex';
         }
 
         function openEditSpotModal(id) {
-            previousView = currentView;
             editingSpotId = id;
             const spot = spots.find(s => s.id === id);
             if(!spot) return;
@@ -1065,20 +1096,13 @@
                 if(previewContainer) previewContainer.classList.add('hidden');
             }
 
+            history.pushState({ view: currentView, modal: 'spot' }, '', '');
             const m = document.getElementById('newSpotModal');
             if(m) m.style.display = 'flex';
         }
 
         function closeNewSpotModal() {
-            const m = document.getElementById('newSpotModal');
-            if(m) m.style.display = 'none';
-            if(pickingMarker && map) {
-                map.removeLayer(pickingMarker);
-                pickingMarker = null;
-            }
-            cancelMapPinMode();
-            switchView(previousView);
-            editingSpotId = null;
+            history.back();
         }
 
         function saveNewSpot() {
@@ -1118,13 +1142,11 @@
                 map.removeLayer(pickingMarker);
                 pickingMarker = null;
             }
-            const m = document.getElementById('newSpotModal');
-            if(m) m.style.display = 'none';
             cancelMapPinMode();
             renderSpots();
             plotMapMarkers();
             
-            switchView(previousView);
+            history.back();
         }
 
         // Market Logic
@@ -1142,12 +1164,12 @@
         }
 
         function openNewMarketModal() {
+            history.pushState({ view: currentView, modal: 'market' }, '', '');
             const m = document.getElementById('newMarketModal');
             if(m) m.style.display = 'flex';
         }
         function closeNewMarketModal() {
-            const m = document.getElementById('newMarketModal');
-            if(m) m.style.display = 'none';
+            history.back();
         }
 
         function saveNewMarketItem() {
@@ -1172,7 +1194,7 @@
 
             marketItems.push(newItem);
             localStorage.setItem('lensconnect_market', JSON.stringify(marketItems));
-            closeNewMarketModal();
+            history.back();
             renderMarket();
         }
 
