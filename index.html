@@ -1,893 +1,685 @@
 <!DOCTYPE html>
-<html lang="de" class="h-full dark">
+<html lang="de" class="h-full">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LensConnect - Spot-Finder, Ausrüstung & Fotocommunity</title>
-​<!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config = {
-darkMode: 'class',
-theme: {
-extend: {
-colors: {
-brand: {
-50: '#f0f9ff',
-100: '#e0f2fe',
-500: '#0284c7',
-600: '#0284c7',
-700: '#0369a1',
-800: '#075985',
-900: '#0c4a6e',
-}
-}
-}
-}
-}
-</script>
-​<!-- Leaflet CSS & JS for Maps -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-​<!-- FontAwesome Icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-​<!-- Supabase JS Client -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-​<style>
-#map { height: 100%; width: 100%; z-index: 1; }
-.custom-scrollbar::-webkit-scrollbar { width: 6px; }
-.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 3px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LensConnect – Spot-Finder & Community</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- SunCalc for Golden Hour -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#f0fdf4', 100: '#dcfce7', 500: '#22c55e', 600: '#16a34a', 700: '#15803d' }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-gray-50 dark:bg-slate-950 text-gray-800 dark:text-slate-100 flex flex-col h-screen overflow-hidden font-sans transition-colors duration-300">
-​<!-- HEADER -->
-<header class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-gray-200 dark:border-slate-800/80 h-16 flex-shrink-0 z-50">
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
-​<!-- Logo -->
-<div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('mapView')">
-<div class="bg-brand-600 text-white p-2 rounded-xl shadow-md shadow-brand-500/20">
-<i class="fa-solid fa-camera-retro text-xl"></i>
-</div>
-<span class="text-xl font-bold bg-gradient-to-r from-brand-500 to-indigo-400 bg-clip-text text-transparent">LensConnect</span>
-</div>
-​<!-- Navigation Desktop -->
-<nav class="hidden md:flex space-x-1 lg:space-x-2">
-<button onclick="switchView('mapView')" id="nav-mapView" class="nav-btn px-3 py-2 rounded-xl text-sm font-medium flex items-center space-x-2 text-brand-600 bg-brand-50 dark:bg-slate-800/80 dark:text-white">
-<i class="fa-solid fa-map-location-dot"></i> <span>Spots</span>
-</button>
-<button onclick="switchView('marketView')" id="nav-marketView" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 text-gray-600 hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-800/60">
-<i class="fa-solid fa-store"></i> <span>Marktplatz</span>
-</button>
-<button onclick="switchView('magazineView')" id="nav-magazineView" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 text-gray-600 hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-800/60">
-<i class="fa-solid fa-calculator"></i> <span>Tools & Wissen</span>
-</button>
-<button onclick="switchView('favoritesView')" id="nav-favoritesView" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 text-gray-600 hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-800/60">
-<i class="fa-solid fa-bookmark"></i> <span>Merkliste</span>
-</button>
-<button onclick="switchView('profileView')" id="nav-profileView" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 text-gray-600 hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-800/60">
-<i class="fa-solid fa-user-gear"></i> <span>Mein Profil</span>
-</button>
-</nav>
-​<!-- Right Action Controls -->
-<div class="flex items-center space-x-2">
-<div id="cloudStatusBadge" class="hidden sm:flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-<span class="hidden lg:inline" id="cloudStatusText">Supabase Sync</span>
-</div>
-​<button id="themeToggle" onclick="toggleTheme()" title="Farbschema umschalten" class="p-2.5 text-gray-500 hover:text-gray-700 dark:text-amber-400 dark:hover:text-amber-300 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800/80 transition focus:outline-none">
-<i class="fa-solid fa-sun text-lg" id="themeIcon"></i>
-</button>
-<button onclick="openNewSpotModal()" class="hidden sm:flex items-center space-x-2 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-xl font-medium shadow-sm transition">
-<i class="fa-solid fa-plus"></i> <span>Spot eintragen</span>
-</button>
-</div>
-</div>
-</header>
-​<!-- MAIN CONTAINER WITH EXPLICIT VIEWPORT HEIGHT -->
-<main class="flex-1 relative flex flex-col overflow-hidden h-[calc(100vh-4rem)]">
-​<!-- 1. MAP VIEW -->
-<section id="mapView" class="view-section flex-1 flex flex-col md:flex-row w-full h-full relative min-h-0">
-​<!-- Mobile View Toggle -->
-<div class="md:hidden flex bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 z-20 flex-shrink-0">
-<button onclick="setMobileMapTab('map')" id="mobileTabMap" class="flex-1 py-2.5 text-xs font-bold text-center text-brand-600 dark:text-brand-400 border-b-2 border-brand-600">
-<i class="fa-solid fa-map mr-1"></i> Karte
-</button>
-<button onclick="setMobileMapTab('list')" id="mobileTabList" class="flex-1 py-2.5 text-xs font-bold text-center text-gray-500 dark:text-slate-400 border-b-2 border-transparent">
-<i class="fa-solid fa-list mr-1"></i> Spot-Liste
-</button>
-</div>
-​<!-- Sidebar / List Container -->
-<div id="sidebarContainer" class="w-full md:w-96 bg-white dark:bg-slate-900/95 border-r border-gray-200 dark:border-slate-800/80 flex flex-col h-full z-10 shadow-lg flex-shrink-0">
-​<!-- Search & Filter Bar -->
-<div class="p-4 border-b border-gray-200 dark:border-slate-800/80 space-y-3 flex-shrink-0">
-<div class="relative">
-<i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 dark:text-slate-500"></i>
-<input type="text" id="spotSearchInput" onkeyup="filterSpots()" placeholder="Spot-Filter (Name, Thema)..." class="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-300 dark:border-slate-700/80 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
-</div>
-​<form onsubmit="searchMapLocation(event)" class="relative flex gap-2">
-<input type="text" id="mapGeoSearchInput" placeholder="Ort anspringen (z.B. Villach)..." class="w-full pl-3 pr-3 py-1.5 rounded-xl border border-gray-300 dark:border-slate-700/80 dark:bg-slate-800/60 dark:text-slate-100 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
-<button type="submit" class="bg-brand-600 text-white px-3 py-1.5 rounded-xl text-xs font-medium hover:bg-brand-700 transition flex items-center space-x-1 shrink-0">
-<i class="fa-solid fa-location-crosshairs"></i> <span>Fly</span>
-</button>
-</form>
-​<div class="flex gap-2 overflow-x-auto pb-1 custom-scrollbar">
-<button onclick="setCategoryFilter('all')" class="cat-btn bg-brand-600 text-white px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">Alle</button>
-<button onclick="setCategoryFilter('Landschaft')" class="cat-btn bg-gray-100 dark:bg-slate-800 dark:text-slate-300 text-gray-700 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">Landschaft</button>
-<button onclick="setCategoryFilter('Urbex / Lost Place')" class="cat-btn bg-gray-100 dark:bg-slate-800 dark:text-slate-300 text-gray-700 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">Lost Place</button>
-<button onclick="setCategoryFilter('Architektur')" class="cat-btn bg-gray-100 dark:bg-slate-800 dark:text-slate-300 text-gray-700 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">Architektur</button>
-<button onclick="setCategoryFilter('Porträt / Studio')" class="cat-btn bg-gray-100 dark:bg-slate-800 dark:text-slate-300 text-gray-700 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">Porträt</button>
-</div>
-</div>
-​<!-- Spot List -->
-<div id="spotList" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar"></div>
-</div>
-​<!-- Map Canvas Container -->
-<div id="mapCanvasContainer" class="flex-1 relative w-full h-full min-h-[300px]">
-<div id="map"></div>
-​<!-- Layer Switcher -->
-<div class="absolute top-3 right-3 z-[400] bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-1.5 rounded-2xl shadow-lg border border-gray-200/50 dark:border-slate-800/80 flex items-center space-x-1 text-xs">
-<button onclick="switchMapLayer('street')" id="mapBtn-street" class="map-style-btn px-2.5 py-1.5 rounded-xl font-medium transition bg-brand-600 text-white shadow-sm flex items-center space-x-1">
-<i class="fa-solid fa-map"></i> <span class="hidden sm:inline">Karte</span>
-</button>
-<button onclick="switchMapLayer('osmde')" id="mapBtn-osmde" class="map-style-btn px-2.5 py-1.5 rounded-xl font-medium transition text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 flex items-center space-x-1">
-<i class="fa-solid fa-compass"></i> <span class="hidden sm:inline">OSM DE</span>
-</button>
-<button onclick="switchMapLayer('satellite')" id="mapBtn-satellite" class="map-style-btn px-2.5 py-1.5 rounded-xl font-medium transition text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 flex items-center space-x-1">
-<i class="fa-solid fa-globe"></i> <span class="hidden sm:inline">Satellit</span>
-</button>
-<button onclick="switchMapLayer('topo')" id="mapBtn-topo" class="map-style-btn px-2.5 py-1.5 rounded-xl font-medium transition text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 flex items-center space-x-1">
-<i class="fa-solid fa-mountain"></i> <span class="hidden sm:inline">Outdoor</span>
-</button>
-</div>
-​<button onclick="goToCurrentLocation()" title="Meinen Standort anzeigen" class="absolute bottom-6 left-6 z-[400] bg-white dark:bg-slate-900 text-brand-600 dark:text-brand-400 hover:bg-gray-50 dark:hover:bg-slate-800 p-3 rounded-2xl shadow-xl flex items-center justify-center border border-gray-200 dark:border-slate-800 transition">
-<i class="fa-solid fa-location-arrow text-lg"></i>
-</button>
-​<button onclick="openNewSpotModal()" class="md:hidden absolute bottom-6 right-6 z-[400] bg-brand-600 text-white p-4 rounded-full shadow-xl flex items-center justify-center">
-<i class="fa-solid fa-plus text-xl"></i>
-</button>
-</div>
-</section>
-​<!-- 2. MARKTPLATZ VIEW -->
-<section id="marketView" class="view-section hidden h-full overflow-y-auto p-4 md:p-8 max-w-7xl mx-auto custom-scrollbar w-full">
-<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-<div>
-<h1 class="text-3xl font-bold text-gray-900 dark:text-slate-100">Fotografie-Kleinanzeigen</h1>
-<p class="text-gray-500 dark:text-slate-400">Finde Shootings, Models, Locations, Studios & mehr</p>
-</div>
-<button onclick="openMarketModal()" class="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-medium shadow-sm transition flex items-center justify-center space-x-2">
-<i class="fa-solid fa-bullhorn"></i> <span>Inserat erstellen</span>
-</button>
-</div>
-​<div class="flex flex-wrap gap-2 mb-6">
-<button onclick="filterMarket('all')" class="market-filter-btn bg-brand-600 text-white px-4 py-2 rounded-xl text-sm font-medium">Alle Inserate</button>
-<button onclick="filterMarket('biete')" class="market-filter-btn bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-800/80 px-4 py-2 rounded-xl text-sm font-medium">Biete</button>
-<button onclick="filterMarket('suche')" class="market-filter-btn bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-800/80 px-4 py-2 rounded-xl text-sm font-medium">Suche</button>
-</div>
-​<div id="marketGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12"></div>
-</section>
-​<!-- 3. MAGAZINE & TOOLS VIEW -->
-<section id="magazineView" class="view-section hidden h-full overflow-y-auto p-4 md:p-8 max-w-7xl mx-auto custom-scrollbar w-full">
-<div class="mb-8">
-<h1 class="text-3xl font-bold text-gray-900 dark:text-slate-100">Fotografie Tools & Wissen</h1>
-<p class="text-gray-500 dark:text-slate-400">Rechner, Belichtungs-Timer, Glossar und Packlisten für dein nächstes Shooting</p>
-</div>
-​<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-12">
-<div class="lg:col-span-1 space-y-6">
-<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-800/80">
-<h2 class="text-xl font-bold mb-4 flex items-center space-x-2 text-brand-500">
-<i class="fa-solid fa-stopwatch"></i> <span>ND-Filter Rechner & Timer</span>
-</h2>
-<div class="space-y-4">
-<div>
-<label class="block text-xs font-semibold uppercase text-gray-500 dark:text-slate-400 mb-1">Grundzeit (ohne Filter)</label>
-<select id="ndBaseTime" onchange="calculateNDTime()" class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700/80 dark:bg-slate-800/60 dark:text-slate-100 text-sm">
-<option value="0.001">1/1000 s</option>
-<option value="0.004">1/250 s</option>
-<option value="0.0166">1/60 s</option>
-<option value="1" selected>1 Sekunde</option>
-<option value="5">5 Sekunden</option>
-</select>
-</div>
-<div>
-<label class="block text-xs font-semibold uppercase text-gray-500 dark:text-slate-400 mb-1">Verwendeter ND-Filter</label>
-<select id="ndFilterFactor" onchange="calculateNDTime()" class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700/80 dark:bg-slate-800/60 dark:text-slate-100 text-sm">
-<option value="64">ND64 (6 Blenden)</option>
-<option value="1000" selected>ND1000 (10 Blenden)</option>
-<option value="32000">ND32000 (15 Blenden)</option>
-</select>
-</div>
-<div id="ndResultBox" class="mt-4 p-4 bg-gray-50 dark:bg-slate-800/50 rounded-xl border border-gray-200 dark:border-slate-700/80 text-center">
-<span class="text-xs uppercase font-bold text-gray-400 dark:text-slate-400 block mb-1">Berechnete Zeit</span>
-<span id="ndResultTime" class="text-2xl font-extrabold text-brand-600 dark:text-brand-400">1000 Sek.</span>
-</div>
-<button id="startNdTimerBtn" onclick="toggleNDTimer()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-xl transition flex items-center justify-center space-x-2 shadow">
-<i class="fa-solid fa-play" id="timerIcon"></i> <span id="timerBtnText">Timer Starten</span>
-</button>
-<div id="timerProgressDisplay" class="text-center font-mono text-2xl font-bold text-brand-600 dark:text-brand-400 hidden pt-2">00:00</div>
-</div>
-</div>
-</div>
-​<div class="lg:col-span-2 space-y-6">
-<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-800/80">
-<h2 class="text-xl font-bold mb-4 flex items-center space-x-2 text-indigo-400">
-<i class="fa-solid fa-book-open"></i> <span>Fotografie Lexikon</span>
-</h2>
-<div id="glossaryContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar"></div>
-</div>
-</div>
-</div>
-</section>
-​<!-- 4. FAVORITES VIEW -->
-<section id="favoritesView" class="view-section hidden h-full overflow-y-auto p-4 md:p-8 max-w-7xl mx-auto custom-scrollbar w-full">
-<div class="mb-8">
-<h1 class="text-3xl font-bold text-gray-900 dark:text-white">Gespeicherte Favoriten</h1>
-<p class="text-gray-500 dark:text-gray-400">Deine gemerkten Spots für spätere Ausflüge</p>
-</div>
-<div id="favoritesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12"></div>
-</section>
-​<!-- 5. PROFILE VIEW -->
-<section id="profileView" class="view-section hidden h-full overflow-y-auto p-4 md:p-8 max-w-4xl mx-auto custom-scrollbar w-full">
-<div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-200 dark:border-slate-800/80 p-6 md:p-8 space-y-6 mb-12">
-<div class="flex items-center space-x-4">
-<div class="w-20 h-20 bg-brand-100 dark:bg-brand-950/80 text-brand-600 dark:text-brand-400 border border-brand-500/20 rounded-full flex items-center justify-center text-3xl font-bold">
-<i class="fa-solid fa-user"></i>
-</div>
-<div>
-<h1 class="text-2xl font-bold text-gray-900 dark:text-slate-100" id="profileNameDisplay">Fotograf / User</h1>
-<p class="text-sm text-gray-500 dark:text-slate-400" id="profileRoleDisplay">Community Mitglied</p>
-</div>
-</div>
-<hr class="border-gray-200 dark:border-slate-800">
-<form id="profileForm" onsubmit="saveProfile(event)" class="space-y-6">
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-<div>
-<label class="block text-sm font-medium mb-1 dark:text-slate-300">Benutzername</label>
-<input type="text" id="profUsername" class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700/80 dark:bg-slate-800/60 dark:text-slate-100 text-sm">
-</div>
-<div>
-<label class="block text-sm font-medium mb-1 dark:text-slate-300">Wohnort / Region</label>
-<input type="text" id="profRegion" class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700/80 dark:bg-slate-800/60 dark:text-slate-100 text-sm">
-</div>
-</div>
-<div>
-<label class="block text-sm font-medium mb-1 dark:text-slate-300">Über mich / Bio</label>
-<textarea id="profBio" rows="3" class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700/80 dark:bg-slate-800/60 dark:text-slate-100 text-sm"></textarea>
-</div>
-<div class="border-t border-gray-200 dark:border-slate-800 pt-4 space-y-3">
-<h3 class="text-lg font-bold text-brand-500"><i class="fa-solid fa-camera mr-2"></i>Ausrüstung</h3>
-<div>
-<label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Kameras & Film</label>
-<input type="text" id="profCameras" placeholder="z.B. Sony Alpha 6400, Leica" class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 text-sm">
-</div>
-<div>
-<label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Objektive</label>
-<input type="text" id="profLenses" placeholder="z.B. 24-70mm f2.8" class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 text-sm">
-</div>
-</div>
-<button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white font-medium px-6 py-2.5 rounded-xl shadow transition">Profil Speichern</button>
-</form>
-</div>
-</section>
-​</main>
-​<!-- Mobile Navigation Footer -->
-<nav class="md:hidden bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800/80 flex justify-around py-2 z-40 flex-shrink-0">
-<button onclick="switchView('mapView')" id="mobile-nav-mapView" class="flex flex-col items-center text-xs text-brand-600 dark:text-brand-400 font-semibold">
-<i class="fa-solid fa-map-location-dot text-lg"></i> <span>Spots</span>
-</button>
-<button onclick="switchView('marketView')" id="mobile-nav-marketView" class="flex flex-col items-center text-xs text-gray-500 dark:text-slate-400">
-<i class="fa-solid fa-store text-lg"></i> <span>Markt</span>
-</button>
-<button onclick="switchView('magazineView')" id="mobile-nav-magazineView" class="flex flex-col items-center text-xs text-gray-500 dark:text-slate-400">
-<i class="fa-solid fa-calculator text-lg"></i> <span>Tools</span>
-</button>
-<button onclick="switchView('favoritesView')" id="mobile-nav-favoritesView" class="flex flex-col items-center text-xs text-gray-500 dark:text-slate-400">
-<i class="fa-solid fa-bookmark text-lg"></i> <span>Gemerkt</span>
-</button>
-<button onclick="switchView('profileView')" id="mobile-nav-profileView" class="flex flex-col items-center text-xs text-gray-500 dark:text-slate-400">
-<i class="fa-solid fa-user-gear text-lg"></i> <span>Profil</span>
-</button>
-</nav>
-​<!-- MODAL: SPOT CREATION & EDITING -->
-<div id="newSpotModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-<div class="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-200 dark:border-slate-800 relative max-h-[90vh] overflow-y-auto custom-scrollbar">
-<button onclick="closeNewSpotModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-slate-200">
-<i class="fa-solid fa-xmark text-xl"></i>
-</button>
-​<h2 id="spotModalTitle" class="text-xl font-bold mb-2 text-gray-900 dark:text-slate-100">Neuen Fotospot eintragen</h2>
-<p class="text-xs text-brand-600 dark:text-brand-400 mb-4 bg-brand-50 dark:bg-slate-800/80 p-2.5 rounded-xl border border-brand-500/20 flex items-center justify-between">
-<span><i class="fa-solid fa-circle-info mr-1"></i> Position direkt auf der Karte wählen.</span>
-<button type="button" onclick="enableMapPinPicker()" class="bg-brand-600 text-white px-3 py-1 rounded-lg text-xs font-medium hover:bg-brand-700 transition">Pin setzen</button>
-</p>
-​<form id="spotForm" onsubmit="handleSpotSubmit(event)" class="space-y-4">
-<div>
-<label class="block text-xs font-semibold uppercase text-gray-500 dark:text-slate-400 mb-1">Titel des Spots</label>
-<input type="text" id="spotTitle" required placeholder="z.B. Aussichtspunkt" class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700/80 dark:bg-slate-800/60 dark:text-slate-100 text-sm">
-</div>
-​<div class="grid grid-cols-2 gap-3">
-<div>
-<label class="block text-xs font-semibold uppercase text-gray-500 dark:text-slate-400 mb-1">Kategorie</label>
-<select id="spotCategory" class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700/80 dark:bg-slate-800/60 dark:text-slate-100 text-sm">
-<option value="Landschaft">Landschaft</option>
-<option value="Urbex / Lost Place">Lost Place</option>
-<option value="Architektur">Architektur</option>
-<option value="Porträt / Studio">Porträt</option>
-</select>
-</div>
-<div>
-<label class="block text-xs font-semibold uppercase text-gray-500 dark:text-slate-400 mb-1">Beste Zeit</label>
-<select id="spotBestTime" class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700/80 dark:bg-slate-800/60 dark:text-slate-100 text-sm">
-<option value="Sonnenaufgang">Sonnenaufgang</option>
-<option value="Sonnenuntergang">Sonnenuntergang</option>
-<option value="Goldene Stunde">Goldene Stunde</option>
-<option value="Blaue Stunde">Blaue Stunde</option>
-</select>
-</div>
-</div>
-​<div class="grid grid-cols-2 gap-3">
-<div>
-<label class="block text-xs font-semibold uppercase text-gray-500 dark:text-slate-400 mb-1">Lat</label>
-<input type="number" step="any" id="spotLat" required class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700/80 dark:bg-slate-800/60 dark:text-slate-100 text-sm">
-</div>
-<div>
-<label class="block text-xs font-semibold uppercase text-gray-500 dark:text-slate-400 mb-1">Lng</label>
-<input type="number" step="any" id="spotLng" required class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700/80 dark:bg-slate-800/60 dark:text-slate-100 text-sm">
-</div>
-</div>
-​<div>
-<label class="block text-xs font-semibold uppercase text-gray-500 dark:text-slate-400 mb-1">Foto hochladen</label>
-<input type="file" id="spotImageFile" accept="image/*" class="w-full p-2 text-xs text-gray-500 dark:text-slate-400 border border-gray-300 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-800">
-</div>
-​<div>
-<label class="block text-xs font-semibold uppercase text-gray-500 dark:text-slate-400 mb-1">Beschreibung & Tipps</label>
-<textarea id="spotDescription" rows="3" placeholder="Parkmöglichkeiten..." class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700/80 dark:bg-slate-800/60 dark:text-slate-100 text-sm"></textarea>
-</div>
-​<button type="submit" id="spotSubmitBtn" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-3 rounded-xl shadow transition">Spot Speichern</button>
-</form>
-</div>
-</div>
-​<!-- MODAL: MARKET LISTING -->
-<div id="newMarketModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-<div class="bg-white dark:bg-slate-900 rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-gray-200 dark:border-slate-800 relative max-h-[90vh] overflow-y-auto custom-scrollbar">
-<button onclick="closeMarketModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-white">
-<i class="fa-solid fa-xmark text-xl"></i>
-</button>
-<h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Neues Inserat erstellen</h2>
-​<form id="marketForm" onsubmit="handleMarketSubmit(event)" class="space-y-4">
-<div class="grid grid-cols-2 gap-3">
-<div>
-<label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Aktion</label>
-<select id="marketType" class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm">
-<option value="biete">Biete</option>
-<option value="suche">Suche</option>
-</select>
-</div>
-<div>
-<label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Bereich</label>
-<select id="marketCategory" onchange="updateMarketFormFields()" class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm">
-<option value="shooting">Fotoshooting</option>
-<option value="location">Location</option>
-</select>
-</div>
-</div>
-​<div id="shootingFields" class="grid grid-cols-2 gap-3 p-3 bg-gray-50 dark:bg-slate-800/50 rounded-xl border border-gray-200 dark:border-slate-700">
-<div>
-<label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Level</label>
-<select id="marketShootingLevel" class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm">
-<option value="Profi">Profi</option>
-<option value="Amateur">Amateur</option>
-</select>
-</div>
-<div>
-<label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Preis</label>
-<input type="text" id="marketPrice" placeholder="z.B. TFP oder 50€/h" class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm">
-</div>
-</div>
-​<div id="locationFields" class="hidden p-3 bg-gray-50 dark:bg-slate-800/50 rounded-xl border border-gray-200 dark:border-slate-700">
-<label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Location Art</label>
-<select id="marketLocationType" class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm">
-<option value="Profi Studio">Profi Studio</option>
-<option value="Heim Studio">Heim Studio</option>
-<option value="Andere">Andere (Besonderes Gebäude, Garten etc.)</option>
-</select>
-</div>
-​<div>
-<label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Titel</label>
-<input type="text" id="marketTitle" required placeholder="z.B. Outdoor Porträt Shooting" class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm">
-</div>
-​<div class="grid grid-cols-2 gap-3">
-<div>
-<label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Region</label>
-<input type="text" id="marketRegion" required placeholder="z.B. Villach" class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm">
-</div>
-<div>
-<label class="block text-xs font-semibold uppercase text-gray-500 mb-1">E-Mail</label>
-<input type="email" id="marketContact" required placeholder="deine@email.de" class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm">
-</div>
-</div>
-​<div>
-<label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Beschreibung</label>
-<textarea id="marketDescription" rows="3" required placeholder="Details..." class="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white text-sm"></textarea>
-</div>
-​<button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-3 rounded-xl shadow transition">Inserat Veröffentlichen</button>
-</form>
-</div>
-</div>
-​<!-- JAVASCRIPT -->
-<script>
-const SUPABASE_URL = 'DEINE_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'DEIN_SUPABASE_ANON_KEY';
-​let supabaseClient = null;
-let currentUserUid = 'local-user';
-let editingSpotId = null;
-let activeCategoryFilter = 'all';
-​if (window.supabase && SUPABASE_URL !== 'DEINE_SUPABASE_URL') {
-supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-supabaseClient.auth.getSession().then(async ({ data: { session } }) => {
-if (!session) {
-const { data: authData } = await supabaseClient.auth.signInAnonymously();
-currentUserUid = authData?.user?.id || 'local-user';
-} else {
-currentUserUid = session.user.id;
-}
-document.getElementById('cloudStatusText').textContent = "Supabase Verbunden";
-loadProfileFromSupabase();
-loadSpotsFromSupabase();
-});
-}
-​function compressImage(file, maxWidth = 1000, maxHeight = 1000, quality = 0.75) {
-return new Promise((resolve, reject) => {
-const reader = new FileReader();
-reader.readAsDataURL(file);
-reader.onload = event => {
-const img = new Image();
-img.src = event.target.result;
-img.onload = () => {
-let width = img.width;
-let height = img.height;
-if (width > height) {
-if (width > maxWidth) { height *= maxWidth / width; width = maxWidth; }
-} else {
-if (height > maxHeight) { width *= maxHeight / height; height = maxHeight; }
-}
-const canvas = document.createElement('canvas');
-canvas.width = width;
-canvas.height = height;
-const ctx = canvas.getContext('2d');
-ctx.drawImage(img, 0, 0, width, height);
-resolve(canvas.toDataURL('image/jpeg', quality));
-};
-img.onerror = error => reject(error);
-};
-reader.onerror = error => reject(error);
-});
-}
-​function initTheme() {
-const savedTheme = localStorage.getItem('lc_theme') || 'dark';
-if (savedTheme === 'dark') {
-document.documentElement.classList.add('dark');
-updateThemeIcon(true);
-} else {
-document.documentElement.classList.remove('dark');
-updateThemeIcon(false);
-}
-}
-​function toggleTheme() {
-const isDark = document.documentElement.classList.toggle('dark');
-localStorage.setItem('lc_theme', isDark ? 'dark' : 'light');
-updateThemeIcon(isDark);
-}
-​function updateThemeIcon(isDark) {
-const icon = document.getElementById('themeIcon');
-if (icon) icon.className = isDark ? "fa-solid fa-sun text-lg text-amber-400" : "fa-solid fa-moon text-lg text-slate-600";
-}
-​function setMobileMapTab(tab) {
-const sidebar = document.getElementById('sidebarContainer');
-const mapContainer = document.getElementById('mapCanvasContainer');
-const tabMap = document.getElementById('mobileTabMap');
-const tabList = document.getElementById('mobileTabList');
-​if (tab === 'map') {
-sidebar.classList.add('hidden');
-mapContainer.classList.remove('hidden');
-tabMap.className = "flex-1 py-2.5 text-xs font-bold text-center text-brand-600 dark:text-brand-400 border-b-2 border-brand-600";
-tabList.className = "flex-1 py-2.5 text-xs font-bold text-center text-gray-500 dark:text-slate-400 border-b-2 border-transparent";
-if (map) map.invalidateSize();
-} else {
-sidebar.classList.remove('hidden');
-mapContainer.classList.add('hidden');
-tabList.className = "flex-1 py-2.5 text-xs font-bold text-center text-brand-600 dark:text-brand-400 border-b-2 border-brand-600";
-tabMap.className = "flex-1 py-2.5 text-xs font-bold text-center text-gray-500 dark:text-slate-400 border-b-2 border-transparent";
-}
-}
-​function switchView(viewId) {
-document.querySelectorAll('.view-section').forEach(sec => sec.classList.add('hidden'));
-const targetSec = document.getElementById(viewId);
-if (targetSec) targetSec.classList.remove('hidden');
-​const views = ['mapView', 'marketView', 'magazineView', 'favoritesView', 'profileView'];
-views.forEach(v => {
-const desktopBtn = document.getElementById(nav-${v});
-const mobileBtn = document.getElementById(mobile-nav-${v});
-const isActive = v === viewId;
-​if (desktopBtn) desktopBtn.className = isActive ? "nav-btn px-3 py-2 rounded-xl text-sm font-medium flex items-center space-x-2 text-brand-600 bg-brand-50 dark:bg-slate-800/80 dark:text-white" : "nav-btn px-3 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 text-gray-600 hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-800/60";
-if (mobileBtn) mobileBtn.className = isActive ? "flex flex-col items-center text-xs text-brand-600 dark:text-brand-400 font-semibold" : "flex flex-col items-center text-xs text-gray-500 dark:text-slate-400";
-});
-​if (viewId === 'favoritesView') renderFavoritesGrid();
-​if (viewId === 'mapView' && map) {
-if (window.innerWidth < 768) setMobileMapTab('map');
-else {
-document.getElementById('sidebarContainer').classList.remove('hidden');
-document.getElementById('mapCanvasContainer').classList.remove('hidden');
-}
-setTimeout(() => map.invalidateSize(), 150);
-}
-}
-​let map = null;
-let markersGroup = null;
-let tileLayerInstance = null;
-let activeMarketFilter = 'all';
-let isPickingPinFromMap = false;
-​let spotsData = JSON.parse(localStorage.getItem('lc_spots')) || [
-{ id: '1', title: 'Wörthersee Südufer', category: 'Landschaft', bestTime: 'Sonnenuntergang', lat: 46.6185, lng: 14.2858, imageUrl: 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=600&q=80', description: 'Tolles Abendlicht über dem See.' }
-];
-​let favoritesIds = JSON.parse(localStorage.getItem('lc_favorites')) || [];
-​let marketListings = JSON.parse(localStorage.getItem('lc_market')) || [
-{ id: 'm1', type: 'biete', category: 'shooting', shootingLevel: 'Profi', price: 'TFP', title: 'TFP Porträt Shooting', region: 'Kärnten', description: 'Suche Models für Outdoor-Shooting.', contact: 'beispiel@fotograf.at', createdAt: new Date().toISOString() }
-];
-​const glossaryData = [
-{ term: "Belichtungsdreieck", category: "Belichtung", desc: "Zusammenspiel aus Blende, Verschlusszeit und ISO." },
-{ term: "Bokeh", category: "Optik", desc: "Ästhetische Qualität der Hintergrundunschärfe." },
-{ term: "ND-Filter", category: "Optik", desc: "Graufilter für Langzeitbelichtungen am Tag." }
-];
-​function initMap() {
-if (map) return;
-map = L.map('map', { zoomControl: false }).setView([46.6365, 13.8430], 9);
-L.control.zoom({ position: 'bottomright' }).addTo(map);
-​switchMapLayer('street');
-markersGroup = L.layerGroup().addTo(map);
-​map.on('click', function(e) {
-document.getElementById('spotLat').value = e.latlng.lat.toFixed(5);
-document.getElementById('spotLng').value = e.latlng.lng.toFixed(5);
-​if (isPickingPinFromMap) {
-isPickingPinFromMap = false;
-document.getElementById('newSpotModal')?.classList.remove('hidden');
-}
-});
-​renderSpots();
-}
-​function switchMapLayer(style) {
-if (!map) return;
-if (tileLayerInstance) map.removeLayer(tileLayerInstance);
-​let url = 'https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png';
-if (style === 'satellite') url = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
-if (style === 'topo') url = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
-​tileLayerInstance = L.tileLayer(url, { maxZoom: 19 }).addTo(map);
-​['street', 'osmde', 'satellite', 'topo'].forEach(b => {
-const btn = document.getElementById('mapBtn-' + b);
-if (btn) btn.className = (b === style) ? "map-style-btn px-2.5 py-1.5 rounded-xl font-medium transition bg-brand-600 text-white shadow-sm flex items-center space-x-1" : "map-style-btn px-2.5 py-1.5 rounded-xl font-medium transition text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 flex items-center space-x-1";
-});
-}
-​function setCategoryFilter(cat) {
-activeCategoryFilter = cat;
-document.querySelectorAll('.cat-btn').forEach(btn => {
-if (btn.textContent.toLowerCase() === cat.toLowerCase() || (cat === 'all' && btn.textContent === 'Alle')) {
-btn.className = "cat-btn bg-brand-600 text-white px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap";
-} else {
-btn.className = "cat-btn bg-gray-100 dark:bg-slate-800 dark:text-slate-300 text-gray-700 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap";
-}
-});
-renderSpots();
-}
-​function filterSpots() {
-renderSpots();
-}
-​function renderSpots() {
-if (!map || !markersGroup) return;
-markersGroup.clearLayers();
-​const searchQuery = (document.getElementById('spotSearchInput')?.value || '').toLowerCase();
-const filtered = spotsData.filter(spot => {
-const matchCat = activeCategoryFilter === 'all' || spot.category === activeCategoryFilter;
-const matchSearch = spot.title.toLowerCase().includes(searchQuery) || (spot.description || '').toLowerCase().includes(searchQuery);
-return matchCat && matchSearch;
-});
-​// Render Map Markers
-filtered.forEach(spot => {
-const marker = L.marker([spot.lat, spot.lng]);
-const isFav = favoritesIds.includes(spot.id);
-marker.bindPopup(<div class="p-2 max-w-xs text-slate-800 dark:text-slate-100"> ${spot.imageUrl ?<img src="${spot.imageUrl}" class="w-full h-24 object-cover rounded-lg mb-2">: ''} <h4 class="font-bold text-sm">${spot.title}</h4> <p class="text-xs text-brand-600">${spot.category}</p> <p class="text-xs mt-1">${spot.description || ''}</p> <div class="flex gap-2 mt-2"> <button onclick="toggleFavorite('${spot.id}')" class="text-xs bg-gray-200 dark:bg-slate-700 text-gray-800 dark:text-white px-2 py-1 rounded flex-1"> <i class="fa-solid fa-bookmark ${isFav ? 'text-amber-500' : ''}"></i> ${isFav ? 'Gemerkt' : 'Merken'} </button> <button onclick="openEditSpotModal('${spot.id}')" class="text-xs bg-brand-600 text-white px-2 py-1 rounded">Bearbeiten</button> </div> </div>);
-markersGroup.addLayer(marker);
-});
-​// Render Sidebar List
-const listEl = document.getElementById('spotList');
-if (!listEl) return;
-listEl.innerHTML = filtered.map(spot => {
-const isFav = favoritesIds.includes(spot.id);
-return <div class="bg-white dark:bg-slate-800/80 p-3 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm flex gap-3 items-center"> <img src="${spot.imageUrl || 'https://via.placeholder.com/150'}" class="w-16 h-16 rounded-lg object-cover flex-shrink-0 cursor-pointer" onclick="focusSpotOnMap(${spot.lat}, ${spot.lng})"> <div class="flex-1 min-w-0 cursor-pointer" onclick="focusSpotOnMap(${spot.lat}, ${spot.lng})"> <h3 class="font-semibold text-sm text-gray-900 dark:text-slate-100 truncate">${spot.title}</h3> <span class="text-[10px] bg-brand-500/10 text-brand-600 px-2 py-0.5 rounded">${spot.category}</span> </div> <div class="flex flex-col gap-1"> <button onclick="toggleFavorite('${spot.id}')" title="Merken" class="p-1.5 text-gray-400 hover:text-amber-500"> <i class="fa-solid fa-bookmark ${isFav ? 'text-amber-500' : ''}"></i> </button> <button onclick="openEditSpotModal('${spot.id}')" title="Bearbeiten" class="p-1.5 text-gray-400 hover:text-brand-500"> <i class="fa-solid fa-pen text-sm"></i> </button> </div> </div>;
-}).join('');
-}
-​function toggleFavorite(id) {
-if (favoritesIds.includes(id)) {
-favoritesIds = favoritesIds.filter(favId => favId !== id);
-} else {
-favoritesIds.push(id);
-}
-localStorage.setItem('lc_favorites', JSON.stringify(favoritesIds));
-renderSpots();
-if (document.getElementById('favoritesView') && !document.getElementById('favoritesView').classList.contains('hidden')) {
-renderFavoritesGrid();
-}
-}
-​function renderFavoritesGrid() {
-const grid = document.getElementById('favoritesGrid');
-if (!grid) return;
-const favSpots = spotsData.filter(s => favoritesIds.includes(s.id));
-​if (favSpots.length === 0) {
-grid.innerHTML = <div class="col-span-full text-center py-12 text-gray-400">Du hast noch keine Spots in deiner Merkliste gespeichert.</div>;
-return;
-}
-​grid.innerHTML = favSpots.map(spot => <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-gray-200 dark:border-slate-800 shadow-sm flex flex-col justify-between"> <div> <img src="${spot.imageUrl}" class="w-full h-40 object-cover rounded-xl mb-3"> <span class="text-[10px] bg-brand-500/10 text-brand-600 px-2.5 py-0.5 rounded">${spot.category}</span> <h3 class="text-lg font-bold text-gray-900 dark:text-white mt-2">${spot.title}</h3> <p class="text-xs text-gray-500 dark:text-slate-400 mt-1">${spot.description || ''}</p> </div> <div class="mt-4 pt-3 border-t border-gray-100 dark:border-slate-800 flex justify-between items-center"> <button onclick="focusSpotOnMap(${spot.lat}, ${spot.lng}); switchView('mapView');" class="text-xs bg-brand-600 text-white px-3 py-1.5 rounded-xl">Auf Karte zeigen</button> <button onclick="toggleFavorite('${spot.id}')" class="text-xs text-red-500 hover:underline">Entfernen</button> </div> </div>).join('');
-}
-​function focusSpotOnMap(lat, lng) {
-if (window.innerWidth < 768) setMobileMapTab('map');
-if (map) map.flyTo([lat, lng], 14, { duration: 1.2 });
-}
-​function goToCurrentLocation() {
-if (navigator.geolocation) {
-navigator.geolocation.getCurrentPosition(pos => {
-if (map) map.flyTo([pos.coords.latitude, pos.coords.longitude], 14);
-});
-}
-}
-​async function searchMapLocation(event) {
-event.preventDefault();
-const q = document.getElementById('mapGeoSearchInput').value;
-const res = await fetch(https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)});
-const data = await res.json();
-if (data && data.length > 0 && map) {
-map.flyTo([parseFloat(data[0].lat), parseFloat(data[0].lon)], 12);
-}
-}
-​function openNewSpotModal() {
-editingSpotId = null;
-document.getElementById('spotModalTitle').textContent = "Neuen Fotospot eintragen";
-document.getElementById('spotSubmitBtn').textContent = "Spot Speichern";
-document.getElementById('spotForm').reset();
-​const center = map ? map.getCenter() : { lat: 46.6365, lng: 13.8430 };
-document.getElementById('spotLat').value = center.lat.toFixed(5);
-document.getElementById('spotLng').value = center.lng.toFixed(5);
-document.getElementById('newSpotModal')?.classList.remove('hidden');
-}
-​function openEditSpotModal(id) {
-const spot = spotsData.find(s => s.id === id);
-if (!spot) return;
-​editingSpotId = id;
-document.getElementById('spotModalTitle').textContent = "Fotospot bearbeiten";
-document.getElementById('spotSubmitBtn').textContent = "Änderungen speichern";
-​document.getElementById('spotTitle').value = spot.title || '';
-document.getElementById('spotCategory').value = spot.category || 'Landschaft';
-document.getElementById('spotBestTime').value = spot.bestTime || 'Sonnenaufgang';
-document.getElementById('spotLat').value = spot.lat || '';
-document.getElementById('spotLng').value = spot.lng || '';
-document.getElementById('spotDescription').value = spot.description || '';
-​document.getElementById('newSpotModal')?.classList.remove('hidden');
-}
-​function closeNewSpotModal() {
-document.getElementById('newSpotModal')?.classList.add('hidden');
-editingSpotId = null;
-}
-​function enableMapPinPicker() {
-document.getElementById('newSpotModal')?.classList.add('hidden');
-switchView('mapView');
-isPickingPinFromMap = true;
-}
-​async function handleSpotSubmit(e) {
-e.preventDefault();
-const fileInput = document.getElementById('spotImageFile');
-let imageUrl = 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=600&q=80';
-​if (editingSpotId) {
-const existing = spotsData.find(s => s.id === editingSpotId);
-if (existing && existing.imageUrl) imageUrl = existing.imageUrl;
-}
-​if (fileInput.files && fileInput.files[0]) {
-try {
-imageUrl = await compressImage(fileInput.files[0], 1000, 1000, 0.75);
-} catch(err) {
-console.error("Bildkomprimierung fehlgeschlagen", err);
-}
-}
-​if (editingSpotId) {
-spotsData = spotsData.map(spot => {
-if (spot.id === editingSpotId) {
-return {
-...spot,
-title: document.getElementById('spotTitle').value,
-category: document.getElementById('spotCategory').value,
-bestTime: document.getElementById('spotBestTime').value,
-lat: parseFloat(document.getElementById('spotLat').value),
-lng: parseFloat(document.getElementById('spotLng').value),
-imageUrl: imageUrl,
-description: document.getElementById('spotDescription').value
-};
-}
-return spot;
-});
-} else {
-const newSpot = {
-id: Date.now().toString(),
-title: document.getElementById('spotTitle').value,
-category: document.getElementById('spotCategory').value,
-bestTime: document.getElementById('spotBestTime').value,
-lat: parseFloat(document.getElementById('spotLat').value),
-lng: parseFloat(document.getElementById('spotLng').value),
-imageUrl: imageUrl,
-description: document.getElementById('spotDescription').value,
-user_id: currentUserUid
-};
-spotsData.unshift(newSpot);
-}
-​localStorage.setItem('lc_spots', JSON.stringify(spotsData));
-renderSpots();
-closeNewSpotModal();
-}
-​async function loadSpotsFromSupabase() {
-if (!supabaseClient) return;
-const { data } = await supabaseClient.from('spots').select('*');
-if (data && data.length > 0) {
-spotsData = data;
-localStorage.setItem('lc_spots', JSON.stringify(spotsData));
-renderSpots();
-}
-}
-​function openMarketModal() {
-document.getElementById('marketForm').reset();
-updateMarketFormFields();
-document.getElementById('newMarketModal')?.classList.remove('hidden');
-}
-​function closeMarketModal() {
-document.getElementById('newMarketModal')?.classList.add('hidden');
-}
-​function updateMarketFormFields() {
-const category = document.getElementById('marketCategory').value;
-const shootingFields = document.getElementById('shootingFields');
-const locationFields = document.getElementById('locationFields');
-​if (category === 'shooting') {
-shootingFields.classList.remove('hidden');
-locationFields.classList.add('hidden');
-} else {
-shootingFields.classList.add('hidden');
-locationFields.classList.remove('hidden');
-}
-}
-​function handleMarketSubmit(e) {
-e.preventDefault();
-const category = document.getElementById('marketCategory').value;
-​const listing = {
-id: 'm' + Date.now(),
-type: document.getElementById('marketType').value,
-category: category,
-title: document.getElementById('marketTitle').value,
-region: document.getElementById('marketRegion').value,
-description: document.getElementById('marketDescription').value,
-contact: document.getElementById('marketContact').value,
-createdAt: new Date().toISOString()
-};
-​if (category === 'shooting') {
-listing.shootingLevel = document.getElementById('marketShootingLevel').value;
-listing.price = document.getElementById('marketPrice').value;
-} else {
-listing.locationType = document.getElementById('marketLocationType').value;
-}
-​marketListings.unshift(listing);
-localStorage.setItem('lc_market', JSON.stringify(marketListings));
-renderMarketGrid();
-closeMarketModal();
-}
-​function renderMarketGrid() {
-const grid = document.getElementById('marketGrid');
-if (!grid) return;
-​const filtered = marketListings.filter(item => activeMarketFilter === 'all' || item.type === activeMarketFilter);
-​grid.innerHTML = filtered.map(item => {
-const subject = encodeURIComponent(Anfrage zu Anzeige: ${item.title});
-const body = encodeURIComponent(Hallo,\n\nich interessiere mich für deine Anzeige "${item.title}" auf LensConnect.\n\nBeste Grüße);
-const mailtoLink = mailto:${item.contact}?subject=${subject}&body=${body};
-​let detailBadgeHTML = item.category === 'shooting'
-? <div class="flex items-center gap-2 mt-2"><span class="text-[10px] font-semibold bg-indigo-500/10 text-indigo-500 px-2.5 py-0.5 rounded-full">Shooting (${item.shootingLevel})</span><span class="text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 px-2.5 py-0.5 rounded-full">💰 ${item.price}</span></div>
-: <div class="flex items-center gap-2 mt-2"><span class="text-[10px] font-semibold bg-amber-500/10 text-amber-600 px-2.5 py-0.5 rounded-full">Location: ${item.locationType}</span></div>;
-​return <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-gray-200 dark:border-slate-800 shadow-sm flex flex-col justify-between"> <div> <div class="flex items-center justify-between"> <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-brand-500/10 text-brand-600">${item.type.toUpperCase()}</span> <span class="text-xs text-gray-400"><i class="fa-solid fa-location-dot mr-1"></i>${item.region}</span> </div> <h3 class="text-lg font-bold text-gray-900 dark:text-white mt-3">${item.title}</h3> ${detailBadgeHTML} <p class="text-sm text-gray-600 dark:text-slate-300 mt-3 mb-4">${item.description}</p> </div> <div class="pt-3 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between"> <span class="text-xs text-gray-400 font-mono">${item.contact}</span> <a href="${mailtoLink}" class="bg-brand-600 hover:bg-brand-700 text-white text-xs px-3 py-2 rounded-xl transition flex items-center space-x-1.5 shadow-sm"> <i class="fa-solid fa-envelope"></i> <span>Anfragen</span> </a> </div> </div>;
-}).join('');
-}
-​function filterMarket(filterKey) {
-activeMarketFilter = filterKey;
-document.querySelectorAll('.market-filter-btn').forEach(btn => {
-if (btn.textContent.toLowerCase().includes(filterKey) || (filterKey === 'all' && btn.textContent.includes('Alle'))) {
-btn.className = "market-filter-btn bg-brand-600 text-white px-4 py-2 rounded-xl text-sm font-medium";
-} else {
-btn.className = "market-filter-btn bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-300 border border-gray-200 dark:border-slate-800/80 px-4 py-2 rounded-xl text-sm font-medium";
-}
-});
-renderMarketGrid();
-}
-​async function loadProfileFromSupabase() {
-if (!supabaseClient || currentUserUid === 'local-user') return;
-const { data } = await supabaseClient.from('profiles').select('*').eq('id', currentUserUid).single();
-if (data) {
-document.getElementById('profUsername').value = data.username || '';
-document.getElementById('profRegion').value = data.region || '';
-document.getElementById('profBio').value = data.bio || '';
-document.getElementById('profCameras').value = data.cameras || '';
-document.getElementById('profLenses').value = data.lenses || '';
-updateProfileDisplay(data);
-}
-}
-​async function saveProfile(e) {
-e.preventDefault();
-const prof = {
-id: currentUserUid,
-username: document.getElementById('profUsername').value,
-region: document.getElementById('profRegion').value,
-bio: document.getElementById('profBio').value,
-cameras: document.getElementById('profCameras').value,
-lenses: document.getElementById('profLenses').value,
-updated_at: new Date()
-};
-​localStorage.setItem('lc_profile', JSON.stringify(prof));
-updateProfileDisplay(prof);
-​if (supabaseClient && currentUserUid !== 'local-user') {
-await supabaseClient.from('profiles').upsert(prof);
-}
-}
-​function updateProfileDisplay(prof) {
-if (prof.username && document.getElementById('profileNameDisplay')) {
-document.getElementById('profileNameDisplay').textContent = prof.username;
-}
-if (prof.region && document.getElementById('profileRoleDisplay')) {
-document.getElementById('profileRoleDisplay').textContent = Fotograf in ${prof.region};
-}
-}
-​function renderGlossary() {
-const c = document.getElementById('glossaryContainer');
-if (!c) return;
-c.innerHTML = glossaryData.map(g => <div class="p-4 rounded-xl bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700"> <h3 class="font-bold text-sm text-gray-900 dark:text-white">${g.term}</h3> <p class="text-xs text-gray-600 dark:text-slate-300 mt-1">${g.desc}</p> </div>).join('');
-}
-​function calculateNDTime() {
-const base = parseFloat(document.getElementById('ndBaseTime').value);
-const factor = parseInt(document.getElementById('ndFilterFactor').value);
-const totalSeconds = base * factor;
-const displayTime = totalSeconds >= 60 ? (totalSeconds / 60).toFixed(1) + " Min." : totalSeconds.toFixed(1) + " Sek.";
-document.getElementById('ndResultTime').textContent = displayTime;
-}
-​let timerInterval = null;
-function toggleNDTimer() {
-const display = document.getElementById('timerProgressDisplay');
-display.classList.remove('hidden');
-const base = parseFloat(document.getElementById('ndBaseTime').value);
-const factor = parseInt(document.getElementById('ndFilterFactor').value);
-let secs = Math.round(base * factor);
-​if (timerInterval) clearInterval(timerInterval);
-​timerInterval = setInterval(() => {
-secs--;
-const m = Math.floor(secs / 60).toString().padStart(2, '0');
-const s = (secs % 60).toString().padStart(2, '0');
-display.textContent = ${m}:${s};
-if (secs <= 0) {
-clearInterval(timerInterval);
-display.textContent = "Fertig!";
-}
-}, 1000);
-}
-​window.onload = function() {
-initTheme();
-initMap();
-renderMarketGrid();
-renderGlossary();
-​const localProf = JSON.parse(localStorage.getItem('lc_profile')) || {};
-updateProfileDisplay(localProf);
-if (document.getElementById('profUsername')) document.getElementById('profUsername').value = localProf.username || '';
-if (document.getElementById('profRegion')) document.getElementById('profRegion').value = localProf.region || '';
-if (document.getElementById('profBio')) document.getElementById('profBio').value = localProf.bio || '';
-if (document.getElementById('profCameras')) document.getElementById('profCameras').value = localProf.cameras || '';
-if (document.getElementById('profLenses')) document.getElementById('profLenses').value = localProf.lenses || '';
-​window.addEventListener('resize', () => { if (map) map.invalidateSize(); });
-};
-</script>
+<body class="h-full bg-slate-900 text-slate-100 flex flex-col font-sans antialiased overflow-hidden">
+
+    <!-- TOP NAVIGATION -->
+    <header class="bg-slate-800 border-b border-slate-700 h-16 flex items-center justify-between px-4 lg:px-8 z-30 shrink-0">
+        <div class="flex items-center space-x-3">
+            <div class="bg-brand-500 p-2 rounded-xl text-slate-900 shadow-lg shadow-brand-500/20">
+                <i data-lucide="camera" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">LensConnect</span>
+                <span class="hidden sm:inline-block ml-2 text-xs bg-slate-700 text-brand-400 px-2 py-0.5 rounded-full border border-slate-600">Spot & Community</span>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="hidden md:flex items-center space-x-1 bg-slate-900/50 p-1 rounded-xl border border-slate-700/50">
+            <button onclick="switchView('map')" id="nav-map" class="nav-btn px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center space-x-2 bg-brand-500 text-slate-900 shadow">
+                <i data-lucide="map" class="w-4 h-4"></i>
+                <span>Map & Spots</span>
+            </button>
+            <button onclick="switchView('market')" id="nav-market" class="nav-btn px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800">
+                <i data-lucide="store" class="w-4 h-4"></i>
+                <span>Marktplatz</span>
+            </button>
+            <button onclick="switchView('tools')" id="nav-tools" class="nav-btn px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800">
+                <i data-lucide="sun" class="w-4 h-4"></i>
+                <span>Tools & Licht</span>
+            </button>
+            <button onclick="switchView('community')" id="nav-community" class="nav-btn px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800">
+                <i data-lucide="users" class="w-4 h-4"></i>
+                <span>Community</span>
+            </button>
+        </nav>
+
+        <!-- Right User / Actions -->
+        <div class="flex items-center space-x-3">
+            <button onclick="openProfileModal()" class="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition">
+                <div class="w-7 h-7 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs" id="userAvatarInitials">CP</div>
+                <span class="text-sm font-medium hidden sm:inline" id="userNameDisplay">Gast</span>
+            </button>
+            <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition">
+                <i data-lucide="moon" class="w-4 h-4" id="themeIcon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <div class="md:hidden bg-slate-800 border-t border-slate-700 h-16 flex items-center justify-around px-2 z-30 shrink-0">
+        <button onclick="switchView('map')" id="mob-nav-map" class="mob-nav-btn flex flex-col items-center justify-center flex-1 py-1 text-brand-400">
+            <i data-lucide="map" class="w-5 h-5"></i>
+            <span class="text-[10px] mt-1">Map</span>
+        </button>
+        <button onclick="switchView('market')" id="mob-nav-market" class="mob-nav-btn flex flex-col items-center justify-center flex-1 py-1 text-slate-400">
+            <i data-lucide="store" class="w-5 h-5"></i>
+            <span class="text-[10px] mt-1">Markt</span>
+        </button>
+        <button onclick="switchView('tools')" id="mob-nav-tools" class="mob-nav-btn flex flex-col items-center justify-center flex-1 py-1 text-slate-400">
+            <i data-lucide="sun" class="w-5 h-5"></i>
+            <span class="text-[10px] mt-1">Tools</span>
+        </button>
+        <button onclick="switchView('community')" id="mob-nav-community" class="mob-nav-btn flex flex-col items-center justify-center flex-1 py-1 text-slate-400">
+            <i data-lucide="users" class="w-5 h-5"></i>
+            <span class="text-[10px] mt-1">Community</span>
+        </button>
+    </div>
+
+    <!-- MAIN VIEW CONTAINER -->
+    <main class="flex-1 relative overflow-hidden flex min-h-0">
+
+        <!-- VIEW 1: MAP & SPOTS -->
+        <div id="view-map" class="view-panel w-full h-full flex flex-col md:flex-row relative">
+            <!-- Sidebar list / Filters -->
+            <div class="w-full md:w-96 bg-slate-800/90 backdrop-blur border-r border-slate-700 flex flex-col z-10 h-1/2 md:h-full shrink-0">
+                <div class="p-4 border-b border-slate-700 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h2 class="font-semibold text-white flex items-center space-x-2">
+                            <i data-lucide="compass" class="w-4 h-4 text-brand-400"></i>
+                            <span>Fotospots entdecken</span>
+                        </h2>
+                        <button onclick="openNewSpotModal()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-medium px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1 transition shadow">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                            <span>Spot hinzufügen</span>
+                        </button>
+                    </div>
+                    <!-- Search & Categories -->
+                    <div class="relative">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+                        <input type="text" id="spotSearchInput" oninput="filterSpots()" placeholder="Suche nach Titel, Ort..." class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div class="flex space-x-2 overflow-x-auto pb-1 text-xs">
+                        <button onclick="setCategoryFilter('all')" class="cat-pill px-3 py-1 rounded-full bg-brand-500 text-slate-900 font-medium whitespace-nowrap">Alle</button>
+                        <button onclick="setCategoryFilter('Landschaft')" class="cat-pill px-3 py-1 rounded-full bg-slate-700 text-slate-300 hover:bg-slate-600 whitespace-nowrap">Landschaft</button>
+                        <button onclick="setCategoryFilter('Urbex / Lost Place')" class="cat-pill px-3 py-1 rounded-full bg-slate-700 text-slate-300 hover:bg-slate-600 whitespace-nowrap">Lost Place</button>
+                        <button onclick="setCategoryFilter('Architektur')" class="cat-pill px-3 py-1 rounded-full bg-slate-700 text-slate-300 hover:bg-slate-600 whitespace-nowrap">Architektur</button>
+                        <button onclick="setCategoryFilter('Porträt')" class="cat-pill px-3 py-1 rounded-full bg-slate-700 text-slate-300 hover:bg-slate-600 whitespace-nowrap">Porträt</button>
+                    </div>
+                </div>
+                <!-- Spot List -->
+                <div id="spotListContainer" class="flex-1 overflow-y-auto p-4 space-y-3">
+                    <!-- Dynamic Spot Cards generated by JS -->
+                </div>
+            </div>
+            <!-- Leaflet Map Element -->
+            <div id="leafletMap" class="flex-1 h-1/2 md:h-full bg-slate-950"></div>
+        </div>
+
+        <!-- VIEW 2: MARKTER / CLASSIFIEDS -->
+        <div id="view-market" class="view-panel w-full h-full hidden flex-col overflow-y-auto p-4 lg:p-8 space-y-6">
+            <div class="max-w-6xl mx-auto w-full">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-700">
+                    <div>
+                        <h1 class="text-2xl font-bold text-white">Community Marktplatz</h1>
+                        <p class="text-sm text-slate-400">Finde Fotoshootings, Locations, Studios oder Foto-Equipment.</p>
+                    </div>
+                    <button onclick="openNewMarketModal()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-medium px-4 py-2 rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow-lg shadow-brand-500/10">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span>Inserat erstellen</span>
+                    </button>
+                </div>
+
+                <!-- Filter Badges for Market -->
+                <div class="flex flex-wrap gap-2 pt-4">
+                    <button onclick="filterMarket('all')" class="market-filter-btn px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium text-xs transition">Alle anzeigen</button>
+                    <button onclick="filterMarket('biete')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition">Biete</button>
+                    <button onclick="filterMarket('suche')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition">Suche</button>
+                    <button onclick="filterMarket('shooting')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition">Fotoshootings</button>
+                    <button onclick="filterMarket('location')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition">Locations / Studios</button>
+                </div>
+
+                <!-- Market Grid -->
+                <div id="marketGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-6">
+                    <!-- Dynamic Market Cards -->
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: TOOLS & LICHT -->
+        <div id="view-tools" class="view-panel w-full h-full hidden flex-col overflow-y-auto p-4 lg:p-8 space-y-6">
+            <div class="max-w-4xl mx-auto w-full space-y-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-white">Foto-Tools & Lichtrechner</h1>
+                    <p class="text-sm text-slate-400">Goldene Stunde Rechner, ND-Filter Timer und EXIF-Helfer.</p>
+                </div>
+
+                <!-- Golden Hour Card -->
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
+                    <div class="flex items-center space-x-3 text-brand-400">
+                        <i data-lucide="sun" class="w-6 h-6"></i>
+                        <h3 class="text-lg font-semibold text-white">Sonnenstand & Golden Hour</h3>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50">
+                            <span class="text-xs text-slate-400 block">Goldene Stunde (Morgens)</span>
+                            <span class="text-lg font-bold text-white" id="goldenMorning">-</span>
+                        </div>
+                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50">
+                            <span class="text-xs text-slate-400 block">Blaue Stunde (Abends)</span>
+                            <span class="text-lg font-bold text-white" id="blueEvening">-</span>
+                        </div>
+                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50">
+                            <span class="text-xs text-slate-400 block">Sonnenuntergang</span>
+                            <span class="text-lg font-bold text-white" id="sunsetTime">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ND Filter Calculator Card -->
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
+                    <div class="flex items-center space-x-3 text-brand-400">
+                        <i data-lucide="timer" class="w-6 h-6"></i>
+                        <h3 class="text-lg font-semibold text-white">ND-Filter Belichtungsrechner</h3>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Ausgangs-Belichtungszeit (ohne Filter)</label>
+                            <select id="ndBaseTime" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm">
+                                <option value="0.001">1/1000 s</option>
+                                <option value="0.004">1/250 s</option>
+                                <option value="0.01">1/100 s</option>
+                                <option value="0.03">1/30 s</option>
+                                <option value="0.25">1/4 s</option>
+                                <option value="1">1 Sekunde</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">ND-Filter Stärke</label>
+                            <select id="ndStrength" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm">
+                                <option value="8">ND8 (3 Blendenstufen)</option>
+                                <option value="64">ND64 (6 Blendenstufen)</option>
+                                <option value="1000">ND1000 (10 Blendenstufen)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button onclick="calculateND()" class="w-full bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold py-2.5 rounded-xl text-sm transition">Berechnen</button>
+                    <div id="ndResult" class="text-center font-bold text-brand-400 text-lg pt-2"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 4: COMMUNITY -->
+        <div id="view-community" class="view-panel w-full h-full hidden flex-col overflow-y-auto p-4 lg:p-8 space-y-6">
+            <div class="max-w-4xl mx-auto w-full space-y-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-white">Community Feed & Gruppen</h1>
+                        <p class="text-sm text-slate-400">Tausche dich mit Fotografen aus deiner Region aus.</p>
+                    </div>
+                </div>
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
+                    <textarea id="communityPostInput" placeholder="Teile dein neueste Foto-Projekt oder frage nach Tipps..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-brand-500 resize-none h-24"></textarea>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-slate-400">Bilder werden automatisch client-seitig komprimiert.</span>
+                        <button onclick="submitCommunityPost()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold px-4 py-2 rounded-xl text-sm transition">Beitrag posten</button>
+                    </div>
+                </div>
+                <div id="communityFeedContainer" class="space-y-4">
+                    <!-- Feed dynamic posts -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODAL: NEW SPOT -->
+    <div id="newSpotModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-bold text-white">Neuen Fotospot hinzufügen</h3>
+                <button onclick="closeNewSpotModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="space-y-3">
+                <input type="text" id="newSpotTitle" placeholder="Spot Titel (z.B. Burgruine am See)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                <select id="newSpotCategory" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                    <option value="Landschaft">Landschaft</option>
+                    <option value="Urbex / Lost Place">Urbex / Lost Place</option>
+                    <option value="Architektur">Architektur</option>
+                    <option value="Porträt">Porträt</option>
+                </select>
+                <textarea id="newSpotDesc" placeholder="Beschreibung, beste Tageszeit, Parkmöglichkeiten..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-20 resize-none"></textarea>
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="number" step="any" id="newSpotLat" placeholder="Latitude (optional)" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                    <input type="number" step="any" id="newSpotLng" placeholder="Longitude (optional)" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3 pt-2">
+                <button onclick="closeNewSpotModal()" class="px-4 py-2 rounded-xl text-sm text-slate-400 hover:bg-slate-800">Abbrechen</button>
+                <button onclick="saveNewSpot()" class="px-4 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: NEW MARKET ENTRY (Mit 2-stufiger Logik: Biete/Suche -> Shooting oder Location) -->
+    <div id="newMarketModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-bold text-white">Neues Inserat erstellen</h3>
+                <button onclick="closeNewMarketModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">1. Ebene: Art des Inserats</label>
+                    <select id="marketType" onchange="onMarketTypeChange()" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                        <option value="biete">Biete</option>
+                        <option value="suche">Suche</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">2. Ebene: Kategorie</label>
+                    <select id="marketCategory" onchange="onMarketCategoryChange()" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                        <option value="shooting">Fotoshooting</option>
+                        <option value="location">Location / Studio</option>
+                    </select>
+                </div>
+
+                <input type="text" id="marketTitle" placeholder="Titel (z.B. Outdoor Shooting / Mietstudio)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+
+                <!-- Dynamische Felder für Fotoshooting -->
+                <div id="shootingFields" class="space-y-3 p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Level</label>
+                        <select id="marketShootingLevel" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                            <option value="Profi">Profi</option>
+                            <option value="Amateur">Amateur</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Preisvorstellung</label>
+                        <input type="text" id="marketPrice" placeholder="z.B. TFP oder 50€ / Stunde" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                    </div>
+                </div>
+
+                <!-- Dynamische Felder für Location -->
+                <div id="locationFields" class="space-y-3 p-3 bg-slate-800/50 rounded-xl border border-slate-700/50 hidden">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Location Art</label>
+                        <select id="marketLocationType" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                            <option value="Profi Studio">Profi Studio</option>
+                            <option value="Heim Studio">Heim Studio</option>
+                            <option value="Andere">Andere (z.B. besonderes Gebäude, Garten)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <textarea id="marketDesc" placeholder="Beschreibung des Angebots..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-20 resize-none"></textarea>
+            </div>
+            <div class="flex justify-end space-x-3 pt-2">
+                <button onclick="closeNewMarketModal()" class="px-4 py-2 rounded-xl text-sm text-slate-400 hover:bg-slate-800">Abbrechen</button>
+                <button onclick="saveNewMarketItem()" class="px-4 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold">Inserieren</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: PROFILE -->
+    <div id="profileModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-bold text-white">Profil verwalten</h3>
+                <button onclick="closeProfileModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Dein Name / Handle</label>
+                    <input type="text" id="profileNameInput" placeholder="z.B. Christian" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3 pt-2">
+                <button onclick="closeProfileModal()" class="px-4 py-2 rounded-xl text-sm text-slate-400 hover:bg-slate-800">Abbrechen</button>
+                <button onclick="saveProfile()" class="px-4 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- APP LOGIC -->
+    <script>
+        // Supabase & State Configuration
+        const SUPABASE_URL = 'DEINE_SUPABASE_URL';
+        const SUPABASE_KEY = 'DEINE_SUPABASE_ANON_KEY';
+        let supabaseClient = null;
+        if (SUPABASE_URL !== 'DEINE_SUPABASE_URL' && SUPABASE_KEY !== 'DEINE_SUPABASE_ANON_KEY') {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
+
+        let currentView = 'map';
+        let map = null;
+        let markersLayer = null;
+        let currentCategoryFilter = 'all';
+        let currentMarketFilter = 'all';
+
+        // Initial Data Fallback LocalStorage
+        let spots = JSON.parse(localStorage.getItem('lensconnect_spots')) || [
+            { id: 1, title: 'Burgruine Landskron', category: 'Urbex / Lost Place', lat: 46.621, lng: 13.904, desc: 'Toller Ausblick über den Villacher Raum, perfekt bei Sonnenuntergang.' },
+            { id: 2, title: 'Wörthersee Ostbucht', category: 'Landschaft', lat: 46.622, lng: 14.286, desc: 'Spiegelungen und Stege zur blauen Stunde.' }
+        ];
+
+        let marketItems = JSON.parse(localStorage.getItem('lensconnect_market')) || [
+            { id: 1, type: 'biete', category: 'shooting', title: 'Porträt-Shooting am See', level: 'Profi', price: 'TFP oder Spende', desc: 'Suche Model für ein entspanntes Outdoor-Shooting.' },
+            { id: 2, type: 'biete', category: 'location', title: 'Heim-Studio mit Blitzanlage', locationType: 'Heim Studio', desc: 'Voll ausgestattetes kleines Studio im Keller.' }
+        ];
+
+        let communityPosts = JSON.parse(localStorage.getItem('lensconnect_posts')) || [
+            { id: 1, author: 'Christian', text: 'Erster Test mit der analogen Kamera und Kodak Portra 400. Die Farben sind einfach genial!', time: 'Vor 2 Stunden' }
+        ];
+
+        let userProfile = JSON.parse(localStorage.getItem('lensconnect_user')) || { name: 'Christian' };
+
+        window.onload = function() {
+            lucide.createIcons();
+            initUserDisplay();
+            initMap();
+            renderSpots();
+            renderMarket();
+            renderCommunity();
+            initTools();
+        };
+
+        // Navigation Switching
+        function switchView(viewName) {
+            currentView = viewName;
+            document.querySelectorAll('.view-panel').forEach(el => el.classList.add('hidden'));
+            document.getElementById('view-' + viewName).classList.remove('hidden');
+            document.getElementById('view-' + viewName).classList.add('flex');
+
+            // Update Nav Classes
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = "nav-btn px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center space-x-2 text-slate-400 hover:text-white hover:bg-slate-800";
+            });
+            const activeNav = document.getElementById('nav-' + viewName);
+            if(activeNav) activeNav.className = "nav-btn px-4 py-1.5 rounded-lg text-sm font-medium transition flex items-center space-x-2 bg-brand-500 text-slate-900 shadow";
+
+            document.querySelectorAll('.mob-nav-btn').forEach(btn => btn.className = "mob-nav-btn flex flex-col items-center justify-center flex-1 py-1 text-slate-400");
+            const activeMob = document.getElementById('mob-nav-' + viewName);
+            if(activeMob) activeMob.className = "mob-nav-btn flex flex-col items-center justify-center flex-1 py-1 text-brand-400";
+
+            if(viewName === 'map' && map) {
+                setTimeout(() => map.invalidateSize(), 200);
+            }
+        }
+
+        // User Display & Profile Modal
+        function initUserDisplay() {
+            document.getElementById('userNameDisplay').textContent = userProfile.name || 'Gast';
+            document.getElementById('profileNameInput').value = userProfile.name || '';
+            const initials = (userProfile.name || 'Gast').split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
+            document.getElementById('userAvatarInitials').textContent = initials;
+        }
+        function openProfileModal() { document.getElementById('profileModal').classList.remove('hidden'); document.getElementById('profileModal').classList.add('flex'); }
+        function closeProfileModal() { document.getElementById('profileModal').classList.add('hidden'); document.getElementById('profileModal').classList.remove('flex'); }
+        function saveProfile() {
+            userProfile.name = document.getElementById('profileNameInput').value || 'Christian';
+            localStorage.setItem('lensconnect_user', JSON.stringify(userProfile));
+            initUserDisplay();
+            closeProfileModal();
+        }
+
+        // Leaflet Map Initialization
+        function initMap() {
+            if(map) return;
+            map = L.map('leafletMap').setView([46.61, 14.30], 10);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap & CARTO',
+                maxZoom: 19
+            }).addTo(map);
+            markersLayer = L.layerGroup().addTo(map);
+            plotMapMarkers();
+        }
+
+        function plotMapMarkers() {
+            if(!markersLayer) return;
+            markersLayer.clearLayers();
+            const searchVal = document.getElementById('spotSearchInput').value.toLowerCase();
+            spots.forEach(spot => {
+                if(currentCategoryFilter !== 'all' && spot.category !== currentCategoryFilter) return;
+                if(searchVal && !spot.title.toLowerCase().includes(searchVal) && !spot.desc.toLowerCase().includes(searchVal)) return;
+
+                if(spot.lat && spot.lng) {
+                    const marker = L.marker([spot.lat, spot.lng]);
+                    marker.bindPopup(`<b>${spot.title}</b><br><span class="text-xs text-brand-600">${spot.category}</span><p class="mt-1 text-xs">${spot.desc}</p>`);
+                    markersLayer.addLayer(marker);
+                }
+            });
+        }
+
+        function renderSpots() {
+            const container = document.getElementById('spotListContainer');
+            container.innerHTML = '';
+            const searchVal = document.getElementById('spotSearchInput').value.toLowerCase();
+
+            spots.forEach(spot => {
+                if(currentCategoryFilter !== 'all' && spot.category !== currentCategoryFilter) return;
+                if(searchVal && !spot.title.toLowerCase().includes(searchVal) && !spot.desc.toLowerCase().includes(searchVal)) return;
+
+                const card = document.createElement('div');
+                card.className = "bg-slate-900 border border-slate-700/70 p-3.5 rounded-xl hover:border-brand-500/50 transition cursor-pointer space-y-2";
+                card.onclick = () => {
+                    if(spot.lat && spot.lng && map) map.setView([spot.lat, spot.lng], 14);
+                };
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <h4 class="font-semibold text-sm text-white">${spot.title}</h4>
+                        <span class="text-[10px] bg-slate-800 text-brand-400 px-2 py-0.5 rounded-md border border-slate-700">${spot.category}</span>
+                    </div>
+                    <p class="text-xs text-slate-400 line-clamp-2">${spot.desc}</p>
+                `;
+                container.appendChild(card);
+            });
+            plotMapMarkers();
+        }
+
+        function setCategoryFilter(cat) {
+            currentCategoryFilter = cat;
+            document.querySelectorAll('.cat-pill').forEach(btn => {
+                if(btn.textContent.toLowerCase() === cat.toLowerCase() || (cat === 'all' && btn.textContent === 'Alle')) {
+                    btn.className = "cat-pill px-3 py-1 rounded-full bg-brand-500 text-slate-900 font-medium whitespace-nowrap";
+                } else {
+                    btn.className = "cat-pill px-3 py-1 rounded-full bg-slate-700 text-slate-300 hover:bg-slate-600 whitespace-nowrap";
+                }
+            });
+            renderSpots();
+        }
+
+        function filterSpots() { renderSpots(); }
+
+        // New Spot Modal
+        function openNewSpotModal() { document.getElementById('newSpotModal').classList.remove('hidden'); document.getElementById('newSpotModal').classList.add('flex'); }
+        function closeNewSpotModal() { document.getElementById('newSpotModal').classList.add('hidden'); document.getElementById('newSpotModal').classList.remove('flex'); }
+        function saveNewSpot() {
+            const title = document.getElementById('newSpotTitle').value;
+            if(!title) return alert('Bitte Titel angeben');
+            const newSpot = {
+                id: Date.now(),
+                title: title,
+                category: document.getElementById('newSpotCategory').value,
+                desc: document.getElementById('newSpotDesc').value,
+                lat: parseFloat(document.getElementById('newSpotLat').value) || (map ? map.getCenter().lat : 46.61),
+                lng: parseFloat(document.getElementById('newSpotLng').value) || (map ? map.getCenter().lng : 14.30)
+            };
+            spots.push(newSpot);
+            localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
+            closeNewSpotModal();
+            renderSpots();
+        }
+
+        // Market Logic & 2-tier structure
+        function onMarketTypeChange() { /* Erweitert falls nötig */ }
+        function onMarketCategoryChange() {
+            const cat = document.getElementById('marketCategory').value;
+            if(cat === 'shooting') {
+                document.getElementById('shootingFields').classList.remove('hidden');
+                document.getElementById('locationFields').classList.add('hidden');
+            } else {
+                document.getElementById('shootingFields').classList.add('hidden');
+                document.getElementById('locationFields').classList.remove('hidden');
+            }
+        }
+
+        function openNewMarketModal() { document.getElementById('newMarketModal').classList.remove('hidden'); document.getElementById('newMarketModal').classList.add('flex'); }
+        function closeNewMarketModal() { document.getElementById('newMarketModal').classList.add('hidden'); document.getElementById('newMarketModal').classList.remove('flex'); }
+
+        function saveNewMarketItem() {
+            const title = document.getElementById('marketTitle').value;
+            if(!title) return alert('Bitte Titel angeben');
+            const category = document.getElementById('marketCategory').value;
+            
+            const newItem = {
+                id: Date.now(),
+                type: document.getElementById('marketType').value,
+                category: category,
+                title: title,
+                desc: document.getElementById('marketDesc').value
+            };
+
+            if(category === 'shooting') {
+                newItem.level = document.getElementById('marketShootingLevel').value;
+                newItem.price = document.getElementById('marketPrice').value || 'TFP';
+            } else {
+                newItem.locationType = document.getElementById('marketLocationType').value;
+            }
+
+            marketItems.push(newItem);
+            localStorage.setItem('lensconnect_market', JSON.stringify(marketItems));
+            closeNewMarketModal();
+            renderMarket();
+        }
+
+        function filterMarket(filter) {
+            currentMarketFilter = filter;
+            document.querySelectorAll('.market-filter-btn').forEach(btn => {
+                btn.className = "market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition";
+            });
+            event.target.className = "market-filter-btn px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium text-xs transition";
+            renderMarket();
+        }
+
+        function renderMarket() {
+            const grid = document.getElementById('marketGrid');
+            grid.innerHTML = '';
+
+            marketItems.forEach(item => {
+                if(currentMarketFilter === 'biete' && item.type !== 'biete') return;
+                if(currentMarketFilter === 'suche' && item.type !== 'suche') return;
+                if(currentMarketFilter === 'shooting' && item.category !== 'shooting') return;
+                if(currentMarketFilter === 'location' && item.category !== 'location') return;
+
+                const card = document.createElement('div');
+                card.className = "bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg space-y-3 flex flex-col justify-between";
+                
+                let badgeSub = '';
+                if(item.category === 'shooting') {
+                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Shooting (${item.level}) • ${item.price}</span>`;
+                } else {
+                    badgeSub = `<span class="text-xs bg-purple-500/10 text-purple-400 px-2.5 py-1 rounded-lg border border-purple-500/20">Location: ${item.locationType}</span>`;
+                }
+
+                card.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded ${item.type === 'biete' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${item.type}</span>
+                            ${badgeSub}
+                        </div>
+                        <h3 class="font-semibold text-white text-base">${item.title}</h3>
+                        <p class="text-xs text-slate-400 line-clamp-3">${item.desc}</p>
+                    </div>
+                    <div class="pt-3 border-t border-slate-700/50 flex justify-between items-center text-xs text-slate-400">
+                        <span>Gemeinschaft Inserat</span>
+                        <button onclick="alert('Nachricht senden Funktion')" class="text-brand-400 hover:underline font-medium">Kontaktieren</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Tools & Licht
+        function initTools() {
+            const times = SunCalc.getTimes(new Date(), 46.61, 14.30);
+            if(times && times.goldenHour) {
+                document.getElementById('goldenMorning0').textContent = times.goldenHour.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            }
+            if(times && times.sunset) {
+                document.getElementById('sunsetTime').textContent = times.sunset.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                document.getElementById('blueEvening').textContent = times.dusk ? times.dusk.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '-';
+            }
+        }
+
+        function calculateND() {
+            const base = parseFloat(document.getElementById('ndBaseTime').value);
+            const factor = parseInt(document.getElementById('ndStrength').value);
+            const totalSecs = base * factor;
+            let resultText = "";
+            if(totalSecs >= 60) {
+                resultText = `Belichtungszeit: ${(totalSecs / 60).toFixed(1)} Minuten`;
+            } else {
+                resultText = `Belichtungszeit: ${totalSecs.toFixed(2)} Sekunden`;
+            }
+            document.getElementById('ndResult').textContent = resultText;
+        }
+
+        // Community Feed
+        function renderCommunity() {
+            const container = document.getElementById('communityFeedContainer');
+            container.innerHTML = '';
+            communityPosts.forEach(post => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg space-y-2";
+                card.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold text-sm text-white">${post.author}</span>
+                        <span class="text-xs text-slate-400">${post.time}</span>
+                    </div>
+                    <p class="text-sm text-slate-300">${post.text}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function submitCommunityPost() {
+            const text = document.getElementById('communityPostInput').value;
+            if(!text) return;
+            communityPosts.unshift({
+                id: Date.now(),
+                author: userProfile.name || 'Christian',
+                text: text,
+                time: 'Gerade eben'
+            });
+            localStorage.setItem('lensconnect_posts', JSON.stringify(communityPosts));
+            document.getElementById('communityPostInput').value = '';
+            renderCommunity();
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+        }
+    </script>
 </body>
 </html>
