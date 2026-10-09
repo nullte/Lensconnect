@@ -474,6 +474,7 @@
 
                 <div id="loggedInSection" class="space-y-3 hidden">
                     <p class="text-xs text-slate-300">Eingeloggt als: <strong id="loggedInUserEmail" class="text-brand-400"></strong></p>
+                    <div id="adminBadge" class="hidden text-[11px] bg-brand-500/20 text-brand-300 px-2.5 py-1 rounded-lg border border-brand-500/40 font-bold">👑 Administrator-Modus aktiv</div>
                     <button onclick="supabaseLogout()" class="w-full bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 font-semibold py-2 rounded-xl text-xs transition cursor-pointer">Abmelden</button>
                 </div>
 
@@ -579,8 +580,8 @@
         } catch(e) { console.warn("PWA setup notice:", e); }
 
         // --- SUPABASE CONFIGURATION ---
-        const SUPABASE_URL = 'https://ygzazikwcngwclvmhbbb.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlnemF6aWt3Y25nd2Nsdm1oYmJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0NjA1OTgsImV4cCI6MjEwNzAzNjU5OH0.30RNloWiRhtOIq3QVsQcJmvuOw4xU2_4vSzra6NKeUg';
+        const SUPABASE_URL = 'DEINE_SUPABASE_URL';
+        const SUPABASE_KEY = 'DEINE_SUPABASE_ANON_KEY';
         let supabaseClient = null;
         try {
             if (SUPABASE_URL !== 'DEINE_SUPABASE_URL' && SUPABASE_KEY !== 'DEINE_SUPABASE_ANON_KEY' && window.supabase) {
@@ -608,6 +609,8 @@
         let marketItems = [];
         let communityPosts = [];
         let userProfile = JSON.parse(localStorage.getItem('lensconnect_user')) || { name: 'Christian' };
+        let currentUserEmail = null;
+        let isAdmin = false;
 
         let impressumData = JSON.parse(localStorage.getItem('lensconnect_impressum')) || {
             name: 'Christian Arnold',
@@ -638,10 +641,16 @@
             }
         };
 
-        // Load Data from Supabase (mit Fallback auf localStorage)
+        // Load Data from Supabase
         async function loadDataFromSupabase() {
             if (supabaseClient) {
                 try {
+                    // Check Auth Session first
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    if (session) {
+                        updateAuthUI(session.user);
+                    }
+
                     const { data: spotsData } = await supabaseClient.from('spots').select('*, spot_contributions(*)');
                     if (spotsData) {
                         spots = spotsData.map(s => ({
@@ -662,12 +671,6 @@
 
                     const { data: postsData } = await supabaseClient.from('community_posts').select('*');
                     if (postsData) communityPosts = postsData;
-
-                    // Check Auth Session
-                    const { data: { session } } = await supabaseClient.auth.getSession();
-                    if (session) {
-                        updateAuthUI(session.user);
-                    }
                 } catch (e) {
                     console.warn("Supabase load failed, fallback to local:", e);
                     loadLocalFallback();
@@ -723,22 +726,46 @@
         async function supabaseLogout() {
             if (!supabaseClient) return;
             await supabaseClient.auth.signOut();
+            currentUserEmail = null;
+            isAdmin = false;
             document.getElementById('authSection').classList.remove('hidden');
             document.getElementById('loggedInSection').classList.add('hidden');
+            document.getElementById('adminBadge').classList.add('hidden');
+            renderSpots();
+            renderMarket();
             alert('Erfolgreich abgemeldet.');
         }
 
         function updateAuthUI(user) {
             if (user) {
+                currentUserEmail = user.email;
+                // Check if user is Admin
+                isAdmin = (currentUserEmail.toLowerCase() === 'christian.arnold10@gmail.com');
+
                 document.getElementById('authSection').classList.add('hidden');
                 document.getElementById('loggedInSection').classList.remove('hidden');
                 document.getElementById('loggedInUserEmail').textContent = user.email;
+                
+                const adminBadge = document.getElementById('adminBadge');
+                if (isAdmin) {
+                    adminBadge.classList.remove('hidden');
+                } else {
+                    adminBadge.classList.add('hidden');
+                }
+
                 userProfile.name = user.email.split('@')[0];
                 initUserDisplay();
             }
         }
 
-        // History API popstate listener to manage Back button without leaving page
+        // Helper check for ownership or admin rights
+        function canModify(itemAuthor) {
+            if (isAdmin) return true;
+            if (!currentUserEmail) return true; // Fallback if not logged in via Supabase Auth yet
+            return (itemAuthor === userProfile.name || itemAuthor === currentUserEmail);
+        }
+
+        // History API popstate listener
         window.addEventListener('popstate', (event) => {
             hideAllModals();
             const state = event.state;
@@ -936,6 +963,15 @@
                 if(spot.lat && spot.lng) {
                     const marker = L.marker([spot.lat, spot.lng]);
                     let imgHtml = spot.image ? `<div class="w-full aspect-[4/3] mt-1 overflow-hidden rounded-lg border border-slate-200 bg-slate-100"><img src="${spot.image}" class="w-full h-full object-cover"></div>` : '';
+                    
+                    let ownerButtonsHtml = '';
+                    if (canModify(spot.author)) {
+                        ownerButtonsHtml = `
+                            <button onclick="openEditSpotModal(${spot.id})" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-[11px] py-1 px-1.5 rounded font-medium cursor-pointer text-center">Bearbeiten</button>
+                            <button onclick="deleteSpot(${spot.id})" class="bg-red-100 hover:bg-red-200 text-red-700 text-[11px] py-1 px-1.5 rounded font-medium cursor-pointer text-center">Löschen</button>
+                        `;
+                    }
+
                     marker.bindPopup(`
                         <div class="space-y-2 p-1 min-w-[210px]">
                             <div class="flex justify-between items-start">
@@ -946,8 +982,7 @@
                             <p class="text-xs text-slate-700">${spot.desc || ''}</p>
                             <span class="text-[10px] text-slate-500 block">Von: ${spot.author || 'Christian'}</span>
                             <div class="pt-2 border-t border-slate-200 grid grid-cols-2 gap-1.5">
-                                <button onclick="openEditSpotModal(${spot.id})" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-[11px] py-1 px-1.5 rounded font-medium cursor-pointer text-center">Bearbeiten</button>
-                                <button onclick="deleteSpot(${spot.id})" class="bg-red-100 hover:bg-red-200 text-red-700 text-[11px] py-1 px-1.5 rounded font-medium cursor-pointer text-center">Löschen</button>
+                                ${ownerButtonsHtml}
                                 <button onclick="openSpotContributionModal(${spot.id})" class="bg-brand-500 hover:bg-brand-600 text-slate-900 text-[11px] py-1 px-1.5 rounded font-medium cursor-pointer text-center">Bericht erfassen</button>
                                 <button onclick="gotoSpotContributions(${spot.id})" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-[11px] py-1 px-1.5 rounded font-medium cursor-pointer text-center">Berichte (${spot.contributions ? spot.contributions.length : 0})</button>
                             </div>
@@ -1086,6 +1121,11 @@
             const contrib = spot?.contributions.find(c => c.id === contribId);
             if(!contrib) return;
 
+            if(!canModify(contrib.author)) {
+                alert('Du hast keine Berechtigung, diesen Bericht zu bearbeiten.');
+                return;
+            }
+
             document.getElementById('contribModalTitle').textContent = 'Bericht bearbeiten';
             document.getElementById('contribText').value = contrib.text;
             compressedContribImage = contrib.image || '';
@@ -1150,8 +1190,14 @@
         }
 
         async function deleteContribution(spotId, contribId) {
+            const spot = spots.find(s => s.id === spotId);
+            const contrib = spot?.contributions.find(c => c.id === contribId);
+            if(contrib && !canModify(contrib.author)) {
+                alert('Keine Berechtigung zum Löschen.');
+                return;
+            }
+
             if(confirm('Möchtest du diesen Bericht wirklich löschen?')) {
-                const spot = spots.find(s => s.id === spotId);
                 if(spot && spot.contributions) {
                     spot.contributions = spot.contributions.filter(c => c.id !== contribId);
                     if(supabaseClient) {
@@ -1173,6 +1219,12 @@
         }
 
         async function deleteSpot(id) {
+            const spot = spots.find(s => s.id === id);
+            if(spot && !canModify(spot.author)) {
+                alert('Du hast keine Berechtigung, diesen Spot zu löschen.');
+                return;
+            }
+
             if(confirm('Möchtest du diesen Spot wirklich komplett löschen?')) {
                 spots = spots.filter(s => s.id !== id);
                 if(supabaseClient) {
@@ -1211,14 +1263,22 @@
                 if(spot.contributions && spot.contributions.length > 0) {
                     spot.contributions.forEach(c => {
                         let cImg = c.image ? `<img src="${c.image}" class="w-full h-20 object-cover rounded-lg mt-1 border border-slate-700">` : '';
+                        
+                        let cActions = '';
+                        if (canModify(c.author)) {
+                            cActions = `
+                                <div class="space-x-2">
+                                    <button onclick="openEditContributionModal(${spot.id}, ${c.id})" class="text-brand-400 hover:underline cursor-pointer">Bearbeiten</button>
+                                    <button onclick="deleteContribution(${spot.id}, ${c.id})" class="text-red-400 hover:underline cursor-pointer">Löschen</button>
+                                </div>
+                            `;
+                        }
+
                         contributionsHtml += `
                             <div class="bg-slate-900/65 p-2.5 rounded-xl border border-slate-700/50 text-xs space-y-1">
                                 <div class="flex justify-between items-center font-semibold text-slate-200">
                                     <span>${c.author} <span class="text-[10px] text-slate-400 font-normal">(${c.time || ''})</span></span>
-                                    <div class="space-x-2">
-                                        <button onclick="openEditContributionModal(${spot.id}, ${c.id})" class="text-brand-400 hover:underline cursor-pointer">Bearbeiten</button>
-                                        <button onclick="deleteContribution(${spot.id}, ${c.id})" class="text-red-400 hover:underline cursor-pointer">Löschen</button>
-                                    </div>
+                                    ${cActions}
                                 </div>
                                 <p class="text-slate-200">${c.text}</p>
                                 ${cImg}
@@ -1229,6 +1289,16 @@
                     contributionsHtml += `<p class="text-xs text-slate-400">Noch keine Berichte vorhanden.</p>`;
                 }
                 contributionsHtml += `</div></div>`;
+
+                let spotOwnerButtons = '';
+                if (canModify(spot.author)) {
+                    spotOwnerButtons = `
+                        <div class="flex items-center space-x-1.5 w-full sm:w-auto">
+                            <button onclick="openEditSpotModal(${spot.id})" class="flex-1 sm:flex-initial bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg transition cursor-pointer font-medium">Bearbeiten</button>
+                            <button onclick="deleteSpot(${spot.id})" class="flex-1 sm:flex-initial bg-red-500/20 text-red-400 hover:bg-red-500/30 px-3 py-1.5 rounded-lg border border-red-500/30 transition cursor-pointer font-medium">Löschen</button>
+                        </div>
+                    `;
+                }
 
                 card.innerHTML = `
                     <div class="space-y-2">
@@ -1242,11 +1312,8 @@
                         ${contributionsHtml}
                     </div>
                     <div class="pt-3 border-t border-slate-700/50 flex flex-col sm:flex-row gap-2 justify-between items-center text-xs">
-                        <div class="flex items-center space-x-1.5 w-full sm:w-auto">
-                            <button onclick="openEditSpotModal(${spot.id})" class="flex-1 sm:flex-initial bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg transition cursor-pointer font-medium">Bearbeiten</button>
-                            <button onclick="deleteSpot(${spot.id})" class="flex-1 sm:flex-initial bg-red-500/20 text-red-400 hover:bg-red-500/30 px-3 py-1.5 rounded-lg border border-red-500/30 transition cursor-pointer font-medium">Löschen</button>
-                        </div>
-                        <div class="flex items-center space-x-1.5 w-full sm:w-auto">
+                        ${spotOwnerButtons}
+                        <div class="flex items-center space-x-1.5 w-full sm:w-auto ml-auto">
                             <button onclick="openSpotContributionModal(${spot.id})" class="flex-1 sm:flex-initial bg-brand-500/10 text-brand-400 px-3 py-1.5 rounded-lg border border-brand-500/25 hover:bg-brand-500/20 transition cursor-pointer font-medium">Bericht erfassen</button>
                             <button onclick="toggleSpotContributions(${spot.id})" class="flex-1 sm:flex-initial bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg transition cursor-pointer font-medium">Berichte lesen (${spot.contributions ? spot.contributions.length : 0})</button>
                         </div>
@@ -1295,6 +1362,11 @@
             editingSpotId = id;
             const spot = spots.find(s => s.id === id);
             if(!spot) return;
+
+            if(!canModify(spot.author)) {
+                alert('Du hast keine Berechtigung, diesen Spot zu bearbeiten.');
+                return;
+            }
 
             const modalTitle = document.getElementById('spotModalTitle');
             if(modalTitle) modalTitle.textContent = 'Fotospot bearbeiten';
@@ -1406,6 +1478,11 @@
             const item = marketItems.find(m => m.id === id);
             if(!item) return;
 
+            if(!canModify(item.author)) {
+                alert('Du hast keine Berechtigung, dieses Inserat zu bearbeiten.');
+                return;
+            }
+
             document.getElementById('marketModalTitle').textContent = 'Inserat bearbeiten';
             document.getElementById('marketType').value = item.type;
             document.getElementById('marketCategory').value = item.category;
@@ -1478,6 +1555,12 @@
         }
 
         async function deleteMarketItem(id) {
+            const item = marketItems.find(m => m.id === id);
+            if(item && !canModify(item.author)) {
+                alert('Du hast keine Berechtigung, dieses Inserat zu löschen.');
+                return;
+            }
+
             if(confirm('Möchtest du dieses Inserat wirklich löschen?')) {
                 marketItems = marketItems.filter(m => m.id !== id);
                 if(supabaseClient) {
@@ -1561,6 +1644,16 @@
 
                 let contactHtml = item.contact ? `<div class="text-xs text-brand-400 font-medium flex items-center space-x-1.5"><i data-lucide="mail" class="w-3.5 h-3.5"></i><span>Kontakt: ${item.contact}</span></div>` : '';
 
+                let marketActions = '';
+                if (canModify(item.author)) {
+                    marketActions = `
+                        <div class="space-x-2">
+                            <button onclick="openEditMarketModal(${item.id})" class="text-brand-400 hover:underline font-medium cursor-pointer">Bearbeiten</button>
+                            <button onclick="deleteMarketItem(${item.id})" class="text-red-400 hover:underline font-medium cursor-pointer">Löschen</button>
+                        </div>
+                    `;
+                }
+
                 card.innerHTML = `
                     <div class="space-y-2">
                         <div class="flex justify-between items-center">
@@ -1580,10 +1673,7 @@
                         </div>
                         <div class="flex justify-between items-center text-xs text-slate-400 pt-1 border-t border-slate-700/30">
                             <span class="text-[11px]">Von: ${item.author || 'Christian'}</span>
-                            <div class="space-x-2">
-                                <button onclick="openEditMarketModal(${item.id})" class="text-brand-400 hover:underline font-medium cursor-pointer">Bearbeiten</button>
-                                <button onclick="deleteMarketItem(${item.id})" class="text-red-400 hover:underline font-medium cursor-pointer">Löschen</button>
-                            </div>
+                            ${marketActions}
                         </div>
                     </div>
                 `;
