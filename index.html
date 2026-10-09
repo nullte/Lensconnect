@@ -112,7 +112,7 @@
             <button onclick="cancelPickingLocation()" class="bg-slate-900 text-white px-2.5 py-1 rounded-xl text-xs font-bold hover:bg-slate-800">Abbrechen</button>
         </div>
 
-        <!-- VIEW 1: MAP (REINE KARTE IM VOLLBILD) -->
+        <!-- VIEW 1: MAP -->
         <div id="view-map" class="view-panel w-full h-full relative flex flex-col">
             <div class="absolute top-4 right-4 z-20 flex space-x-2">
                 <button onclick="openNewSpotModal()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold px-4 py-2.5 rounded-2xl text-sm flex items-center space-x-2 shadow-xl transition">
@@ -123,7 +123,7 @@
             <div id="leafletMap" class="w-full h-full bg-slate-950"></div>
         </div>
 
-        <!-- VIEW 2: SPOTS LISTE (EIGENER MENÜPUNKT) -->
+        <!-- VIEW 2: SPOTS LISTE -->
         <div id="view-spots" class="view-panel w-full h-full hidden flex-col overflow-y-auto p-4 lg:p-8 space-y-6">
             <div class="max-w-5xl mx-auto w-full space-y-6">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-700">
@@ -137,7 +137,6 @@
                     </button>
                 </div>
 
-                <!-- Filter & Search Bar -->
                 <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
                     <div class="relative w-full sm:w-80">
                         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
@@ -152,7 +151,6 @@
                     </div>
                 </div>
 
-                <!-- Spot Cards Grid -->
                 <div id="spotListContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2"></div>
             </div>
         </div>
@@ -265,7 +263,7 @@
     </main>
 
     <!-- MODAL: NEW SPOT -->
-    <div id="newSpotModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div id="newSpotModal" style="display: none;" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white">Neuen Fotospot hinzufügen</h3>
@@ -281,7 +279,6 @@
                 </select>
                 <textarea id="newSpotDesc" placeholder="Beschreibung..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-20 resize-none"></textarea>
                 
-                <!-- Coordinates Picker Field -->
                 <div class="space-y-1">
                     <label class="block text-xs text-slate-400">Koordinaten (Lat / Lng)</label>
                     <div class="flex items-center space-x-2">
@@ -302,7 +299,7 @@
     </div>
 
     <!-- MODAL: NEW MARKET ENTRY -->
-    <div id="newMarketModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div id="newMarketModal" style="display: none;" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white">Neues Inserat erstellen</h3>
@@ -326,7 +323,6 @@
 
                 <input type="text" id="marketTitle" placeholder="Titel (z.B. Outdoor Shooting)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
 
-                <!-- Fotoshooting Felder -->
                 <div id="shootingFields" class="space-y-3 p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Level</label>
@@ -341,7 +337,6 @@
                     </div>
                 </div>
 
-                <!-- Location Felder -->
                 <div id="locationFields" class="space-y-3 p-3 bg-slate-800/50 rounded-xl border border-slate-700/50 hidden">
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Location Art</label>
@@ -363,7 +358,7 @@
     </div>
 
     <!-- MODAL: PROFILE -->
-    <div id="profileModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div id="profileModal" style="display: none;" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white">Profil verwalten</h3>
@@ -442,14 +437,12 @@
                 target.classList.add('flex');
             }
 
-            // Update Desktop Nav
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.className = "nav-btn px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center space-x-1.5 text-slate-400 hover:text-white hover:bg-slate-800";
             });
             const activeNav = document.getElementById('nav-' + viewName);
             if(activeNav) activeNav.className = "nav-btn px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center space-x-1.5 bg-brand-500 text-slate-900 shadow";
 
-            // Update Mobile Nav
             document.querySelectorAll('.mob-nav-btn').forEach(btn => btn.className = "mob-nav-btn flex flex-col items-center justify-center flex-1 py-1 text-slate-400");
             const activeMob = document.getElementById('mob-nav-' + viewName);
             if(activeMob) activeMob.className = "mob-nav-btn flex flex-col items-center justify-center flex-1 py-1 text-brand-400";
@@ -471,11 +464,11 @@
 
         function openProfileModal() {
             const m = document.getElementById('profileModal');
-            if(m) { m.classList.remove('hidden'); m.classList.add('flex'); }
+            if(m) m.style.display = 'flex';
         }
         function closeProfileModal() {
             const m = document.getElementById('profileModal');
-            if(m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+            if(m) m.style.display = 'none';
         }
         function saveProfile() {
             const input = document.getElementById('profileNameInput');
@@ -497,7 +490,6 @@
                 markersLayer = L.layerGroup().addTo(map);
                 plotMapMarkers();
 
-                // Map click listener for picking coordinates
                 map.on('click', function(e) {
                     if(isPickingLocation) {
                         document.getElementById('newSpotLat').value = e.latlng.lat.toFixed(5);
@@ -593,11 +585,11 @@
 
         function openNewSpotModal() {
             const m = document.getElementById('newSpotModal');
-            if(m) { m.classList.remove('hidden'); m.classList.add('flex'); }
+            if(m) m.style.display = 'flex';
         }
         function closeNewSpotModal() {
             const m = document.getElementById('newSpotModal');
-            if(m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+            if(m) m.style.display = 'none';
         }
         function saveNewSpot() {
             const titleEl = document.getElementById('newSpotTitle');
@@ -634,11 +626,11 @@
 
         function openNewMarketModal() {
             const m = document.getElementById('newMarketModal');
-            if(m) { m.classList.remove('hidden'); m.classList.add('flex'); }
+            if(m) m.style.display = 'flex';
         }
         function closeNewMarketModal() {
             const m = document.getElementById('newMarketModal');
-            if(m) { m.classList.add('hidden'); m.classList.remove('flex'); }
+            if(m) m.style.display = 'none';
         }
 
         function saveNewMarketItem() {
