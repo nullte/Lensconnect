@@ -563,6 +563,7 @@
             }
         } catch(e) { console.warn("PWA setup notice:", e); }
 
+        // --- SUPABASE CONFIGURATION ---
         const SUPABASE_URL = 'DEINE_SUPABASE_URL';
         const SUPABASE_KEY = 'DEINE_SUPABASE_ANON_KEY';
         let supabaseClient = null;
@@ -588,20 +589,9 @@
         let currentMarketFilter = 'all';
         let isPickingLocation = false;
 
-        let spots = JSON.parse(localStorage.getItem('lensconnect_spots')) || [
-            { id: 1, title: 'Burgruine Landskron', category: 'Urbex / Lost Place', tags: 'Ruine, Aussicht', lat: 46.621, lng: 13.904, desc: 'Toller Ausblick über den Villacher Raum, perfekt bei Sonnenuntergang.', author: 'Christian', image: '', contributions: [] },
-            { id: 2, title: 'Wörthersee Ostbucht', category: 'Landschaft', tags: 'See, Spiegelung', lat: 46.622, lng: 14.286, desc: 'Spiegelungen und Stege zur blauen Stunde.', author: 'Christian', image: '', contributions: [] }
-        ];
-
-        let marketItems = JSON.parse(localStorage.getItem('lensconnect_market')) || [
-            { id: 1, type: 'biete', category: 'shooting', title: 'Porträt-Shooting am See', level: 'Profi', price: 'TFP oder Spende', contact: 'christian@example.com', desc: 'Suche Model für ein entspanntes Outdoor-Shooting.' },
-            { id: 2, type: 'biete', category: 'location', title: 'Heim-Studio mit Blitzanlage', locationType: 'Heim Studio', contact: '+43 660 1234567', desc: 'Voll ausgestattetes kleines Studio im Keller.' }
-        ];
-
-        let communityPosts = JSON.parse(localStorage.getItem('lensconnect_posts')) || [
-            { id: 1, author: 'Christian', text: 'Erster Test mit der analogen Kamera und Kodak Portra 400. Die Farben sind einfach genial!', time: 'Vor 2 Stunden' }
-        ];
-
+        let spots = [];
+        let marketItems = [];
+        let communityPosts = [];
         let userProfile = JSON.parse(localStorage.getItem('lensconnect_user')) || { name: 'Christian' };
 
         let impressumData = JSON.parse(localStorage.getItem('lensconnect_impressum')) || {
@@ -610,7 +600,7 @@
             email: 'christian.arnold10@gmail.com'
         };
 
-        window.onload = function() {
+        window.onload = async function() {
             try {
                 if(localStorage.getItem('lensconnect_theme') === 'light') {
                     document.documentElement.classList.add('light');
@@ -620,9 +610,8 @@
                 if(window.lucide) lucide.createIcons();
                 initUserDisplay();
                 renderImpressum();
-                renderSpots();
-                renderMarket();
-                renderCommunity();
+
+                await loadDataFromSupabase();
 
                 // Initialize History API state
                 history.replaceState({ view: 'home', modal: null }, '', '');
@@ -633,6 +622,57 @@
                 console.error("Init error:", err);
             }
         };
+
+        // Load Data from Supabase (mit automatischem Fallback auf localStorage)
+        async function loadDataFromSupabase() {
+            if (supabaseClient) {
+                try {
+                    const { data: spotsData } = await supabaseClient.from('spots').select('*, spot_contributions(*)');
+                    if (spotsData) {
+                        spots = spotsData.map(s => ({
+                            ...s,
+                            desc: s.desc,
+                            contributions: s.spot_contributions || []
+                        }));
+                    }
+
+                    const { data: marketData } = await supabaseClient.from('market_items').select('*');
+                    if (marketData) {
+                        marketItems = marketData.map(m => ({
+                            ...m,
+                            desc: m.desc,
+                            locationType: m.location_type
+                        }));
+                    }
+
+                    const { data: postsData } = await supabaseClient.from('community_posts').select('*');
+                    if (postsData) communityPosts = postsData;
+                } catch (e) {
+                    console.warn("Supabase load failed, fallback to local:", e);
+                    loadLocalFallback();
+                }
+            } else {
+                loadLocalFallback();
+            }
+
+            renderSpots();
+            renderMarket();
+            renderCommunity();
+        }
+
+        function loadLocalFallback() {
+            spots = JSON.parse(localStorage.getItem('lensconnect_spots')) || [
+                { id: 1, title: 'Burgruine Landskron', category: 'Urbex / Lost Place', tags: 'Ruine, Aussicht', lat: 46.621, lng: 13.904, desc: 'Toller Ausblick über den Villacher Raum, perfekt bei Sonnenuntergang.', author: 'Christian', image: '', contributions: [] },
+                { id: 2, title: 'Wörthersee Ostbucht', category: 'Landschaft', tags: 'See, Spiegelung', lat: 46.622, lng: 14.286, desc: 'Spiegelungen und Stege zur blauen Stunde.', author: 'Christian', image: '', contributions: [] }
+            ];
+            marketItems = JSON.parse(localStorage.getItem('lensconnect_market')) || [
+                { id: 1, type: 'biete', category: 'shooting', title: 'Porträt-Shooting am See', level: 'Profi', price: 'TFP oder Spende', contact: 'christian@example.com', desc: 'Suche Model für ein entspanntes Outdoor-Shooting.' },
+                { id: 2, type: 'biete', category: 'location', title: 'Heim-Studio mit Blitzanlage', locationType: 'Heim Studio', contact: '+43 660 1234567', desc: 'Voll ausgestattetes kleines Studio im Keller.' }
+            ];
+            communityPosts = JSON.parse(localStorage.getItem('lensconnect_posts')) || [
+                { id: 1, author: 'Christian', text: 'Erster Test mit der analogen Kamera und Kodak Portra 400. Die Farben sind einfach genial!', time: 'Vor 2 Stunden' }
+            ];
+        }
 
         // History API popstate listener to manage Back button without leaving page
         window.addEventListener('popstate', (event) => {
@@ -839,7 +879,7 @@
                             </div>
                             <span class="inline-block text-[10px] bg-brand-500/15 text-brand-700 px-2 py-0.5 rounded font-semibold">${spot.category}</span>
                             ${imgHtml}
-                            <p class="text-xs text-slate-700">${spot.desc}</p>
+                            <p class="text-xs text-slate-700">${spot.desc || ''}</p>
                             <span class="text-[10px] text-slate-500 block">Von: ${spot.author || 'Christian'}</span>
                             <div class="pt-2 border-t border-slate-200 grid grid-cols-2 gap-1.5">
                                 <button onclick="openEditSpotModal(${spot.id})" class="bg-slate-200 hover:bg-slate-300 text-slate-800 text-[11px] py-1 px-1.5 rounded font-medium cursor-pointer text-center">Bearbeiten</button>
@@ -1007,7 +1047,7 @@
             history.back();
         }
 
-        function saveSpotContribution() {
+        async function saveSpotContribution() {
             const textEl = document.getElementById('contribText');
             if(!textEl || !textEl.value) { alert('Bitte Text eingeben'); return; }
             
@@ -1017,32 +1057,44 @@
                 if(contrib) {
                     contrib.text = textEl.value;
                     contrib.image = compressedContribImage;
+                    if(supabaseClient) {
+                        await supabaseClient.from('spot_contributions').update({ text: contrib.text, image: contrib.image }).eq('id', contribId);
+                    }
                 }
             } else {
                 const spot = spots.find(s => s.id === activeContribSpotId);
                 if(spot) {
                     if(!spot.contributions) spot.contributions = [];
-                    spot.contributions.push({
-                        id: Date.now(),
+                    const newContrib = {
+                        spot_id: spot.id,
                         author: userProfile.name || 'Christian',
                         text: textEl.value,
                         image: compressedContribImage,
                         time: 'Gerade eben'
-                    });
+                    };
+                    if(supabaseClient) {
+                        await supabaseClient.from('spot_contributions').insert([newContrib]);
+                    } else {
+                        newContrib.id = Date.now();
+                        spot.contributions.push(newContrib);
+                        localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
+                    }
                 }
             }
-            localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
             closeSpotContributionModal();
-            renderSpots();
-            plotMapMarkers();
+            await loadDataFromSupabase();
         }
 
-        function deleteContribution(spotId, contribId) {
-            if(confirm('Möchtest du diesen Bericht wirklich löschen? (Der Spot selbst bleibt erhalten)')) {
+        async function deleteContribution(spotId, contribId) {
+            if(confirm('Möchtest du diesen Bericht wirklich löschen?')) {
                 const spot = spots.find(s => s.id === spotId);
                 if(spot && spot.contributions) {
                     spot.contributions = spot.contributions.filter(c => c.id !== contribId);
-                    localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
+                    if(supabaseClient) {
+                        await supabaseClient.from('spot_contributions').delete().eq('id', contribId);
+                    } else {
+                        localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
+                    }
                     renderSpots();
                     plotMapMarkers();
                 }
@@ -1056,10 +1108,14 @@
             }
         }
 
-        function deleteSpot(id) {
-            if(confirm('Möchtest du diesen Spot samt aller zugehörigen Berichte wirklich komplett löschen?')) {
+        async function deleteSpot(id) {
+            if(confirm('Möchtest du diesen Spot wirklich komplett löschen?')) {
                 spots = spots.filter(s => s.id !== id);
-                localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
+                if(supabaseClient) {
+                    await supabaseClient.from('spots').delete().eq('id', id);
+                } else {
+                    localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
+                }
                 renderSpots();
                 plotMapMarkers();
             }
@@ -1074,7 +1130,7 @@
 
             spots.forEach(spot => {
                 if(currentCategoryFilter !== 'all' && spot.category !== currentCategoryFilter) return;
-                if(searchVal && !spot.title.toLowerCase().includes(searchVal) && !spot.desc.toLowerCase().includes(searchVal) && !spot.tags?.toLowerCase().includes(searchVal)) return;
+                if(searchVal && !spot.title.toLowerCase().includes(searchVal) && !spot.desc?.toLowerCase().includes(searchVal) && !spot.tags?.toLowerCase().includes(searchVal)) return;
 
                 const card = document.createElement('div');
                 card.className = "bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg space-y-3 flex flex-col justify-between hover:border-brand-500/50 transition";
@@ -1094,7 +1150,7 @@
                         contributionsHtml += `
                             <div class="bg-slate-900/65 p-2.5 rounded-xl border border-slate-700/50 text-xs space-y-1">
                                 <div class="flex justify-between items-center font-semibold text-slate-200">
-                                    <span>${c.author} <span class="text-[10px] text-slate-400 font-normal">(${c.time})</span></span>
+                                    <span>${c.author} <span class="text-[10px] text-slate-400 font-normal">(${c.time || ''})</span></span>
                                     <div class="space-x-2">
                                         <button onclick="openEditContributionModal(${spot.id}, ${c.id})" class="text-brand-400 hover:underline cursor-pointer">Bearbeiten</button>
                                         <button onclick="deleteContribution(${spot.id}, ${c.id})" class="text-red-400 hover:underline cursor-pointer">Löschen</button>
@@ -1117,7 +1173,7 @@
                             <span class="text-xs bg-slate-900 text-brand-400 px-2.5 py-1 rounded-lg border border-slate-700">${spot.category}</span>
                         </div>
                         ${imgHtml}
-                        <p class="text-xs text-slate-300 line-clamp-3">${spot.desc}</p>
+                        <p class="text-xs text-slate-300 line-clamp-3">${spot.desc || ''}</p>
                         ${tagsHtml}
                         ${contributionsHtml}
                     </div>
@@ -1136,15 +1192,6 @@
             });
             if(window.lucide) lucide.createIcons();
             plotMapMarkers();
-        }
-
-        function focusSpotOnMap(lat, lng) {
-            switchView('map');
-            if(map && lat && lng) {
-                setTimeout(() => {
-                    map.setView([lat, lng], 14);
-                }, 150);
-            }
         }
 
         function setCategoryFilter(cat) {
@@ -1217,47 +1264,47 @@
             history.back();
         }
 
-        function saveNewSpot() {
+        async function saveNewSpot() {
             const titleEl = document.getElementById('newSpotTitle');
             if(!titleEl || !titleEl.value) { alert('Bitte Titel angeben'); return; }
             
+            const spotData = {
+                title: titleEl.value,
+                category: document.getElementById('newSpotCategory').value,
+                tags: document.getElementById('newSpotTags').value,
+                desc: document.getElementById('newSpotDesc').value,
+                lat: parseFloat(document.getElementById('newSpotLat').value) || (map ? map.getCenter().lat : 46.61),
+                lng: parseFloat(document.getElementById('newSpotLng').value) || (map ? map.getCenter().lng : 14.30),
+                author: userProfile.name || 'Christian',
+                image: compressedSpotImage
+            };
+
             if(editingSpotId) {
-                const spot = spots.find(s => s.id === editingSpotId);
-                if(spot) {
-                    spot.title = titleEl.value;
-                    spot.category = document.getElementById('newSpotCategory').value;
-                    spot.tags = document.getElementById('newSpotTags').value;
-                    spot.desc = document.getElementById('newSpotDesc').value;
-                    spot.lat = parseFloat(document.getElementById('newSpotLat').value) || spot.lat;
-                    spot.lng = parseFloat(document.getElementById('newSpotLng').value) || spot.lng;
-                    spot.image = compressedSpotImage;
+                if(supabaseClient) {
+                    await supabaseClient.from('spots').update(spotData).eq('id', editingSpotId);
+                } else {
+                    const spot = spots.find(s => s.id === editingSpotId);
+                    if(spot) Object.assign(spot, spotData);
+                    localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
                 }
                 editingSpotId = null;
             } else {
-                const newSpot = {
-                    id: Date.now(),
-                    title: titleEl.value,
-                    category: document.getElementById('newSpotCategory').value,
-                    tags: document.getElementById('newSpotTags').value,
-                    desc: document.getElementById('newSpotDesc').value,
-                    lat: parseFloat(document.getElementById('newSpotLat').value) || (map ? map.getCenter().lat : 46.61),
-                    lng: parseFloat(document.getElementById('newSpotLng').value) || (map ? map.getCenter().lng : 14.30),
-                    author: userProfile.name || 'Christian',
-                    image: compressedSpotImage,
-                    contributions: []
-                };
-                spots.push(newSpot);
+                if(supabaseClient) {
+                    await supabaseClient.from('spots').insert([spotData]);
+                } else {
+                    spotData.id = Date.now();
+                    spotData.contributions = [];
+                    spots.push(spotData);
+                    localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
+                }
             }
 
-            localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
             if(pickingMarker && map) {
                 map.removeLayer(pickingMarker);
                 pickingMarker = null;
             }
             cancelMapPinMode();
-            renderSpots();
-            plotMapMarkers();
-            
+            await loadDataFromSupabase();
             history.back();
         }
 
@@ -1318,71 +1365,76 @@
             history.back();
         }
 
-        function saveNewMarketItem() {
+        async function saveNewMarketItem() {
             const titleEl = document.getElementById('marketTitle');
             if(!titleEl || !titleEl.value) { alert('Bitte Titel angeben'); return; }
             const category = document.getElementById('marketCategory').value;
             
+            const itemData = {
+                type: document.getElementById('marketType').value,
+                category: category,
+                title: titleEl.value,
+                contact: document.getElementById('marketContact').value,
+                desc: document.getElementById('marketDesc').value,
+                author: userProfile.name || 'Christian',
+                completed: false
+            };
+
+            if(category === 'shooting') {
+                itemData.level = document.getElementById('marketShootingLevel').value;
+                itemData.price = document.getElementById('marketPrice').value || 'TFP';
+                itemData.location_type = null;
+            } else {
+                itemData.location_type = document.getElementById('marketLocationType').value;
+                itemData.level = null;
+                itemData.price = null;
+            }
+
             if(editingMarketId) {
-                const item = marketItems.find(m => m.id === editingMarketId);
-                if(item) {
-                    item.type = document.getElementById('marketType').value;
-                    item.category = category;
-                    item.title = titleEl.value;
-                    item.contact = document.getElementById('marketContact').value;
-                    item.desc = document.getElementById('marketDesc').value;
-                    if(category === 'shooting') {
-                        item.level = document.getElementById('marketShootingLevel').value;
-                        item.price = document.getElementById('marketPrice').value || 'TFP';
-                        delete item.locationType;
-                    } else {
-                        item.locationType = document.getElementById('marketLocationType').value;
-                        delete item.level;
-                        delete item.price;
-                    }
+                if(supabaseClient) {
+                    await supabaseClient.from('market_items').update(itemData).eq('id', editingMarketId);
+                } else {
+                    const item = marketItems.find(m => m.id === editingMarketId);
+                    if(item) Object.assign(item, itemData);
+                    localStorage.setItem('lensconnect_market', JSON.stringify(marketItems));
                 }
                 editingMarketId = null;
             } else {
-                const newItem = {
-                    id: Date.now(),
-                    type: document.getElementById('marketType').value,
-                    category: category,
-                    title: titleEl.value,
-                    contact: document.getElementById('marketContact').value,
-                    desc: document.getElementById('marketDesc').value,
-                    author: userProfile.name || 'Christian',
-                    completed: false
-                };
-
-                if(category === 'shooting') {
-                    newItem.level = document.getElementById('marketShootingLevel').value;
-                    newItem.price = document.getElementById('marketPrice').value || 'TFP';
+                if(supabaseClient) {
+                    await supabaseClient.from('market_items').insert([itemData]);
                 } else {
-                    newItem.locationType = document.getElementById('marketLocationType').value;
+                    itemData.id = Date.now();
+                    marketItems.push(itemData);
+                    localStorage.setItem('lensconnect_market', JSON.stringify(marketItems));
                 }
-
-                marketItems.push(newItem);
             }
 
-            localStorage.setItem('lensconnect_market', JSON.stringify(marketItems));
             history.back();
-            renderMarket();
+            await loadDataFromSupabase();
         }
 
-        function deleteMarketItem(id) {
+        async function deleteMarketItem(id) {
             if(confirm('Möchtest du dieses Inserat wirklich löschen?')) {
                 marketItems = marketItems.filter(m => m.id !== id);
-                localStorage.setItem('lensconnect_market', JSON.stringify(marketItems));
+                if(supabaseClient) {
+                    await supabaseClient.from('market_items').delete().eq('id', id);
+                } else {
+                    localStorage.setItem('lensconnect_market', JSON.stringify(marketItems));
+                }
                 renderMarket();
             }
         }
 
-        function toggleMarketCompleted(id, checkbox) {
+        async function toggleMarketCompleted(id, checkbox) {
             const item = marketItems.find(m => m.id === id);
             if(!item) return;
             if(checkbox.checked) {
                 item.completed = true;
-                localStorage.setItem('lensconnect_market', JSON.stringify(marketItems));
+                if(supabaseClient) {
+                    await supabaseClient.from('market_items').update({ completed: true }).eq('id', id);
+                } else {
+                    localStorage.setItem('lensconnect_market', JSON.stringify(marketItems));
+                }
                 
                 const card = checkbox.closest('.market-card');
                 if(card) {
@@ -1393,9 +1445,9 @@
                     card.appendChild(notice);
                 }
 
-                setTimeout(() => {
+                setTimeout(async () => {
                     marketItems = marketItems.filter(m => m.id !== id);
-                    localStorage.setItem('lensconnect_market', JSON.stringify(marketItems));
+                    if(!supabaseClient) localStorage.setItem('lensconnect_market', JSON.stringify(marketItems));
                     renderMarket();
                 }, 3000);
             }
@@ -1440,7 +1492,7 @@
                 if(item.category === 'shooting') {
                     badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Shooting (${item.level}) • ${item.price}</span>`;
                 } else {
-                    badgeSub = `<span class="text-xs bg-purple-500/10 text-purple-400 px-2.5 py-1 rounded-lg border border-purple-500/20">Location: ${item.locationType}</span>`;
+                    badgeSub = `<span class="text-xs bg-purple-500/10 text-purple-400 px-2.5 py-1 rounded-lg border border-purple-500/20">Location: ${item.locationType || 'Profi Studio'}</span>`;
                 }
 
                 let contactHtml = item.contact ? `<div class="text-xs text-brand-400 font-medium flex items-center space-x-1.5"><i data-lucide="mail" class="w-3.5 h-3.5"></i><span>Kontakt: ${item.contact}</span></div>` : '';
@@ -1452,7 +1504,7 @@
                             ${badgeSub}
                         </div>
                         <h3 class="font-semibold text-white text-base">${item.title}</h3>
-                        <p class="text-xs text-slate-300 line-clamp-3">${item.desc}</p>
+                        <p class="text-xs text-slate-300 line-clamp-3">${item.desc || ''}</p>
                         ${contactHtml}
                     </div>
                     <div class="space-y-3 pt-3 border-t border-slate-700/50">
@@ -1487,7 +1539,7 @@
                 card.innerHTML = `
                     <div class="flex justify-between items-center">
                         <span class="font-semibold text-sm text-white">${post.author}</span>
-                        <span class="text-xs text-slate-400">${post.time}</span>
+                        <span class="text-xs text-slate-400">${post.time || ''}</span>
                     </div>
                     <p class="text-sm text-slate-300">${post.text}</p>
                 `;
@@ -1495,18 +1547,23 @@
             });
         }
 
-        function submitCommunityPost() {
+        async function submitCommunityPost() {
             const input = document.getElementById('communityPostInput');
             if(!input || !input.value) return;
-            communityPosts.unshift({
-                id: Date.now(),
+            const postData = {
                 author: userProfile.name || 'Christian',
                 text: input.value,
                 time: 'Gerade eben'
-            });
-            localStorage.setItem('lensconnect_posts', JSON.stringify(communityPosts));
+            };
+            if(supabaseClient) {
+                await supabaseClient.from('community_posts').insert([postData]);
+            } else {
+                postData.id = Date.now();
+                communityPosts.unshift(postData);
+                localStorage.setItem('lensconnect_posts', JSON.stringify(communityPosts));
+            }
             input.value = '';
-            renderCommunity();
+            await loadDataFromSupabase();
         }
 
         function toggleDarkMode() {
