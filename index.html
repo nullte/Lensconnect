@@ -98,8 +98,9 @@
     <!-- MAIN VIEW CONTAINER -->
     <main class="flex-1 relative overflow-hidden flex min-h-0">
 
-        <!-- VIEW 1: MAP & SPOTS -->
+        <!-- VIEW 1: MAP & SPOTS (GETEILTER BILDSCHIRM: LINKS LISTE, RECHTS KARTE) -->
         <div id="view-map" class="view-panel w-full h-full flex flex-col md:flex-row relative">
+            <!-- Linker Bereich: Suche, Filter & Spot-Liste -->
             <div class="w-full md:w-96 bg-slate-800/90 backdrop-blur border-r border-slate-700 flex flex-col z-10 h-1/2 md:h-full shrink-0">
                 <div class="p-4 border-b border-slate-700 space-y-3">
                     <div class="flex items-center justify-between">
@@ -126,6 +127,7 @@
                 </div>
                 <div id="spotListContainer" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
             </div>
+            <!-- Rechter Bereich: Leaflet Karte -->
             <div id="leafletMap" class="flex-1 h-1/2 md:h-full bg-slate-950"></div>
         </div>
 
@@ -264,7 +266,7 @@
         </div>
     </div>
 
-    <!-- MODAL: NEW MARKET ENTRY (Mit 2-stufiger Logik) -->
+    <!-- MODAL: NEW MARKET ENTRY -->
     <div id="newMarketModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center">
@@ -449,8 +451,9 @@
             if(map || !document.getElementById('leafletMap')) return;
             try {
                 map = L.map('leafletMap').setView([46.61, 14.30], 10);
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                    attribution: '&copy; OpenStreetMap & CARTO',
+                // Official OpenStreetMap tiles (100% free, no API key required)
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors',
                     maxZoom: 19
                 }).addTo(map);
                 markersLayer = L.layerGroup().addTo(map);
