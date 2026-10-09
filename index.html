@@ -104,12 +104,13 @@
             </button>
         </nav>
 
-        <!-- Right User / Actions / Version -->
+        <!-- Right User / Actions -->
         <div class="flex items-center space-x-3">
             <button onclick="openProfileModal()" class="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
-                <div class="w-7 h-7 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs" id="userAvatarInitials">CP</div>
-                <span class="text-sm font-medium hidden sm:inline" id="userNameDisplay">Christian</span>
-                <span class="text-[11px] bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded font-mono border border-brand-500/40 font-bold shadow-sm">v0.3.3</span>
+                <div class="w-7 h-7 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs" id="userAvatarInitials">
+                    <i data-lucide="user" class="w-4 h-4"></i>
+                </div>
+                <span class="text-sm font-medium" id="userNameDisplay">Anmelden</span>
             </button>
             <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition cursor-pointer">
                 <i data-lucide="moon" class="w-4 h-4" id="themeIcon"></i>
@@ -580,9 +581,11 @@
         } catch(e) { console.warn("PWA setup notice:", e); }
 
         // --- SUPABASE CONFIGURATION ---
-        const SUPABASE_URL = 'https://ygzazikwcngwclvmhbbb.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlnemF6aWt3Y25nd2Nsdm1oYmJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0NjA1OTgsImV4cCI6MjEwNzAzNjU5OH0.30RNloWiRhtOIq3QVsQcJmvuOw4xU2_4vSzra6NKeUg';
+        const SUPABASE_URL = 'DEINE_SUPABASE_URL';
+        const SUPABASE_KEY = 'DEINE_SUPABASE_ANON_KEY';
         let supabaseClient = null;
+        let realtimeChannel = null;
+
         try {
             if (SUPABASE_URL !== 'DEINE_SUPABASE_URL' && SUPABASE_KEY !== 'DEINE_SUPABASE_ANON_KEY' && window.supabase) {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -649,6 +652,8 @@
                     const { data: { session } } = await supabaseClient.auth.getSession();
                     if (session) {
                         updateAuthUI(session.user);
+                    } else {
+                        updateAuthUI(null);
                     }
 
                     const { data: spotsData } = await supabaseClient.from('spots').select('*, spot_contributions(*)');
@@ -671,6 +676,15 @@
 
                     const { data: postsData } = await supabaseClient.from('community_posts').select('*');
                     if (postsData) communityPosts = postsData;
+
+                    // Setup Realtime Subscription for instant updates across all users
+                    if (!realtimeChannel) {
+                        realtimeChannel = supabaseClient.channel('public:lensconnect_realtime')
+                            .on('postgres_changes', { event: '*', schema: 'public' }, () => {
+                                loadDataFromSupabaseSilent();
+                            })
+                            .subscribe();
+                    }
                 } catch (e) {
                     console.warn("Supabase load failed, fallback to local:", e);
                     loadLocalFallback();
@@ -682,6 +696,36 @@
             renderSpots();
             renderMarket();
             renderCommunity();
+        }
+
+        async function loadDataFromSupabaseSilent() {
+            if (!supabaseClient) return;
+            try {
+                const { data: spotsData } = await supabaseClient.from('spots').select('*, spot_contributions(*)');
+                if (spotsData) {
+                    spots = spotsData.map(s => ({
+                        ...s,
+                        desc: s.desc,
+                        contributions: s.spot_contributions || []
+                    }));
+                }
+                const { data: marketData } = await supabaseClient.from('market_items').select('*');
+                if (marketData) {
+                    marketItems = marketData.map(m => ({
+                        ...m,
+                        desc: m.desc,
+                        locationType: m.location_type
+                    }));
+                }
+                const { data: postsData } = await supabaseClient.from('community_posts').select('*');
+                if (postsData) communityPosts = postsData;
+
+                renderSpots();
+                renderMarket();
+                renderCommunity();
+            } catch(e) {
+                console.warn("Silent reload failed:", e);
+            }
         }
 
         function loadLocalFallback() {
@@ -731,6 +775,7 @@
             document.getElementById('authSection').classList.remove('hidden');
             document.getElementById('loggedInSection').classList.add('hidden');
             document.getElementById('adminBadge').classList.add('hidden');
+            initUserDisplay();
             renderSpots();
             renderMarket();
             alert('Erfolgreich abgemeldet.');
@@ -753,6 +798,10 @@
                 }
 
                 userProfile.name = user.email.split('@')[0];
+                initUserDisplay();
+            } else {
+                currentUserEmail = null;
+                isAdmin = false;
                 initUserDisplay();
             }
         }
@@ -827,13 +876,21 @@
         }
 
         function initUserDisplay() {
-            const name = userProfile.name || 'Christian';
             const nameEl = document.getElementById('userNameDisplay');
-            if(nameEl) nameEl.textContent = name;
-            const inputEl = document.getElementById('profileNameInput');
-            if(inputEl) inputEl.value = name;
             const initialsEl = document.getElementById('userAvatarInitials');
-            if(initialsEl) initialsEl.textContent = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
+            
+            if (!currentUserEmail) {
+                if(nameEl) nameEl.textContent = 'Anmelden';
+                if(initialsEl) initialsEl.innerHTML = '<i data-lucide="user" class="w-4 h-4"></i>';
+            } else {
+                const name = userProfile.name || currentUserEmail.split('@')[0];
+                if(nameEl) nameEl.textContent = name;
+                if(initialsEl) initialsEl.textContent = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
+            }
+
+            const inputEl = document.getElementById('profileNameInput');
+            if(inputEl) inputEl.value = userProfile.name || '';
+            if(window.lucide) lucide.createIcons();
         }
 
         function renderImpressum() {
