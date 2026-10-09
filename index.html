@@ -22,6 +22,13 @@
             max-width: none !important;
             max-height: none !important;
         }
+        /* Light Mode Theme Overrides */
+        html.light body { background-color: #f8fafc !important; color: #0f172a !important; }
+        html.light header, html.light .bg-slate-800 { background-color: #ffffff !important; border-color: #e2e8f0 !important; color: #0f172a !important; }
+        html.light .bg-slate-900, html.light .bg-slate-950 { background-color: #f1f5f9 !important; color: #0f172a !important; }
+        html.light input, html.light select, html.light textarea { background-color: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
+        html.light .text-slate-100, html.light .text-white { color: #0f172a !important; }
+        html.light .text-slate-300, html.light .text-slate-400 { color: #475569 !important; }
     </style>
     <script>
         tailwind.config = {
@@ -80,12 +87,12 @@
 
         <!-- Right User / Actions / Version -->
         <div class="flex items-center space-x-3">
-            <button onclick="openProfileModal()" class="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition">
+            <button onclick="openProfileModal()" class="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
                 <div class="w-7 h-7 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs" id="userAvatarInitials">CP</div>
                 <span class="text-sm font-medium hidden sm:inline" id="userNameDisplay">Christian</span>
-                <span class="text-[10px] bg-slate-800 text-brand-400 px-1.5 py-0.5 rounded font-mono border border-slate-700">v1.5</span>
+                <span class="text-[10px] bg-slate-800 text-brand-400 px-1.5 py-0.5 rounded font-mono border border-slate-700">v0.1.2</span>
             </button>
-            <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition">
+            <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition cursor-pointer">
                 <i data-lucide="moon" class="w-4 h-4" id="themeIcon"></i>
             </button>
         </div>
@@ -134,17 +141,17 @@
                         <span>Willkommen bei LensConnect</span>
                     </div>
                     <h1 class="text-3xl lg:text-5xl font-extrabold text-white tracking-tight">
-                        Die Community-Plattform für <span class="bg-gradient-to-r from-brand-400 to-emerald-200 bg-clip-text text-transparent">Fotografen & Kreative</span>
+                        Die Community-Plattform für <span class="bg-gradient-to-r from-brand-400 to-emerald-200 bg-clip-text text-transparent">Fotografen & Models</span>
                     </h1>
                     <p class="text-slate-300 text-base lg:text-lg leading-relaxed">
                         LensConnect ist dein zentraler Hub, um versteckte Fotospots zu entdecken, präzise Lichtverhältnisse zu berechnen, sich auf dem Marktplatz für Shootings und Studios zu vernetzen und Foto-Projekte in der Community zu teilen.
                     </p>
                     <div class="flex flex-wrap gap-4 pt-2">
-                        <button onclick="switchView('map')" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold px-6 py-3 rounded-2xl text-sm flex items-center space-x-2 shadow-lg shadow-brand-500/20 transition">
+                        <button onclick="switchView('map')" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold px-6 py-3 rounded-2xl text-sm flex items-center space-x-2 shadow-lg shadow-brand-500/20 transition cursor-pointer">
                             <i data-lucide="map" class="w-4 h-4"></i>
                             <span>Karte erkunden</span>
                         </button>
-                        <button onclick="switchView('spots')" class="bg-slate-700/80 hover:bg-slate-700 text-white font-semibold px-6 py-3 rounded-2xl text-sm flex items-center space-x-2 border border-slate-600 transition">
+                        <button onclick="switchView('spots')" class="bg-slate-700/80 hover:bg-slate-700 text-white font-semibold px-6 py-3 rounded-2xl text-sm flex items-center space-x-2 border border-slate-600 transition cursor-pointer">
                             <i data-lucide="compass" class="w-4 h-4"></i>
                             <span>Spots ansehen</span>
                         </button>
@@ -349,7 +356,7 @@
     </main>
 
     <!-- MODAL: NEW SPOT -->
-    <div id="newSpotModal" style="display: none;" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="newSpotModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white">Neuen Fotospot hinzufügen</h3>
@@ -391,7 +398,7 @@
     </div>
 
     <!-- MODAL: NEW MARKET ENTRY -->
-    <div id="newMarketModal" style="display: none;" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="newMarketModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white">Neues Inserat erstellen</h3>
@@ -443,14 +450,14 @@
                 <textarea id="marketDesc" placeholder="Beschreibung..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-20 resize-none"></textarea>
             </div>
             <div class="flex justify-between items-center pt-2">
-                <button onclick="closeNewMarketModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition">Zurück</button>
-                <button onclick="saveNewMarketItem()" class="px-5 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold transition">Inserieren</button>
+                <button onclick="closeNewMarketModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition cursor-pointer">Zurück</button>
+                <button onclick="saveNewMarketItem()" class="px-5 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold transition cursor-pointer">Inserieren</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL: PROFILE -->
-    <div id="profileModal" style="display: none;" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="profileModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white">Profil verwalten</h3>
@@ -508,6 +515,11 @@
 
         window.onload = function() {
             try {
+                if(localStorage.getItem('lensconnect_theme') === 'light') {
+                    document.documentElement.classList.add('light');
+                    const icon = document.getElementById('themeIcon');
+                    if(icon) icon.setAttribute('data-lucide', 'sun');
+                }
                 if(window.lucide) lucide.createIcons();
                 initUserDisplay();
                 renderSpots();
@@ -970,7 +982,15 @@
         }
 
         function toggleDarkMode() {
-            document.documentElement.classList.toggle('dark');
+            const html = document.documentElement;
+            html.classList.toggle('light');
+            const isLight = html.classList.contains('light');
+            const icon = document.getElementById('themeIcon');
+            if(icon) {
+                icon.setAttribute('data-lucide', isLight ? 'sun' : 'moon');
+                lucide.createIcons();
+            }
+            localStorage.setItem('lensconnect_theme', isLight ? 'light' : 'dark');
         }
     </script>
 </body>
