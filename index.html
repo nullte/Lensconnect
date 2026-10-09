@@ -78,11 +78,12 @@
             </button>
         </nav>
 
-        <!-- Right User / Actions -->
+        <!-- Right User / Actions / Version -->
         <div class="flex items-center space-x-3">
             <button onclick="openProfileModal()" class="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition">
                 <div class="w-7 h-7 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs" id="userAvatarInitials">CP</div>
                 <span class="text-sm font-medium hidden sm:inline" id="userNameDisplay">Christian</span>
+                <span class="text-[10px] bg-slate-800 text-brand-400 px-1.5 py-0.5 rounded font-mono border border-slate-700">v1.4</span>
             </button>
             <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition">
                 <i data-lucide="moon" class="w-4 h-4" id="themeIcon"></i>
@@ -198,7 +199,7 @@
         </div>
 
         <!-- VIEW 1: MAP -->
-        <div id="view-map" class="view-panel w-full h-full relative hidden flex-col">
+        <div id="view-map" class="view-panel w-full flex-1 relative hidden flex-col">
             <div class="absolute top-4 right-4 z-[1000] pointer-events-auto flex space-x-2">
                 <button onclick="enableMapPinMode()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold px-4 py-2.5 rounded-2xl text-sm flex items-center space-x-2 shadow-2xl transition cursor-pointer">
                     <i data-lucide="map-pin" class="w-4 h-4"></i>
