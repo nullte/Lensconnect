@@ -104,13 +104,13 @@
             </button>
         </nav>
 
-        <!-- Right User / Actions -->
-        <div class="flex items-center space-x-3">
-            <button onclick="openProfileModal()" class="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
-                <div class="w-7 h-7 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-xs" id="userAvatarInitials">
-                    <i data-lucide="user" class="w-4 h-4"></i>
+        <!-- Right User / Actions (Kompakter gemacht) -->
+        <div class="flex items-center space-x-2">
+            <button onclick="openProfileModal()" class="flex items-center space-x-1.5 px-2 py-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
+                <div class="w-6 h-6 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-[10px]" id="userAvatarInitials">
+                    <i data-lucide="user" class="w-3.5 h-3.5"></i>
                 </div>
-                <span class="text-sm font-medium" id="userNameDisplay">Anmelden</span>
+                <span class="text-xs font-medium truncate max-w-[90px] sm:max-w-[120px]" id="userNameDisplay">Anmelden</span>
             </button>
             <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition cursor-pointer">
                 <i data-lucide="moon" class="w-4 h-4" id="themeIcon"></i>
@@ -628,7 +628,7 @@
         let markersLayer = null;
         let pickingMarker = null;
         let userLocationMarker = null;
-        let userCoords = null; // Für automatische Standortbestimmung und Umkreissuche
+        let userCoords = null;
         let compressedSpotImage = '';
         let editingSpotId = null;
         let editingMarketId = null;
@@ -664,12 +664,10 @@
                 initUserDisplay();
                 renderImpressum();
 
-                // Automatische Standortbestimmung direkt am Anfang im Hintergrund versuchen
                 autoLocateUser();
 
                 await loadDataFromSupabase();
 
-                // Initialize History API state
                 history.replaceState({ view: 'home', modal: null }, '', '');
                 history.pushState({ view: 'home', modal: null }, '', '');
 
@@ -679,7 +677,6 @@
             }
         };
 
-        // Automatisches Ermitteln des Standorts direkt am Anfang
         function autoLocateUser() {
             if (!navigator.geolocation) return;
             const optionsHigh = { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 };
@@ -701,7 +698,7 @@
                         })
                     }).addTo(map).bindPopup('Dein aktueller Standort');
                 }
-                renderSpots(); // Re-render spots to compute distances if active
+                renderSpots();
             };
 
             const errorHandler = () => {
@@ -711,7 +708,6 @@
             navigator.geolocation.getCurrentPosition(successHandler, errorHandler, optionsHigh);
         }
 
-        // Helper for Distance Calculation (Haversine Formula in km)
         function calculateDistance(lat1, lon1, lat2, lon2) {
             const R = 6371;
             const dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -724,11 +720,9 @@
             return R * c;
         }
 
-        // Load Data from Supabase
         async function loadDataFromSupabase() {
             if (supabaseClient) {
                 try {
-                    // Check Auth Session first
                     const { data: { session } } = await supabaseClient.auth.getSession();
                     if (session) {
                         updateAuthUI(session.user);
@@ -757,7 +751,6 @@
                     const { data: postsData } = await supabaseClient.from('community_posts').select('*');
                     if (postsData) communityPosts = postsData;
 
-                    // Setup Realtime Subscription for instant updates across all users
                     if (!realtimeChannel) {
                         realtimeChannel = supabaseClient.channel('public:lensconnect_realtime')
                             .on('postgres_changes', { event: '*', schema: 'public' }, () => {
@@ -822,7 +815,6 @@
             ];
         }
 
-        // Supabase Auth Actions
         async function supabaseRegister() {
             if (!supabaseClient) { alert('Supabase ist nicht konfiguriert.'); return; }
             const email = document.getElementById('authEmail').value;
@@ -888,14 +880,12 @@
             }
         }
 
-        // Helper check for ownership or admin rights (strict: unregistered users cannot modify)
         function canModify(itemAuthor) {
             if (!currentUserEmail) return false;
             if (isAdmin) return true;
             return (itemAuthor === userProfile.name || itemAuthor === currentUserEmail);
         }
 
-        // History API popstate listener
         window.addEventListener('popstate', (event) => {
             hideAllModals();
             const state = event.state;
@@ -968,7 +958,7 @@
             
             if (!currentUserEmail) {
                 if(nameEl) nameEl.textContent = 'Anmelden';
-                if(initialsEl) initialsEl.innerHTML = '<i data-lucide="user" class="w-4 h-4"></i>';
+                if(initialsEl) initialsEl.innerHTML = '<i data-lucide="user" class="w-3.5 h-3.5"></i>';
                 if(inputEl) {
                     inputEl.disabled = false;
                     inputEl.value = userProfile.name || '';
@@ -977,7 +967,7 @@
                 if(socialEl) socialEl.value = userProfile.social || '';
             } else {
                 const name = userProfile.name || currentUserEmail.split('@')[0];
-                if(nameEl) nameEl.textContent = `${name} (${userProfile.role || 'Fotograf'})`;
+                if(nameEl) nameEl.textContent = name; // Kompakt nur Name
                 if(initialsEl) initialsEl.textContent = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
                 if(inputEl) {
                     inputEl.value = name;
@@ -1038,7 +1028,7 @@
                 const newName = input.value.trim();
                 if (newName) {
                     userProfile.name = newName;
-                    userProfile.nameLocked = true; // Lock username permanently after set
+                    userProfile.nameLocked = true;
                 }
             }
             const roleInput = document.getElementById('profileRoleInput');
@@ -1138,7 +1128,6 @@
             };
 
             const errorHandler = (error) => {
-                // Fallback für iOS: Bei Timeout/Fehler mit hoher Genauigkeit auf Standard-Modus (WLAN/Funkzelle) wechseln
                 navigator.geolocation.getCurrentPosition(
                     successHandler,
                     (err) => {
@@ -1481,14 +1470,10 @@
             spots.forEach(spot => {
                 if(currentCategoryFilter !== 'all' && spot.category !== currentCategoryFilter) return;
                 
-                // Tag filtering check if searchVal starts with # or if tag clicked
                 if(searchVal && !spot.title.toLowerCase().includes(searchVal) && !spot.desc?.toLowerCase().includes(searchVal) && !spot.tags?.toLowerCase().includes(searchVal)) return;
 
-                // Radius filtering check
                 if(radiusFilter !== 'all' && spot.lat && spot.lng) {
                     if(!userCoords) {
-                        // If no user location yet, try locating
-                        // Skip or show alert
                     } else {
                         const dist = calculateDistance(userCoords.lat, userCoords.lng, spot.lat, spot.lng);
                         if(dist > parseFloat(radiusFilter)) return;
@@ -1719,7 +1704,6 @@
             history.back();
         }
 
-        // Market Logic
         function onMarketCategoryChange() {
             const cat = document.getElementById('marketCategory').value;
             const shootingF = document.getElementById('shootingFields');
@@ -1970,7 +1954,6 @@
             if(window.lucide) lucide.createIcons();
         }
 
-        // Community Feed
         function renderCommunity() {
             const container = document.getElementById('communityFeedContainer');
             if(!container) return;
