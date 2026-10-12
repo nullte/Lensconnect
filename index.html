@@ -260,17 +260,26 @@
                     </button>
                 </div>
 
-                <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
-                    <div class="relative w-full sm:w-80">
+                <div class="flex flex-col lg:flex-row gap-3 items-center justify-between">
+                    <div class="relative w-full lg:w-72">
                         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
                         <input type="text" id="spotSearchInput" oninput="filterSpots()" placeholder="Suche nach Titel, Ort..." class="w-full bg-slate-800 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-brand-500">
                     </div>
-                    <div class="flex flex-wrap gap-2 text-xs w-full sm:w-auto">
-                        <button onclick="setCategoryFilter('all')" class="cat-pill px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium transition cursor-pointer">Alle</button>
-                        <button onclick="setCategoryFilter('Landschaft')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Landschaft</button>
-                        <button onclick="setCategoryFilter('Urbex / Lost Place')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Lost Place</button>
-                        <button onclick="setCategoryFilter('Architektur')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Architektur</button>
-                        <button onclick="setCategoryFilter('Porträt')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Porträt</button>
+                    <div class="flex flex-wrap gap-3 items-center w-full lg:w-auto">
+                        <!-- Radius / Umkreis Filter -->
+                        <select id="spotRadiusFilter" onchange="filterSpots()" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-brand-500">
+                            <option value="all">📍 Umkreis: Alle</option>
+                            <option value="10">📍 Im Umkreis von 10 km</option>
+                            <option value="50">📍 Im Umkreis von 50 km</option>
+                            <option value="100">📍 Im Umkreis von 100 km</option>
+                        </select>
+                        <div class="flex flex-wrap gap-2 text-xs">
+                            <button onclick="setCategoryFilter('all')" class="cat-pill px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium transition cursor-pointer">Alle</button>
+                            <button onclick="setCategoryFilter('Landschaft')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Landschaft</button>
+                            <button onclick="setCategoryFilter('Urbex / Lost Place')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Lost Place</button>
+                            <button onclick="setCategoryFilter('Architektur')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Architektur</button>
+                            <button onclick="setCategoryFilter('Porträt')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Porträt</button>
+                        </div>
                     </div>
                 </div>
 
@@ -339,7 +348,7 @@
                     <option value="Architektur">Architektur</option>
                     <option value="Porträt">Porträt</option>
                 </select>
-                <input type="text" id="newSpotTags" placeholder="Tags (kommagetrennt, z.B. Sonnenuntergang, Drohne)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
+                <input type="text" id="newSpotTags" placeholder="Tags (kommagetrennt, z.B. Drohne, Nachtfotografie, Indoor)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
                 <textarea id="newSpotDesc" placeholder="Kurze Beschreibung..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-20 resize-none focus:outline-none focus:border-brand-500"></textarea>
                 
                 <div>
@@ -479,9 +488,23 @@
                     <button onclick="supabaseLogout()" class="w-full bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 font-semibold py-2 rounded-xl text-xs transition cursor-pointer">Abmelden</button>
                 </div>
 
-                <div class="pt-2 border-t border-slate-800">
-                    <label class="block text-xs text-slate-400 mb-1">Benutzername / Handle (einmalig festlegbar)</label>
-                    <input type="text" id="profileNameInput" placeholder="z.B. Christian" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                <div class="pt-2 border-t border-slate-800 space-y-3">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Benutzername / Handle (einmalig festlegbar)</label>
+                        <input type="text" id="profileNameInput" placeholder="z.B. Christian" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Rolle in der Community</label>
+                        <select id="profileRoleInput" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                            <option value="Fotograf">Fotograf</option>
+                            <option value="Model">Model</option>
+                            <option value="Beides">Beides (Fotograf & Model)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Instagram / Website Link</label>
+                        <input type="text" id="profileSocialInput" placeholder="z.B. https://instagram.com/deinname" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                    </div>
                 </div>
             </div>
             <div class="flex justify-between items-center pt-2">
@@ -605,7 +628,7 @@
         let markersLayer = null;
         let pickingMarker = null;
         let userLocationMarker = null;
-        let userCoords = null; // Für automatische Standortbestimmung beim Start
+        let userCoords = null; // Für automatische Standortbestimmung und Umkreissuche
         let compressedSpotImage = '';
         let editingSpotId = null;
         let editingMarketId = null;
@@ -620,7 +643,7 @@
         let spots = [];
         let marketItems = [];
         let communityPosts = [];
-        let userProfile = JSON.parse(localStorage.getItem('lensconnect_user')) || { name: 'Christian', nameLocked: false };
+        let userProfile = JSON.parse(localStorage.getItem('lensconnect_user')) || { name: 'Christian', nameLocked: false, role: 'Fotograf', social: '' };
         let currentUserEmail = null;
         let isAdmin = false;
 
@@ -678,6 +701,7 @@
                         })
                     }).addTo(map).bindPopup('Dein aktueller Standort');
                 }
+                renderSpots(); // Re-render spots to compute distances if active
             };
 
             const errorHandler = () => {
@@ -685,6 +709,19 @@
             };
 
             navigator.geolocation.getCurrentPosition(successHandler, errorHandler, optionsHigh);
+        }
+
+        // Helper for Distance Calculation (Haversine Formula in km)
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * (Math.PI / 180);
+            const dLon = (lon2 - lon1) * (Math.PI / 180);
+            const a = 
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * 
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
         }
 
         // Load Data from Supabase
@@ -773,8 +810,8 @@
 
         function loadLocalFallback() {
             spots = JSON.parse(localStorage.getItem('lensconnect_spots')) || [
-                { id: 1, title: 'Burgruine Landskron', category: 'Urbex / Lost Place', tags: 'Ruine, Aussicht', lat: 46.621, lng: 13.904, desc: 'Toller Ausblick über den Villacher Raum, perfekt bei Sonnenuntergang.', author: 'Christian', image: '', contributions: [] },
-                { id: 2, title: 'Wörthersee Ostbucht', category: 'Landschaft', tags: 'See, Spiegelung', lat: 46.622, lng: 14.286, desc: 'Spiegelungen und Stege zur blauen Stunde.', author: 'Christian', image: '', contributions: [] }
+                { id: 1, title: 'Burgruine Landskron', category: 'Urbex / Lost Place', tags: 'Ruine, Aussicht, Drohne', lat: 46.621, lng: 13.904, desc: 'Toller Ausblick über den Villacher Raum, perfekt bei Sonnenuntergang.', author: 'Christian', image: '', contributions: [] },
+                { id: 2, title: 'Wörthersee Ostbucht', category: 'Landschaft', tags: 'See, Spiegelung, Nachtfotografie', lat: 46.622, lng: 14.286, desc: 'Spiegelungen und Stege zur blauen Stunde.', author: 'Christian', image: '', contributions: [] }
             ];
             marketItems = JSON.parse(localStorage.getItem('lensconnect_market')) || [
                 { id: 1, type: 'biete', category: 'shooting', title: 'Porträt-Shooting am See', level: 'Profi', price: 'TFP oder Spende', contact: 'christian@example.com', desc: 'Suche Model für ein entspanntes Outdoor-Shooting.' },
@@ -926,6 +963,8 @@
             const nameEl = document.getElementById('userNameDisplay');
             const initialsEl = document.getElementById('userAvatarInitials');
             const inputEl = document.getElementById('profileNameInput');
+            const roleEl = document.getElementById('profileRoleInput');
+            const socialEl = document.getElementById('profileSocialInput');
             
             if (!currentUserEmail) {
                 if(nameEl) nameEl.textContent = 'Anmelden';
@@ -934,9 +973,11 @@
                     inputEl.disabled = false;
                     inputEl.value = userProfile.name || '';
                 }
+                if(roleEl) roleEl.value = userProfile.role || 'Fotograf';
+                if(socialEl) socialEl.value = userProfile.social || '';
             } else {
                 const name = userProfile.name || currentUserEmail.split('@')[0];
-                if(nameEl) nameEl.textContent = name;
+                if(nameEl) nameEl.textContent = `${name} (${userProfile.role || 'Fotograf'})`;
                 if(initialsEl) initialsEl.textContent = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
                 if(inputEl) {
                     inputEl.value = name;
@@ -947,6 +988,8 @@
                         inputEl.disabled = false;
                     }
                 }
+                if(roleEl) roleEl.value = userProfile.role || 'Fotograf';
+                if(socialEl) socialEl.value = userProfile.social || '';
             }
             if(window.lucide) lucide.createIcons();
         }
@@ -996,9 +1039,15 @@
                 if (newName) {
                     userProfile.name = newName;
                     userProfile.nameLocked = true; // Lock username permanently after set
-                    localStorage.setItem('lensconnect_user', JSON.stringify(userProfile));
                 }
             }
+            const roleInput = document.getElementById('profileRoleInput');
+            if(roleInput) userProfile.role = roleInput.value;
+
+            const socialInput = document.getElementById('profileSocialInput');
+            if(socialInput) userProfile.social = socialInput.value.trim();
+
+            localStorage.setItem('lensconnect_user', JSON.stringify(userProfile));
             initUserDisplay();
             closeProfileModal();
         }
@@ -1085,6 +1134,7 @@
                         })
                     }).addTo(map).bindPopup('Dein aktueller Standort').openPopup();
                 }
+                renderSpots();
             };
 
             const errorHandler = (error) => {
@@ -1426,17 +1476,39 @@
             container.innerHTML = '';
             const searchInput = document.getElementById('spotSearchInput');
             const searchVal = searchInput ? searchInput.value.toLowerCase() : '';
+            const radiusFilter = document.getElementById('spotRadiusFilter') ? document.getElementById('spotRadiusFilter').value : 'all';
 
             spots.forEach(spot => {
                 if(currentCategoryFilter !== 'all' && spot.category !== currentCategoryFilter) return;
+                
+                // Tag filtering check if searchVal starts with # or if tag clicked
                 if(searchVal && !spot.title.toLowerCase().includes(searchVal) && !spot.desc?.toLowerCase().includes(searchVal) && !spot.tags?.toLowerCase().includes(searchVal)) return;
+
+                // Radius filtering check
+                if(radiusFilter !== 'all' && spot.lat && spot.lng) {
+                    if(!userCoords) {
+                        // If no user location yet, try locating
+                        // Skip or show alert
+                    } else {
+                        const dist = calculateDistance(userCoords.lat, userCoords.lng, spot.lat, spot.lng);
+                        if(dist > parseFloat(radiusFilter)) return;
+                    }
+                }
 
                 const card = document.createElement('div');
                 card.className = "bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg space-y-3 flex flex-col justify-between hover:border-brand-500/50 transition";
                 
-                let tagsHtml = spot.tags ? `<div class="flex flex-wrap gap-1 mt-1">${spot.tags.split(',').map(t => `<span class="text-[10px] bg-slate-900 text-brand-400 px-2 py-0.5 rounded border border-slate-700/80">#${t.trim()}</span>`).join('')}</div>` : '';
+                let tagsHtml = spot.tags ? `<div class="flex flex-wrap gap-1 mt-1">${spot.tags.split(',').map(t => `<span onclick="filterByTag('${t.trim()}')" class="text-[10px] bg-slate-900 text-brand-400 px-2 py-0.5 rounded border border-slate-700/80 cursor-pointer hover:bg-slate-700 transition">#${t.trim()}</span>`).join('')}</div>` : '';
 
                 let imgHtml = spot.image ? `<div class="w-full max-h-96 mt-2 mb-2 overflow-hidden rounded-xl border border-slate-700 bg-slate-950 flex items-center justify-center cursor-pointer" onclick="openImageLightbox('${spot.image}')"><img src="${spot.image}" class="max-h-96 w-full object-contain"></div>` : '';
+
+                let distText = '';
+                if(userCoords && spot.lat && spot.lng) {
+                    const dist = calculateDistance(userCoords.lat, userCoords.lng, spot.lat, spot.lng);
+                    distText = `<span class="text-[10px] bg-blue-500/15 text-blue-400 px-2 py-0.5 rounded font-semibold ml-2">📍 ca. ${dist.toFixed(1)} km</span>`;
+                }
+
+                let navBtnHtml = spot.lat && spot.lng ? `<div class="pt-2"><a href="https://www.google.com/maps/search/?api=1&query=${spot.lat},${spot.lng}" target="_blank" style="color: #ffffff !important;" class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-[11px] py-1.5 px-2 rounded font-medium text-center transition shadow">🧭 Da hin navigieren</a></div>` : '';
 
                 let contributionsHtml = `
                     <div id="contrib-section-${spot.id}" class="hidden mt-3 pt-3 border-t border-slate-700/50 space-y-2">
@@ -1487,11 +1559,15 @@
                     <div class="space-y-2">
                         <div class="flex justify-between items-start">
                             <h3 class="font-semibold text-white text-base">${spot.title}</h3>
-                            <span class="text-xs bg-slate-900 text-brand-400 px-2.5 py-1 rounded-lg border border-slate-700">${spot.category}</span>
+                            <div class="flex items-center">
+                                <span class="text-xs bg-slate-900 text-brand-400 px-2.5 py-1 rounded-lg border border-slate-700">${spot.category}</span>
+                                ${distText}
+                            </div>
                         </div>
                         ${imgHtml}
                         <p class="text-xs text-slate-300 line-clamp-3">${spot.desc || ''}</p>
                         ${tagsHtml}
+                        ${navBtnHtml}
                         ${contributionsHtml}
                     </div>
                     <div class="pt-3 border-t border-slate-700/50 flex flex-col sm:flex-row gap-2 justify-between items-center text-xs">
@@ -1506,6 +1582,14 @@
             });
             if(window.lucide) lucide.createIcons();
             plotMapMarkers();
+        }
+
+        function filterByTag(tag) {
+            const input = document.getElementById('spotSearchInput');
+            if(input) {
+                input.value = tag;
+                filterSpots();
+            }
         }
 
         function setCategoryFilter(cat) {
