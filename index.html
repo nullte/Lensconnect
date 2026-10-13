@@ -24,12 +24,10 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Fix Tailwind img reset breaking Leaflet marker icons */
         .leaflet-container img {
             max-width: none !important;
             max-height: none !important;
         }
-        /* Comprehensive Light & Dark Mode Container & Font Overrides */
         html.light body { background-color: #f1f5f9 !important; color: #0f172a !important; }
         html.light header, html.light .bg-slate-800, html.light [class*="bg-slate-800"] { background-color: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         html.light .bg-slate-700, html.light [class*="bg-slate-700"] { background-color: #e2e8f0 !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
@@ -44,7 +42,6 @@
         html.light .border-slate-700 { border-color: #cbd5e1 !important; }
         html.light .bg-slate-900\/60, html.light .bg-slate-900\/65 { background-color: #cbd5e1 !important; color: #0f172a !important; }
         html.light .bg-slate-900\/60 p, html.light .bg-slate-900\/60 span, html.light .bg-slate-900\/65 p, html.light .bg-slate-900\/65 span { color: #1e293b !important; }
-        /* Keep brand colors distinct */
         html.light .text-brand-300, html.light .text-brand-400, html.light .text-brand-600 { color: #16a34a !important; }
         html.light .bg-brand-500 { background-color: #22c55e !important; color: #ffffff !important; }
     </style>
@@ -218,16 +215,22 @@
                     </div>
                 </div>
 
-                <!-- Kontakt / Feedback Box -->
+                <!-- Kontakt / Feedback Box mit E-Mail & Direktnachrichten-Button -->
                 <div class="bg-slate-800 border border-brand-500/40 rounded-3xl p-6 lg:p-8 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
                     <div class="space-y-1 text-center sm:text-left">
                         <h3 class="text-lg font-bold text-white">Lust mitzuwirken oder Fragen?</h3>
-                        <p class="text-slate-200 text-sm">Schreib mir direkt eine E-Mail mit deinen Vorschlägen oder deinem Feedback!</p>
+                        <p class="text-slate-200 text-sm">Schreib mir direkt eine E-Mail oder starte eine Direktnachricht!</p>
                     </div>
-                    <a href="mailto:Christian.arnold10@gmail.com" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold px-5 py-3 rounded-2xl text-sm flex items-center space-x-2 shrink-0 transition shadow-lg shadow-brand-500/20">
-                        <i data-lucide="mail" class="w-4 h-4"></i>
-                        <span>Christian.arnold10@gmail.com</span>
-                    </a>
+                    <div class="flex flex-wrap gap-3 items-center justify-center shrink-0">
+                        <a href="mailto:Christian.arnold10@gmail.com" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold px-4 py-3 rounded-2xl text-sm flex items-center space-x-2 transition shadow-lg shadow-brand-500/20">
+                            <i data-lucide="mail" class="w-4 h-4"></i>
+                            <span>Christian.arnold10@gmail.com</span>
+                        </a>
+                        <button onclick="openChatWithUser('Christian')" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-4 py-3 rounded-2xl text-sm flex items-center space-x-2 transition border border-slate-600 cursor-pointer">
+                            <i data-lucide="message-square" class="w-4 h-4 text-brand-400"></i>
+                            <span>Direktnachricht</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -644,7 +647,7 @@
         </div>
     </div>
 
-    <!-- MODAL: DIREKTNACHRICHTEN / CHAT (1-ON-1 INBOX & CHAT) -->
+    <!-- MODAL: DIREKTNACHRICHTEN / CHAT -->
     <div id="chatModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl flex flex-col h-[550px]">
             <div class="flex justify-between items-center pb-3 border-b border-slate-800">
@@ -658,13 +661,11 @@
                 <button onclick="closeChatModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
 
-            <!-- Chat Inbox View (Conversations list) -->
             <div id="chatInboxView" class="flex-1 overflow-y-auto space-y-2 pr-1">
                 <div class="text-xs font-semibold text-slate-400 mb-1">Deine aktiven Unterhaltungen</div>
                 <div id="chatConversationsList" class="space-y-2"></div>
             </div>
 
-            <!-- Active Chat Room View (1-on-1 messages) -->
             <div id="chatRoomView" class="flex-1 flex flex-col hidden space-y-3 overflow-hidden">
                 <div id="chatMessagesList" class="flex-1 overflow-y-auto space-y-3 pr-2"></div>
                 <div class="pt-2 border-t border-slate-800 flex space-x-2">
@@ -685,7 +686,6 @@
 
     <!-- APP LOGIC -->
     <script>
-        // PWA Setup with Network-First & Push Support
         try {
             const manifestData = {
                 name: "LensConnect – Spot-Finder & Community",
@@ -738,7 +738,6 @@
             }
         } catch(e) { console.warn("PWA setup notice:", e); }
 
-        // --- SUPABASE CONFIGURATION ---
         const SUPABASE_URL = 'https://ygzazikwcngwclvmhbbb.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlnemF6aWt3Y25nd2Nsdm1oYmJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0NjA1OTgsImV4cCI6MjEwNzAzNjU5OH0.30RNloWiRhtOIq3QVsQcJmvuOw4xU2_4vSzra6NKeUg';
         let supabaseClient = null;
@@ -1450,7 +1449,6 @@
             if(window.lucide) lucide.createIcons();
         }
 
-        // FAVORITEN
         function toggleSpotFavorite(spotId, event) {
             if(event) event.stopPropagation();
             const index = favorites.spots.indexOf(spotId);
@@ -1476,7 +1474,6 @@
             renderMarket();
         }
 
-        // --- ECHTES DIREKTNACHRICHTEN-SYSTEM (1-ON-1) ---
         window.currentPubProfileUser = null;
 
         function openChatModal() {
@@ -1604,7 +1601,6 @@
             container.innerHTML = '';
             const myName = userProfile.name || currentUserEmail || '';
             
-            // STRICT 1-on-1 filtering between me and currentChatPartner
             const filtered = messages.filter(m => 
                 (m.sender === myName && m.receiver === currentChatPartner) || 
                 (m.sender === currentChatPartner && m.receiver === myName)
@@ -1639,7 +1635,6 @@
             }
         }
 
-        // ÖFFENTLICHES PROFIL
         function openPublicProfile(authorName) {
             if(!authorName) return;
             window.currentPubProfileUser = authorName;
@@ -2549,7 +2544,8 @@
                 contact: document.getElementById('marketContact').value,
                 desc: document.getElementById('marketDesc').value,
                 author: userProfile.name || 'Christian',
-                completed: false
+                completed: false,
+                completed_at: null
             };
 
             if(category === 'shooting') {
@@ -2607,33 +2603,23 @@
             const item = marketItems.find(m => m.id === id);
             if(!item) return;
             if(!canModify(item.author)) {
-                alert('Keine Berechtigung.');
-                checkbox.checked = false;
+                alert('Du hast keine Berechtigung, den Status dieses Inserats zu ändern.');
+                checkbox.checked = item.completed;
                 return;
             }
-            if(checkbox.checked) {
-                item.completed = true;
-                if(supabaseClient) {
-                    await supabaseClient.from('market_items').update({ completed: true }).eq('id', id);
-                } else {
-                    localStorage.setItem('lensconnect_market', JSON.stringify(marketItems));
-                }
-                
-                const card = checkbox.closest('.market-card');
-                if(card) {
-                    card.style.opacity = '0.5';
-                    const notice = document.createElement('div');
-                    notice.className = 'text-[11px] text-amber-400 mt-2 font-medium';
-                    notice.textContent = 'Als erledigt markiert – wird in Kürze entfernt...';
-                    card.appendChild(notice);
-                }
+            
+            item.completed = checkbox.checked;
+            item.completed_at = checkbox.checked ? Date.now() : null;
 
-                setTimeout(async () => {
-                    marketItems = marketItems.filter(m => m.id !== id);
-                    if(!supabaseClient) localStorage.setItem('lensconnect_market', JSON.stringify(marketItems));
-                    renderMarket();
-                }, 3000);
+            if(supabaseClient) {
+                await supabaseClient.from('market_items').update({ 
+                    completed: item.completed, 
+                    completed_at: item.completed_at 
+                }).eq('id', id);
+            } else {
+                localStorage.setItem('lensconnect_market', JSON.stringify(marketItems));
             }
+            renderMarket();
         }
 
         function filterMarket(filter) {
@@ -2662,8 +2648,15 @@
             if(!grid) return;
             grid.innerHTML = '';
 
+            const THREE_DAYS = 3 * 24 * 60 * 60 * 1000;
+            const now = Date.now();
+
             marketItems.forEach(item => {
-                if(item.completed) return;
+                // If completed and more than 3 days passed, filter it out completely
+                if(item.completed && item.completed_at && (now - item.completed_at > THREE_DAYS)) {
+                    return;
+                }
+
                 if(currentMarketFilter === 'favorites') {
                     if(!favorites.market.includes(item.id)) return;
                 } else {
@@ -2675,7 +2668,8 @@
 
                 const isFav = favorites.market.includes(item.id);
                 const card = document.createElement('div');
-                card.className = "market-card bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg space-y-3 flex flex-col justify-between";
+                const isCompletedStyle = item.completed ? 'opacity-70 bg-slate-800/60 border-slate-700/50' : '';
+                card.className = `market-card bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg space-y-3 flex flex-col justify-between ${isCompletedStyle}`;
                 
                 let badgeSub = '';
                 if(item.category === 'shooting') {
@@ -2683,6 +2677,8 @@
                 } else {
                     badgeSub = `<span class="text-xs bg-purple-500/10 text-purple-400 px-2.5 py-1 rounded-lg border border-purple-500/20">Location: ${item.locationType || 'Profi Studio'}</span>`;
                 }
+
+                let completedNotice = item.completed ? `<div class="text-[11px] bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded-lg border border-amber-500/30 font-medium text-center">⚠️ Inserat ist als erledigt markiert (bleibt noch bis zu 3 Tage sichtbar)</div>` : '';
 
                 let contactHtml = item.contact ? `<div class="text-xs text-brand-400 font-medium flex items-center space-x-1.5"><i data-lucide="mail" class="w-3.5 h-3.5"></i><span>Kontakt: ${item.contact}</span></div>` : '';
 
@@ -2710,11 +2706,12 @@
                         <h3 class="font-semibold text-white text-base">${item.title}</h3>
                         <p class="text-xs text-slate-300 line-clamp-3">${item.desc || ''}</p>
                         ${contactHtml}
+                        ${completedNotice}
                     </div>
                     <div class="space-y-3 pt-3 border-t border-slate-700/50">
                         <div class="flex items-center justify-between text-xs">
                             <label class="flex items-center space-x-2 text-slate-300 cursor-pointer select-none">
-                                <input type="checkbox" onchange="toggleMarketCompleted(${item.id}, this)" class="rounded bg-slate-900 border-slate-700 text-brand-500 focus:ring-0 cursor-pointer">
+                                <input type="checkbox" ${item.completed ? 'checked' : ''} onchange="toggleMarketCompleted(${item.id}, this)" class="rounded bg-slate-900 border-slate-700 text-brand-500 focus:ring-0 cursor-pointer">
                                 <span>Als erledigt markieren</span>
                             </label>
                         </div>
