@@ -107,9 +107,9 @@
             </button>
         </nav>
 
-        <!-- Right User / Actions (Kompakt) -->
+        <!-- Right User / Actions -->
         <div class="flex items-center space-x-2">
-            <button onclick="openChatModal()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition cursor-pointer relative" title="Nachrichten & Chat">
+            <button onclick="openChatModal()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition cursor-pointer relative" title="Direktnachrichten">
                 <i data-lucide="message-square" class="w-4 h-4"></i>
                 <span id="chatBadge" class="absolute -top-1 -right-1 w-2 h-2 bg-brand-500 rounded-full hidden"></span>
             </button>
@@ -231,14 +231,13 @@
                 </div>
             </div>
 
-            <!-- DISCREET TRANSPARENT IMPRESSUM & COPYRIGHT FOOTER -->
+            <!-- FIXED HARDCODED IMPRESSUM & COPYRIGHT FOOTER -->
             <div class="max-w-4xl mx-auto w-full mt-12 pt-4 border-t border-slate-700/30 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400/60 gap-2 px-2 shrink-0">
                 <div class="flex flex-col sm:flex-row items-center gap-1 sm:gap-3 text-center sm:text-left">
                     <span>© 2026 Christian Arnold. Alle Rechte vorbehalten.</span>
                     <span class="hidden sm:inline">|</span>
-                    <span id="impressumTextDisplay">Impressum: Christian Arnold, Neubaugasse 16, 9601 Arnoldstein | E-Mail: christian.arnold10@gmail.com</span>
+                    <span>Impressum: Christian Arnold, Neubaugasse 16, 9601 Arnoldstein | E-Mail: christian.arnold10@gmail.com</span>
                 </div>
-                <button onclick="openImpressumModal()" class="hover:text-slate-300 transition underline cursor-pointer shrink-0">Impressum ändern</button>
             </div>
         </div>
 
@@ -277,7 +276,6 @@
                         <input type="text" id="spotSearchInput" oninput="filterSpots()" placeholder="Suche nach Titel, Ort..." class="w-full bg-slate-800 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-brand-500">
                     </div>
                     <div class="flex flex-wrap gap-3 items-center w-full lg:w-auto">
-                        <!-- Radius / Umkreis Filter -->
                         <select id="spotRadiusFilter" onchange="filterSpots()" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-brand-500">
                             <option value="all">📍 Umkreis: Alle</option>
                             <option value="10">📍 Im Umkreis von 10 km</option>
@@ -533,14 +531,12 @@
                 </div>
 
                 <div class="pt-2 border-t border-slate-800 space-y-3">
-                    <!-- Push Benachrichtigungen -->
                     <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50 space-y-2">
                         <span class="text-xs font-bold text-white block">PWA Push-Benachrichtigungen</span>
                         <p class="text-[11px] text-slate-400">Erhalte Benachrichtigungen bei neuen Nachrichten oder Inseraten direkt auf deinem Gerät.</p>
                         <button onclick="requestPushPermission()" class="w-full bg-slate-800 hover:bg-slate-700 text-brand-400 border border-slate-700 text-xs py-2 rounded-xl font-semibold transition cursor-pointer">🔔 Push-Benachrichtigungen aktivieren</button>
                     </div>
 
-                    <!-- Profilbild Upload -->
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Profilbild</label>
                         <input type="file" id="profileAvatarFile" accept="image/*" onchange="handleProfileAvatarUpload(event)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-300 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-500 file:text-slate-900 cursor-pointer">
@@ -569,7 +565,6 @@
                         <input type="text" id="profileSocialInput" placeholder="z.B. https://instagram.com/deinname" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
                     </div>
 
-                    <!-- Portfolio Upload Section -->
                     <div class="pt-2 border-t border-slate-800 space-y-2">
                         <span class="text-xs font-bold text-white block">Portfolio-Galerie & EXIF-Daten</span>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -591,7 +586,7 @@
         </div>
     </div>
 
-    <!-- MODAL: PUBLIC PROFILE (ÖFFENTLICHES PROFIL) -->
+    <!-- MODAL: PUBLIC PROFILE -->
     <div id="publicProfileModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center">
@@ -610,7 +605,6 @@
                     <p id="pubProfileBio" class="text-xs text-slate-300 italic">Keine Beschreibung hinterlegt.</p>
                 </div>
                 
-                <!-- Kontakt & Social Buttons -->
                 <div class="flex flex-col sm:flex-row gap-2 pt-1">
                     <div id="pubProfileEmailContainer" class="hidden flex-1">
                         <a id="pubProfileEmailBtn" href="#" class="w-full bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs py-2 px-3 rounded-xl flex items-center justify-center space-x-1.5 font-medium transition">
@@ -630,7 +624,6 @@
                     </button>
                 </div>
 
-                <!-- Portfolio Galerie -->
                 <div class="space-y-2 pt-2 border-t border-slate-800">
                     <span class="text-xs font-bold text-white block">Portfolio-Galerie</span>
                     <div id="pubProfilePortfolioGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-56 overflow-y-auto"></div>
@@ -651,48 +644,33 @@
         </div>
     </div>
 
-    <!-- MODAL: CHAT / NACHRICHTENSYSTEM -->
+    <!-- MODAL: DIREKTNACHRICHTEN / CHAT (1-ON-1 INBOX & CHAT) -->
     <div id="chatModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl flex flex-col h-[500px]">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl flex flex-col h-[550px]">
             <div class="flex justify-between items-center pb-3 border-b border-slate-800">
-                <h3 class="text-lg font-bold text-white flex items-center space-x-2">
-                    <i data-lucide="message-square" class="w-5 h-5 text-brand-400"></i>
-                    <span id="chatTitle">Nachrichten</span>
-                </h3>
+                <div class="flex items-center space-x-2">
+                    <button id="chatBackBtn" onclick="showChatInbox()" class="hidden text-slate-400 hover:text-white cursor-pointer mr-1"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+                    <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+                        <i data-lucide="message-square" class="w-5 h-5 text-brand-400"></i>
+                        <span id="chatTitle">Direktnachrichten</span>
+                    </h3>
+                </div>
                 <button onclick="closeChatModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            <div id="chatMessagesList" class="flex-1 overflow-y-auto space-y-3 pr-2"></div>
-            <div class="pt-2 border-t border-slate-800 flex space-x-2">
-                <input type="text" id="chatInputText" placeholder="Nachricht schreiben..." class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500" onkeydown="if(event.key==='Enter') sendChatMessage()">
-                <button onclick="sendChatMessage()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold px-4 py-2 rounded-xl text-sm transition cursor-pointer">Senden</button>
-            </div>
-        </div>
-    </div>
 
-    <!-- MODAL: IMPRESSUM -->
-    <div id="impressumModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-            <div class="flex justify-between items-center">
-                <h3 class="text-lg font-bold text-white">Impressum bearbeiten</h3>
-                <button onclick="closeImpressumModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <!-- Chat Inbox View (Conversations list) -->
+            <div id="chatInboxView" class="flex-1 overflow-y-auto space-y-2 pr-1">
+                <div class="text-xs font-semibold text-slate-400 mb-1">Deine aktiven Unterhaltungen</div>
+                <div id="chatConversationsList" class="space-y-2"></div>
             </div>
-            <div class="space-y-3">
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">Name / Firma</label>
-                    <input type="text" id="impNameInput" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+
+            <!-- Active Chat Room View (1-on-1 messages) -->
+            <div id="chatRoomView" class="flex-1 flex flex-col hidden space-y-3 overflow-hidden">
+                <div id="chatMessagesList" class="flex-1 overflow-y-auto space-y-3 pr-2"></div>
+                <div class="pt-2 border-t border-slate-800 flex space-x-2">
+                    <input type="text" id="chatInputText" placeholder="Nachricht an den Empfänger..." class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500" onkeydown="if(event.key==='Enter') sendChatMessage()">
+                    <button onclick="sendChatMessage()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold px-4 py-2 rounded-xl text-sm transition cursor-pointer">Senden</button>
                 </div>
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">Adresse</label>
-                    <input type="text" id="impAddressInput" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">E-Mail</label>
-                    <input type="text" id="impEmailInput" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
-                </div>
-            </div>
-            <div class="flex justify-between items-center pt-2">
-                <button onclick="closeImpressumModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition cursor-pointer">Abbrechen</button>
-                <button onclick="saveImpressum()" class="px-5 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold transition cursor-pointer">Speichern</button>
             </div>
         </div>
     </div>
@@ -707,7 +685,7 @@
 
     <!-- APP LOGIC -->
     <script>
-        // PWA Setup with Network-First, Instant Supabase Bypass & Push Support
+        // PWA Setup with Network-First & Push Support
         try {
             const manifestData = {
                 name: "LensConnect – Spot-Finder & Community",
@@ -736,7 +714,6 @@
                     self.addEventListener('install', (e) => { self.skipWaiting(); });
                     self.addEventListener('activate', (e) => { e.waitUntil(clients.claim()); });
                     self.addEventListener('fetch', (e) => {
-                        // Bypass cache for Supabase API to guarantee instant fresh data in PWA
                         if (e.request.url.includes('supabase.co')) {
                             e.respondWith(fetch(e.request));
                             return;
@@ -746,7 +723,7 @@
                         );
                     });
                     self.addEventListener('push', (e) => {
-                        const data = e.data ? e.data.json() : { title: 'LensConnect', body: 'Neue Aktivität in der Community!' };
+                        const data = e.data ? e.data.json() : { title: 'LensConnect', body: 'Neue Direktnachricht erhalten!' };
                         e.waitUntil(
                             self.registration.showNotification(data.title, {
                                 body: data.body,
@@ -757,26 +734,7 @@
                 `;
                 const swBlob = new Blob([swCode], { type: 'text/javascript' });
                 const swURL = URL.createObjectURL(swBlob);
-                navigator.serviceWorker.register(swURL).then(reg => {
-                    reg.addEventListener('updatefound', () => {
-                        const newWorker = reg.installing;
-                        if (newWorker) {
-                            newWorker.addEventListener('statechange', () => {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    window.location.reload();
-                                }
-                            });
-                        }
-                    });
-                }).catch(err => console.log('SW registration failed:', err));
-
-                let refreshing = false;
-                navigator.serviceWorker.addEventListener('controllerchange', () => {
-                    if (!refreshing) {
-                        refreshing = true;
-                        window.location.reload();
-                    }
-                });
+                navigator.serviceWorker.register(swURL).catch(err => console.log('SW registration failed:', err));
             }
         } catch(e) { console.warn("PWA setup notice:", e); }
 
@@ -825,12 +783,6 @@
         let currentUserEmail = null;
         let isAdmin = false;
 
-        let impressumData = JSON.parse(localStorage.getItem('lensconnect_impressum')) || {
-            name: 'Christian Arnold',
-            address: 'Neubaugasse 16, 9601 Arnoldstein',
-            email: 'christian.arnold10@gmail.com'
-        };
-
         window.onload = async function() {
             try {
                 if(localStorage.getItem('lensconnect_theme') === 'light') {
@@ -840,12 +792,10 @@
                 }
                 if(window.lucide) lucide.createIcons();
                 initUserDisplay();
-                renderImpressum();
                 renderMyPortfolio();
                 updateChatBadge();
 
                 autoLocateUser();
-
                 await loadDataFromSupabase();
 
                 history.replaceState({ view: 'home', modal: null }, '', '');
@@ -857,7 +807,6 @@
             }
         };
 
-        // Push Benachrichtigungen anfordern
         async function requestPushPermission() {
             if (!('Notification' in window)) {
                 alert('Dein Browser unterstützt keine Push-Benachrichtigungen.');
@@ -981,7 +930,8 @@
             renderMarket();
             renderCommunity();
             renderCommunityProfiles();
-            renderChatMessages();
+            if (currentChatPartner) renderChatMessages();
+            else renderChatConversations();
             updateChatBadge();
         }
 
@@ -1040,7 +990,8 @@
                 renderMarket();
                 renderCommunity();
                 renderCommunityProfiles();
-                renderChatMessages();
+                if (currentChatPartner) renderChatMessages();
+                else renderChatConversations();
                 updateChatBadge();
             } catch(e) {
                 console.warn("Silent reload failed:", e);
@@ -1156,8 +1107,6 @@
             if(ppm) ppm.style.display = 'none';
             const ctm = document.getElementById('chatModal');
             if(ctm) ctm.style.display = 'none';
-            const im = document.getElementById('impressumModal');
-            if(im) im.style.display = 'none';
             const lb = document.getElementById('imageLightboxModal');
             if(lb) lb.style.display = 'none';
             if(isPickingLocation) cancelMapPinMode();
@@ -1264,36 +1213,6 @@
             if(window.lucide) lucide.createIcons();
         }
 
-        function renderImpressum() {
-            const el = document.getElementById('impressumTextDisplay');
-            if(el) {
-                el.textContent = `Impressum: ${impressumData.name}, ${impressumData.address} | E-Mail: ${impressumData.email}`;
-            }
-        }
-
-        function openImpressumModal() {
-            document.getElementById('impNameInput').value = impressumData.name || '';
-            document.getElementById('impAddressInput').value = impressumData.address || '';
-            document.getElementById('impEmailInput').value = impressumData.email || '';
-
-            history.pushState({ view: currentView, modal: 'impressum' }, '', '');
-            const m = document.getElementById('impressumModal');
-            if(m) m.style.display = 'flex';
-        }
-
-        function closeImpressumModal() {
-            history.back();
-        }
-
-        function saveImpressum() {
-            impressumData.name = document.getElementById('impNameInput').value || '';
-            impressumData.address = document.getElementById('impAddressInput').value || '';
-            impressumData.email = document.getElementById('impEmailInput').value || '';
-            localStorage.setItem('lensconnect_impressum', JSON.stringify(impressumData));
-            renderImpressum();
-            closeImpressumModal();
-        }
-
         function openProfileModal() {
             history.pushState({ view: currentView, modal: 'profile' }, '', '');
             const m = document.getElementById('profileModal');
@@ -1303,7 +1222,6 @@
             history.back();
         }
 
-        // PROFILBILD UPLOAD
         function handleProfileAvatarUpload(event) {
             const file = event.target.files[0];
             if(!file) return;
@@ -1332,7 +1250,6 @@
             reader.readAsDataURL(file);
         }
 
-        // PORTFOLIO UPLOAD & RENDER
         function handlePortfolioImageUpload(event) {
             const file = event.target.files[0];
             if(!file) return;
@@ -1450,7 +1367,6 @@
             renderCommunityProfiles();
         }
 
-        // PROFIL-SUCHFUNKTION
         function renderCommunityProfiles() {
             const container = document.getElementById('communityProfilesGrid');
             if(!container) return;
@@ -1534,7 +1450,7 @@
             if(window.lucide) lucide.createIcons();
         }
 
-        // FAVORITEN / MERKLISTEN
+        // FAVORITEN
         function toggleSpotFavorite(spotId, event) {
             if(event) event.stopPropagation();
             const index = favorites.spots.indexOf(spotId);
@@ -1560,25 +1476,23 @@
             renderMarket();
         }
 
-        // CHAT / SUPABASE NACHRICHTENSYSTEM
+        // --- ECHTES DIREKTNACHRICHTEN-SYSTEM (1-ON-1) ---
         window.currentPubProfileUser = null;
+
+        function openChatModal() {
+            if(!currentUserEmail) { alert('Bitte zuerst anmelden.'); return; }
+            showChatInbox();
+            history.pushState({ view: currentView, modal: 'chat' }, '', '');
+            document.getElementById('chatModal').style.display = 'flex';
+        }
+
         function openChatWithUser(partnerName) {
             if(!currentUserEmail) { alert('Bitte zuerst anmelden, um Nachrichten zu senden.'); return; }
             if(!partnerName) return;
             const ppm = document.getElementById('publicProfileModal');
             if(ppm) ppm.style.display = 'none';
-            currentChatPartner = partnerName;
-            document.getElementById('chatTitle').textContent = `Chat mit ${partnerName}`;
-            renderChatMessages();
-            history.pushState({ view: currentView, modal: 'chat' }, '', '');
-            document.getElementById('chatModal').style.display = 'flex';
-        }
-
-        function openChatModal() {
-            if(!currentUserEmail) { alert('Bitte zuerst anmelden.'); return; }
-            currentChatPartner = 'Community';
-            document.getElementById('chatTitle').textContent = `Nachrichten & Chat`;
-            renderChatMessages();
+            
+            showChatRoom(partnerName);
             history.pushState({ view: currentView, modal: 'chat' }, '', '');
             document.getElementById('chatModal').style.display = 'flex';
         }
@@ -1587,12 +1501,79 @@
             history.back();
         }
 
+        function showChatInbox() {
+            currentChatPartner = null;
+            document.getElementById('chatBackBtn').classList.add('hidden');
+            document.getElementById('chatTitle').textContent = 'Direktnachrichten';
+            document.getElementById('chatInboxView').classList.remove('hidden');
+            document.getElementById('chatRoomView').classList.add('hidden');
+            renderChatConversations();
+            updateChatBadge();
+        }
+
+        function showChatRoom(partnerName) {
+            currentChatPartner = partnerName;
+            document.getElementById('chatBackBtn').classList.remove('hidden');
+            document.getElementById('chatTitle').textContent = `Chat mit ${partnerName}`;
+            document.getElementById('chatInboxView').classList.add('hidden');
+            document.getElementById('chatRoomView').classList.remove('hidden');
+            renderChatMessages();
+            updateChatBadge();
+        }
+
+        function renderChatConversations() {
+            const container = document.getElementById('chatConversationsList');
+            if(!container) return;
+            container.innerHTML = '';
+            const myName = userProfile.name || currentUserEmail || '';
+            
+            const partnersSet = new Set();
+            messages.forEach(m => {
+                if(m.sender === myName && m.receiver) partnersSet.add(m.receiver);
+                if(m.receiver === myName && m.sender) partnersSet.add(m.sender);
+            });
+
+            Object.values(userProfilesMap).forEach(p => {
+                if(p.username && p.username !== myName) partnersSet.add(p.username);
+            });
+
+            const partners = Array.from(partnersSet);
+            if(partners.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-6">Keine aktiven Unterhaltungen. Besuche das Community-Profil eines Fotografen oder Models, um einen privaten Chat zu starten!</p>';
+                return;
+            }
+
+            partners.forEach(partner => {
+                const chatMsgs = messages.filter(m => 
+                    (m.sender === myName && m.receiver === partner) || 
+                    (m.sender === partner && m.receiver === myName)
+                );
+                const lastMsg = chatMsgs.length > 0 ? chatMsgs[chatMsgs.length - 1] : null;
+
+                const div = document.createElement('div');
+                div.className = "bg-slate-800/80 border border-slate-700/80 rounded-xl p-3 flex items-center justify-between hover:border-brand-500/50 transition cursor-pointer";
+                div.onclick = () => showChatRoom(partner);
+                
+                div.innerHTML = `
+                    <div class="space-y-0.5 overflow-hidden">
+                        <div class="text-xs font-bold text-white">${partner}</div>
+                        <div class="text-[11px] text-slate-400 truncate">${lastMsg ? lastMsg.text : 'Noch keine Nachrichten'}</div>
+                    </div>
+                    <span class="text-xs text-brand-400 underline shrink-0 ml-2">Öffnen</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
         async function sendChatMessage() {
+            if(!currentChatPartner) return;
             const input = document.getElementById('chatInputText');
             if(!input || !input.value.trim()) return;
             const text = input.value.trim();
+            const myName = userProfile.name || currentUserEmail;
+            
             const msg = {
-                sender: userProfile.name || currentUserEmail,
+                sender: myName,
                 receiver: currentChatPartner,
                 text: text,
                 time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -1617,13 +1598,20 @@
         }
 
         function renderChatMessages() {
+            if(!currentChatPartner) return;
             const container = document.getElementById('chatMessagesList');
             if(!container) return;
             container.innerHTML = '';
             const myName = userProfile.name || currentUserEmail || '';
-            const filtered = messages.filter(m => currentChatPartner === 'Community' || m.sender === currentChatPartner || m.receiver === currentChatPartner || m.receiver === 'Community');
+            
+            // STRICT 1-on-1 filtering between me and currentChatPartner
+            const filtered = messages.filter(m => 
+                (m.sender === myName && m.receiver === currentChatPartner) || 
+                (m.sender === currentChatPartner && m.receiver === myName)
+            );
+
             if(filtered.length === 0) {
-                container.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-6">Noch keine Nachrichten vorhanden. Starte die Unterhaltung!</p>';
+                container.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-6">Noch keine Nachrichten in diesem Chat. Schreib die erste Nachricht!</p>';
                 return;
             }
             filtered.forEach(m => {
@@ -1632,7 +1620,6 @@
                 div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
                 div.innerHTML = `
                     <div class="max-w-[80%] rounded-2xl px-3.5 py-2 text-xs ${isMe ? 'bg-brand-500 text-slate-900 font-medium' : 'bg-slate-800 text-slate-200 border border-slate-700'}">
-                        ${!isMe ? `<span class="text-[10px] text-brand-400 font-bold block mb-0.5">${m.sender}</span>` : ''}
                         <span>${m.text}</span>
                     </div>
                     <span class="text-[9px] text-slate-500 mt-0.5 px-1">${m.time || ''}</span>
@@ -1644,12 +1631,15 @@
 
         function updateChatBadge() {
             const badge = document.getElementById('chatBadge');
-            if(badge && messages.length > 0) {
-                badge.classList.remove('hidden');
+            const myName = userProfile.name || currentUserEmail || '';
+            const unread = messages.filter(m => m.receiver === myName).length;
+            if(badge) {
+                if(unread > 0) badge.classList.remove('hidden');
+                else badge.classList.add('hidden');
             }
         }
 
-        // ÖFFENTLICHES PROFIL ANSEHEN
+        // ÖFFENTLICHES PROFIL
         function openPublicProfile(authorName) {
             if(!authorName) return;
             window.currentPubProfileUser = authorName;
@@ -1676,7 +1666,6 @@
 
             document.getElementById('pubProfileBio').textContent = profile.bio || 'Keine Beschreibung hinterlegt.';
 
-            // E-Mail Kontakt Button
             const emailContainer = document.getElementById('pubProfileEmailContainer');
             const emailBtn = document.getElementById('pubProfileEmailBtn');
             const emailText = document.getElementById('pubProfileEmailText');
@@ -1695,7 +1684,6 @@
                 emailContainer.classList.add('hidden');
             }
 
-            // Social Button (Instagram / Web)
             const socialContainer = document.getElementById('pubProfileSocialContainer');
             const socialBtn = document.getElementById('pubProfileSocialBtn');
             const socialText = document.getElementById('pubProfileSocialText');
@@ -1711,7 +1699,6 @@
                 socialContainer.classList.add('hidden');
             }
 
-            // Render Portfolio Grid
             const portGrid = document.getElementById('pubProfilePortfolioGrid');
             portGrid.innerHTML = '';
             const pList = (authorName === userProfile.name) ? userProfile.portfolio : (profile.portfolio || []);
@@ -1734,7 +1721,6 @@
                 portGrid.innerHTML = '<span class="text-xs text-slate-400 italic col-span-full">Keine Portfolio-Bilder vorhanden.</span>';
             }
 
-            // Filter user spots
             const userSpots = spots.filter(s => s.author === authorName);
             document.getElementById('pubProfileSpotsCount').textContent = userSpots.length;
             const spotsListEl = document.getElementById('pubProfileSpotsList');
@@ -1750,7 +1736,6 @@
                 spotsListEl.innerHTML = '<span class="text-xs text-slate-400 italic">Keine Spots erstellt.</span>';
             }
 
-            // Filter user market items
             const userMarket = marketItems.filter(m => m.author === authorName);
             document.getElementById('pubProfileMarketCount').textContent = userMarket.length;
             const marketListEl = document.getElementById('pubProfileMarketList');
@@ -1871,14 +1856,8 @@
                 renderSpots();
             };
 
-            const errorHandler = (error) => {
-                navigator.geolocation.getCurrentPosition(
-                    successHandler,
-                    (err) => {
-                        alert('Standort konnte nicht ermittelt werden. Bitte prüfe, ob deine App über HTTPS aufgerufen wird.');
-                    },
-                    optionsLow
-                );
+            const errorHandler = () => {
+                navigator.geolocation.getCurrentPosition(successHandler, null, optionsLow);
             };
 
             navigator.geolocation.getCurrentPosition(successHandler, errorHandler, optionsHigh);
@@ -2232,8 +2211,7 @@
                 if(searchVal && !spot.title.toLowerCase().includes(searchVal) && !spot.desc?.toLowerCase().includes(searchVal) && !spot.tags?.toLowerCase().includes(searchVal)) return;
 
                 if(radiusFilter !== 'all' && spot.lat && spot.lng) {
-                    if(!userCoords) {
-                    } else {
+                    if(userCoords) {
                         const dist = calculateDistance(userCoords.lat, userCoords.lng, spot.lat, spot.lng);
                         if(dist > parseFloat(radiusFilter)) return;
                     }
@@ -2371,7 +2349,7 @@
 
         function filterSpots() { renderSpots(); }
 
-        function openNewSpotModal(fromMap = false) {
+        function openNewSpotModal() {
             if(!currentUserEmail) {
                 alert('Bitte melde dich an, um einen Spot hinzuzufügen.');
                 return;
