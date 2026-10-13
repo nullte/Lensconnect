@@ -315,7 +315,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-700">
                     <div>
                         <h1 class="text-2xl font-bold text-white">Community Marktplatz</h1>
-                        <p class="text-sm text-slate-400">Einzelshootings, Lifestyle, Familien-Shootings, Anderes Shooting, Profi-Studios & Locations.</p>
+                        <p class="text-sm text-slate-400">Einzelfotografie, Lifestylefotografie, Familienfotografie, Eventfotografie, Profi-Studios & Locations.</p>
                     </div>
                     <button onclick="openNewMarketModal()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-medium px-4 py-2 rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow-lg shadow-brand-500/10 cursor-pointer">
                         <i data-lucide="plus-circle" class="w-4 h-4"></i>
@@ -327,10 +327,11 @@
                     <button onclick="filterMarket('all')" class="market-filter-btn px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium text-xs transition cursor-pointer">Alle anzeigen</button>
                     <button onclick="filterMarket('biete')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Biete</button>
                     <button onclick="filterMarket('suche')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Suche</button>
-                    <button onclick="filterMarket('einzel')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Einzelshooting</button>
-                    <button onclick="filterMarket('lifestyle')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Lifestyle shooting</button>
-                    <button onclick="filterMarket('familie')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Familien shooting</button>
-                    <button onclick="filterMarket('anderes')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Anderes shooting</button>
+                    <button onclick="filterMarket('einzel')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Einzelfotografie</button>
+                    <button onclick="filterMarket('lifestyle')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Lifestylefotografie</button>
+                    <button onclick="filterMarket('familie')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Familienfotografie</button>
+                    <button onclick="filterMarket('event')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Eventfotografie</button>
+                    <button onclick="filterMarket('anderes')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Anderes Shooting</button>
                     <button onclick="filterMarket('location')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Locations / Studios</button>
                     <button onclick="filterMarket('favorites')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-brand-400 hover:bg-slate-700 text-xs transition cursor-pointer flex items-center space-x-1"><i data-lucide="heart" class="w-3.5 h-3.5"></i><span>Merkliste</span></button>
                 </div>
@@ -489,10 +490,11 @@
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">2. Ebene: Kategorie</label>
                     <select id="marketCategory" onchange="onMarketCategoryChange()" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
-                        <option value="einzel">Einzelshooting</option>
-                        <option value="lifestyle">Lifestyle shooting</option>
-                        <option value="familie">Familien shooting</option>
-                        <option value="anderes">Anderes shooting</option>
+                        <option value="einzel">Einzelfotografie</option>
+                        <option value="lifestyle">Lifestylefotografie</option>
+                        <option value="familie">Familienfotografie</option>
+                        <option value="event">Eventfotografie</option>
+                        <option value="anderes">Anderes Shooting / Fotografie</option>
                         <option value="location">Location / Studio</option>
                     </select>
                 </div>
@@ -505,7 +507,6 @@
                         <select id="marketShootingLevel" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
                             <option value="Profi">Profi</option>
                             <option value="Amateur">Amateur</option>
-                            <option value="Familienfotograf">Familienfotograf</option>
                         </select>
                     </div>
                     <div>
@@ -1095,7 +1096,7 @@
             ];
             marketItems = JSON.parse(localStorage.getItem('lensconnect_market')) || [
                 { id: 1, type: 'biete', category: 'einzel', title: 'Porträt-Shooting am See', level: 'Profi', price: 'TFP oder Spende', contact: 'christian@example.com', desc: 'Suche Model für ein entspanntes Outdoor-Shooting.', author: 'Christian', safe_shooting: true },
-                { id: 2, type: 'biete', category: 'familie', title: 'Familienshooting in der Natur', level: 'Familienfotograf', price: '99€ inkl. 5 bearbeitete Bilder', contact: 'christian@example.com', desc: 'Natürliche Familienaufnahmen im Grünen.', author: 'Christian', safe_shooting: false }
+                { id: 2, type: 'biete', category: 'familie', title: 'Familienfotografie in der Natur', level: 'Profi', price: '99€ inkl. 5 bearbeitete Bilder', contact: 'christian@example.com', desc: 'Natürliche Familienaufnahmen im Grünen.', author: 'Christian', safe_shooting: false }
             ];
             communityPosts = JSON.parse(localStorage.getItem('lensconnect_posts')) || [
                 { id: 1, author: 'Christian', text: 'Erster Test mit der analogen Kamera und Kodak Portra 400. Die Farben sind einfach genial!', time: 'Vor 2 Stunden' }
@@ -2753,7 +2754,7 @@
             const cat = document.getElementById('marketCategory').value;
             const shootingF = document.getElementById('shootingFields');
             const locF = document.getElementById('locationFields');
-            if(cat === 'einzel' || cat === 'lifestyle' || cat === 'familie' || cat === 'anderes') {
+            if(cat === 'einzel' || cat === 'lifestyle' || cat === 'familie' || cat === 'event' || cat === 'anderes') {
                 if(shootingF) shootingF.classList.remove('hidden');
                 if(locF) locF.classList.add('hidden');
             } else {
@@ -2799,7 +2800,7 @@
             document.getElementById('marketTitle').value = item.title;
             document.getElementById('marketContact').value = item.contact || '';
             document.getElementById('marketDesc').value = item.desc || '';
-            if(item.category === 'einzel' || item.category === 'lifestyle' || item.category === 'familie' || item.category === 'anderes' || item.category === 'shooting') {
+            if(item.category === 'einzel' || item.category === 'lifestyle' || item.category === 'familie' || item.category === 'event' || item.category === 'anderes' || item.category === 'shooting') {
                 document.getElementById('marketShootingLevel').value = item.level || 'Profi';
                 document.getElementById('marketPrice').value = item.price || '';
                 document.getElementById('marketSafeShooting').checked = item.safe_shooting || false;
@@ -2833,7 +2834,7 @@
                 desc: document.getElementById('marketDesc').value
             };
 
-            if(category === 'einzel' || category === 'lifestyle' || category === 'familie' || category === 'anderes') {
+            if(category === 'einzel' || category === 'lifestyle' || category === 'familie' || category === 'event' || category === 'anderes') {
                 itemData.level = document.getElementById('marketShootingLevel').value;
                 itemData.price = document.getElementById('marketPrice').value || 'TFP';
                 itemData.safe_shooting = document.getElementById('marketSafeShooting').checked;
@@ -2922,9 +2923,10 @@
                 else if(filter === 'all' && (text.includes('alle') || text.includes('anzeigen'))) match = true;
                 else if(filter === 'biete' && text === 'biete') match = true;
                 else if(filter === 'suche' && text === 'suche') match = true;
-                else if(filter === 'einzel' && text.includes('einzelshooting')) match = true;
-                else if(filter === 'lifestyle' && text.includes('lifestyle')) match = true;
-                else if(filter === 'familie' && text.includes('familien')) match = true;
+                else if(filter === 'einzel' && text.includes('einzelfotografie')) match = true;
+                else if(filter === 'lifestyle' && text.includes('lifestylefotografie')) match = true;
+                else if(filter === 'familie' && text.includes('familienfotografie')) match = true;
+                else if(filter === 'event' && text.includes('eventfotografie')) match = true;
                 else if(filter === 'anderes' && text.includes('anderes')) match = true;
                 else if(filter === 'location' && text.includes('location')) match = true;
 
@@ -2958,6 +2960,7 @@
                     if(currentMarketFilter === 'einzel' && item.category !== 'einzel' && item.category !== 'shooting') return;
                     if(currentMarketFilter === 'lifestyle' && item.category !== 'lifestyle') return;
                     if(currentMarketFilter === 'familie' && item.category !== 'familie') return;
+                    if(currentMarketFilter === 'event' && item.category !== 'event') return;
                     if(currentMarketFilter === 'anderes' && item.category !== 'anderes') return;
                     if(currentMarketFilter === 'location' && item.category !== 'location') return;
                 }
@@ -2969,13 +2972,15 @@
                 
                 let badgeSub = '';
                 if(item.category === 'einzel' || item.category === 'shooting') {
-                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Einzelshooting (${item.level || 'Profi'}) • ${item.price}</span>`;
+                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Einzelfotografie (${item.level || 'Profi'}) • ${item.price}</span>`;
                 } else if(item.category === 'lifestyle') {
-                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Lifestyle shooting • ${item.price}</span>`;
+                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Lifestylefotografie • ${item.price}</span>`;
                 } else if(item.category === 'familie') {
-                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Familien shooting • ${item.price}</span>`;
+                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Familienfotografie • ${item.price}</span>`;
+                } else if(item.category === 'event') {
+                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Eventfotografie • ${item.price}</span>`;
                 } else if(item.category === 'anderes') {
-                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Anderes shooting (${item.level || 'Profi'}) • ${item.price}</span>`;
+                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Anderes Shooting (${item.level || 'Profi'}) • ${item.price}</span>`;
                 } else {
                     badgeSub = `<span class="text-xs bg-purple-500/10 text-purple-400 px-2.5 py-1 rounded-lg border border-purple-500/20">Location: ${item.locationType || 'Profi Studio'}</span>`;
                 }
