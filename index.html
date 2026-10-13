@@ -2747,7 +2747,8 @@
                 };
 
                 if(supabaseClient) {
-                    await supabaseClient.from('spots').update(updateData).eq('id', editingSpotId);
+                    const { error } = await supabaseClient.from('spots').update(updateData).eq('id', editingSpotId);
+                    if(error) alert('Fehler beim Aktualisieren: ' + error.message);
                 } else {
                     if(existingSpot) Object.assign(existingSpot, updateData);
                     localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
@@ -2770,7 +2771,8 @@
                 };
 
                 if(supabaseClient) {
-                    await supabaseClient.from('spots').insert([spotData]);
+                    const { error } = await supabaseClient.from('spots').insert([spotData]);
+                    if(error) alert('Fehler beim Speichern: ' + error.message);
                 } else {
                     spotData.id = Date.now();
                     spotData.contributions = [];
