@@ -311,8 +311,8 @@
 
         <!-- VIEW 3: MARKTPLATZ -->
         <div id="view-market" class="view-panel w-full h-full hidden flex-col overflow-y-auto p-4 lg:p-8 space-y-6">
-            <div class="max-w-6xl mx-auto w-full">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-700">
+            <div class="max-w-6xl mx-auto w-full space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-700">
                     <div>
                         <h1 class="text-2xl font-bold text-white">Community Marktplatz</h1>
                         <p class="text-sm text-slate-400">Einzelfotografie, Lifestylefotografie, Familienfotografie, Eventfotografie, Profi-Studios & Locations.</p>
@@ -323,20 +323,34 @@
                     </button>
                 </div>
 
-                <div class="flex flex-wrap gap-2 pt-4">
-                    <button onclick="filterMarket('all')" class="market-filter-btn px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium text-xs transition cursor-pointer">Alle anzeigen</button>
-                    <button onclick="filterMarket('biete')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Biete</button>
-                    <button onclick="filterMarket('suche')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Suche</button>
-                    <button onclick="filterMarket('einzel')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Einzelfotografie</button>
-                    <button onclick="filterMarket('lifestyle')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Lifestylefotografie</button>
-                    <button onclick="filterMarket('familie')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Familienfotografie</button>
-                    <button onclick="filterMarket('event')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Eventfotografie</button>
-                    <button onclick="filterMarket('anderes')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Anderes Shooting</button>
-                    <button onclick="filterMarket('location')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Locations / Studios</button>
-                    <button onclick="filterMarket('favorites')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-brand-400 hover:bg-slate-700 text-xs transition cursor-pointer flex items-center space-x-1"><i data-lucide="heart" class="w-3.5 h-3.5"></i><span>Merkliste</span></button>
+                <!-- Sortierung & Erledigte ausblenden Filterleiste -->
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-800/60 p-3 rounded-xl border border-slate-700/60">
+                    <div class="flex flex-wrap gap-2 text-xs">
+                        <button onclick="filterMarket('all')" class="market-filter-btn px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium text-xs transition cursor-pointer">Alle anzeigen</button>
+                        <button onclick="filterMarket('biete')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Biete</button>
+                        <button onclick="filterMarket('suche')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Suche</button>
+                        <button onclick="filterMarket('einzel')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Einzelfotografie</button>
+                        <button onclick="filterMarket('lifestyle')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Lifestylefotografie</button>
+                        <button onclick="filterMarket('familie')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Familienfotografie</button>
+                        <button onclick="filterMarket('event')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Eventfotografie</button>
+                        <button onclick="filterMarket('anderes')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Anderes Shooting</button>
+                        <button onclick="filterMarket('location')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Locations / Studios</button>
+                        <button onclick="filterMarket('favorites')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-brand-400 hover:bg-slate-700 text-xs transition cursor-pointer flex items-center space-x-1"><i data-lucide="heart" class="w-3.5 h-3.5"></i><span>Merkliste</span></button>
+                    </div>
+
+                    <div class="flex items-center space-x-3 shrink-0">
+                        <label class="flex items-center space-x-2 text-xs text-slate-300 cursor-pointer select-none">
+                            <input type="checkbox" id="hideCompletedMarket" onchange="renderMarket()" class="rounded bg-slate-900 border-slate-700 text-brand-500 cursor-pointer">
+                            <span>Erledigte ausblenden</span>
+                        </label>
+                        <select id="marketSortOrder" onchange="renderMarket()" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-brand-500">
+                            <option value="newest">📅 Neueste zuerst</option>
+                            <option value="oldest">📅 Älteste zuerst</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div id="marketGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-6"></div>
+                <div id="marketGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2"></div>
             </div>
         </div>
 
@@ -500,6 +514,11 @@
                 </div>
 
                 <input type="text" id="marketTitle" placeholder="Titel (z.B. Outdoor Porträt oder Familien-Shooting)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Datum / Zeitraum (optional)</label>
+                    <input type="text" id="marketDateText" placeholder="z.B. 15.06.2026 oder 10.06 - 15.06" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                </div>
 
                 <div id="shootingFields" class="space-y-3 p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
                     <div>
@@ -985,7 +1004,8 @@
                             ...m,
                             desc: m.desc,
                             locationType: m.location_type,
-                            safe_shooting: m.safe_shooting || false
+                            safe_shooting: m.safe_shooting || false,
+                            date_text: m.date_text || m.dateText || ''
                         }));
                     }
 
@@ -1068,7 +1088,8 @@
                         ...m,
                         desc: m.desc,
                         locationType: m.location_type,
-                        safe_shooting: m.safe_shooting || false
+                        safe_shooting: m.safe_shooting || false,
+                        date_text: m.date_text || m.dateText || ''
                     }));
                 }
                 const { data: postsData } = await supabaseClient.from('community_posts').select('*');
@@ -1095,8 +1116,8 @@
                 { id: 2, title: 'Wörthersee Ostbucht', category: 'Landschaft', status: 'frei', family_friendly: true, rating: 4, tags: 'See, Spiegelung, Familie', lat: 46.622, lng: 14.286, desc: 'Spiegelungen und Stege zur blauen Stunde. Ideal auch mit Kindern.', author: 'Christian', image: '', contributions: [], ratings_list: [4] }
             ];
             marketItems = JSON.parse(localStorage.getItem('lensconnect_market')) || [
-                { id: 1, type: 'biete', category: 'einzel', title: 'Porträt-Shooting am See', level: 'Profi', price: 'TFP oder Spende', contact: 'christian@example.com', desc: 'Suche Model für ein entspanntes Outdoor-Shooting.', author: 'Christian', safe_shooting: true },
-                { id: 2, type: 'biete', category: 'familie', title: 'Familienfotografie in der Natur', level: 'Profi', price: '99€ inkl. 5 bearbeitete Bilder', contact: 'christian@example.com', desc: 'Natürliche Familienaufnahmen im Grünen.', author: 'Christian', safe_shooting: false }
+                { id: 1, type: 'biete', category: 'einzel', title: 'Porträt-Shooting am See', level: 'Profi', price: 'TFP oder Spende', contact: 'christian@example.com', desc: 'Suche Model für ein entspanntes Outdoor-Shooting.', author: 'Christian', safe_shooting: true, date_text: '15.06.2026' },
+                { id: 2, type: 'biete', category: 'familie', title: 'Familienfotografie in der Natur', level: 'Profi', price: '99€ inkl. 5 bearbeitete Bilder', contact: 'christian@example.com', desc: 'Natürliche Familienaufnahmen im Grünen.', author: 'Christian', safe_shooting: false, date_text: 'Wochenende' }
             ];
             communityPosts = JSON.parse(localStorage.getItem('lensconnect_posts')) || [
                 { id: 1, author: 'Christian', text: 'Erster Test mit der analogen Kamera und Kodak Portra 400. Die Farben sind einfach genial!', time: 'Vor 2 Stunden' }
@@ -2771,6 +2792,7 @@
             editingMarketId = null;
             document.getElementById('marketModalTitle').textContent = 'Neues Inserat erstellen';
             document.getElementById('marketTitle').value = '';
+            document.getElementById('marketDateText').value = '';
             document.getElementById('marketContact').value = '';
             document.getElementById('marketDesc').value = '';
             document.getElementById('marketPrice').value = '';
@@ -2798,6 +2820,7 @@
             document.getElementById('marketCategory').value = item.category;
             onMarketCategoryChange();
             document.getElementById('marketTitle').value = item.title;
+            document.getElementById('marketDateText').value = item.date_text || '';
             document.getElementById('marketContact').value = item.contact || '';
             document.getElementById('marketDesc').value = item.desc || '';
             if(item.category === 'einzel' || item.category === 'lifestyle' || item.category === 'familie' || item.category === 'event' || item.category === 'anderes' || item.category === 'shooting') {
@@ -2830,6 +2853,7 @@
                 type: document.getElementById('marketType').value,
                 category: category,
                 title: titleEl.value,
+                date_text: document.getElementById('marketDateText').value.trim(),
                 contact: document.getElementById('marketContact').value,
                 desc: document.getElementById('marketDesc').value
             };
@@ -2944,27 +2968,44 @@
             if(!grid) return;
             grid.innerHTML = '';
 
+            const hideCompleted = document.getElementById('hideCompletedMarket') ? document.getElementById('hideCompletedMarket').checked : false;
+            const sortOrder = document.getElementById('marketSortOrder') ? document.getElementById('marketSortOrder').value : 'newest';
+
             const THREE_DAYS = 3 * 24 * 60 * 60 * 1000;
             const now = Date.now();
 
-            marketItems.forEach(item => {
-                if(item.completed && item.completed_at && (now - item.completed_at > THREE_DAYS)) {
-                    return;
+            let filteredItems = marketItems.filter(item => {
+                if(item.completed) {
+                    if(hideCompleted) return false;
+                    if(item.completed_at && (now - item.completed_at > THREE_DAYS)) return false;
                 }
 
                 if(currentMarketFilter === 'favorites') {
-                    if(!favorites.market.includes(item.id)) return;
+                    if(!favorites.market.includes(item.id)) return false;
                 } else {
-                    if(currentMarketFilter === 'biete' && item.type !== 'biete') return;
-                    if(currentMarketFilter === 'suche' && item.type !== 'suche') return;
-                    if(currentMarketFilter === 'einzel' && item.category !== 'einzel' && item.category !== 'shooting') return;
-                    if(currentMarketFilter === 'lifestyle' && item.category !== 'lifestyle') return;
-                    if(currentMarketFilter === 'familie' && item.category !== 'familie') return;
-                    if(currentMarketFilter === 'event' && item.category !== 'event') return;
-                    if(currentMarketFilter === 'anderes' && item.category !== 'anderes') return;
-                    if(currentMarketFilter === 'location' && item.category !== 'location') return;
+                    if(currentMarketFilter === 'biete' && item.type !== 'biete') return false;
+                    if(currentMarketFilter === 'suche' && item.type !== 'suche') return false;
+                    if(currentMarketFilter === 'einzel' && item.category !== 'einzel' && item.category !== 'shooting') return false;
+                    if(currentMarketFilter === 'lifestyle' && item.category !== 'lifestyle') return false;
+                    if(currentMarketFilter === 'familie' && item.category !== 'familie') return false;
+                    if(currentMarketFilter === 'event' && item.category !== 'event') return false;
+                    if(currentMarketFilter === 'anderes' && item.category !== 'anderes') return false;
+                    if(currentMarketFilter === 'location' && item.category !== 'location') return false;
                 }
+                return true;
+            });
 
+            filteredItems.sort((a, b) => {
+                const idA = a.id || 0;
+                const idB = b.id || 0;
+                if(sortOrder === 'oldest') {
+                    return idA - idB;
+                } else {
+                    return idB - idA;
+                }
+            });
+
+            filteredItems.forEach(item => {
                 const isFav = favorites.market.includes(item.id);
                 const card = document.createElement('div');
                 const isCompletedStyle = item.completed ? 'opacity-70 bg-slate-800/60 border-slate-700/50' : '';
@@ -2985,11 +3026,34 @@
                     badgeSub = `<span class="text-xs bg-purple-500/10 text-purple-400 px-2.5 py-1 rounded-lg border border-purple-500/20">Location: ${item.locationType || 'Profi Studio'}</span>`;
                 }
 
+                let dateHtml = item.date_text ? `<div class="text-xs text-brand-400 font-semibold flex items-center space-x-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5 shrink-0"></i><span>Datum / Zeitraum: ${item.date_text}</span></div>` : '';
+
                 let safeShootingBadge = item.safe_shooting ? `<div class="inline-block mt-1 text-[11px] bg-emerald-500/15 text-emerald-400 px-2.5 py-1 rounded-lg border border-emerald-500/30 font-semibold">Safe Shooting (Begleitpersonen erwünscht)</div>` : '';
 
-                let completedNotice = item.completed ? `<div class="text-[11px] bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded-lg border border-amber-500/30 font-medium text-center">⚠️ Inserat ist als erledigt markiert (bleibt noch bis zu 3 Tage sichtbar)</div>` : '';
+                let completedNotice = item.completed ? `<div class="text-[11px] bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded-lg border border-amber-500/30 font-medium text-center">⚠️ Inserat ist als erledigt markiert</div>` : '';
 
-                let contactHtml = item.contact ? `<div class="text-xs text-brand-400 font-medium flex items-center space-x-1.5"><i data-lucide="mail" class="w-3.5 h-3.5"></i><span>Kontakt: ${item.contact}</span></div>` : '';
+                let contactHtml = '';
+                if(item.contact) {
+                    const rawContact = item.contact.trim();
+                    let contactHref = rawContact;
+                    let contactIcon = 'mail';
+                    if (rawContact.includes('@')) {
+                        contactHref = `mailto:${rawContact}`;
+                        contactIcon = 'mail';
+                    } else if (rawContact.match(/^[\d\+\s\-\(\)]+$/)) {
+                        contactHref = `tel:${rawContact.replace(/\s+/g, '')}`;
+                        contactIcon = 'phone';
+                    } else {
+                        contactHref = `mailto:${rawContact}`;
+                    }
+                    contactHtml = `<div class="text-xs text-brand-400 font-medium flex items-center space-x-1.5"><i data-lucide="${contactIcon}" class="w-3.5 h-3.5 shrink-0"></i><a href="${contactHref}" class="hover:underline truncate">Kontakt: ${rawContact}</a></div>`;
+                }
+
+                let chatButtonHtml = '';
+                const itemAuthor = item.author || 'Christian';
+                if (!currentUserEmail || itemAuthor !== (userProfile.name || currentUserEmail)) {
+                    chatButtonHtml = `<button onclick="openChatWithUser('${itemAuthor}')" class="w-full bg-brand-500/15 hover:bg-brand-500/25 text-brand-400 border border-brand-500/30 text-xs py-2 px-3 rounded-xl flex items-center justify-center space-x-1.5 font-bold transition cursor-pointer"><i data-lucide="message-square" class="w-3.5 h-3.5"></i><span>Direktnachricht an ${itemAuthor}</span></button>`;
+                }
 
                 let marketActions = '';
                 if (canModify(item.author)) {
@@ -3025,15 +3089,17 @@
                             ${badgeSub}
                         </div>
                         <h3 class="font-semibold text-white text-base">${item.title}</h3>
+                        ${dateHtml}
                         <p class="text-xs text-slate-300 line-clamp-3">${item.desc || ''}</p>
                         ${safeShootingBadge}
                         ${contactHtml}
+                        ${chatButtonHtml}
                         ${completedNotice}
                     </div>
                     <div class="space-y-3 pt-3 border-t border-slate-700/50">
                         ${checkboxContainer}
                         <div class="flex justify-between items-center text-xs text-slate-400 pt-1 border-t border-slate-700/30">
-                            <span class="text-[11px]">Von: <span onclick="openPublicProfile('${item.author || 'Christian'}')" class="text-brand-400 font-semibold underline cursor-pointer">${item.author || 'Christian'}</span></span>
+                            <span class="text-[11px]">Von: <span onclick="openPublicProfile('${itemAuthor}')" class="text-brand-400 font-semibold underline cursor-pointer">${itemAuthor}</span></span>
                             ${marketActions}
                         </div>
                     </div>
