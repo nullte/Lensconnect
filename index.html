@@ -512,6 +512,13 @@
                 </div>
 
                 <div class="pt-2 border-t border-slate-800 space-y-3">
+                    <!-- Push Benachrichtigungen (Feature #1) -->
+                    <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50 space-y-2">
+                        <span class="text-xs font-bold text-white block">PWA Push-Benachrichtigungen</span>
+                        <p class="text-[11px] text-slate-400">Erhalte Benachrichtigungen bei neuen Nachrichten oder Inseraten direkt auf deinem Gerät.</p>
+                        <button onclick="requestPushPermission()" class="w-full bg-slate-800 hover:bg-slate-700 text-brand-400 border border-slate-700 text-xs py-2 rounded-xl font-semibold transition cursor-pointer">🔔 Push-Benachrichtigungen aktivieren</button>
+                    </div>
+
                     <!-- Profilbild Upload -->
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Profilbild</label>
@@ -679,7 +686,7 @@
 
     <!-- APP LOGIC -->
     <script>
-        // PWA Setup with Network-First and Auto-Refresh on Update
+        // PWA Setup with Network-First, Instant Supabase Bypass & Push Support
         try {
             const manifestData = {
                 name: "LensConnect – Spot-Finder & Community",
@@ -708,8 +715,22 @@
                     self.addEventListener('install', (e) => { self.skipWaiting(); });
                     self.addEventListener('activate', (e) => { e.waitUntil(clients.claim()); });
                     self.addEventListener('fetch', (e) => {
+                        // Bypass cache for Supabase API to guarantee instant fresh data in PWA
+                        if (e.request.url.includes('supabase.co')) {
+                            e.respondWith(fetch(e.request));
+                            return;
+                        }
                         e.respondWith(
                             fetch(e.request).catch(() => caches.match(e.request))
+                        );
+                    });
+                    self.addEventListener('push', (e) => {
+                        const data = e.data ? e.data.json() : { title: 'LensConnect', body: 'Neue Aktivität in der Community!' };
+                        e.waitUntil(
+                            self.registration.showNotification(data.title, {
+                                body: data.body,
+                                icon: 'data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 24 24\' fill=\\'%2322c55e\\'><path d=\\'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z\\'/></svg>'
+                            })
                         );
                     });
                 `;
@@ -746,7 +767,10 @@
 
         try {
             if (SUPABASE_URL && SUPABASE_KEY && window.supabase) {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+                    auth: { persistSession: true, autoRefreshToken: true },
+                    realtime: { params: { eventsPerSecond: 10 } }
+                });
             }
         } catch(e) { console.warn("Supabase init skipped"); }
 
@@ -811,6 +835,24 @@
                 console.error("Init error:", err);
             }
         };
+
+        // Push Benachrichtigungen anfordern (Feature #1)
+        async function requestPushPermission() {
+            if (!('Notification' in window)) {
+                alert('Dein Browser unterstützt keine Push-Benachrichtigungen.');
+                return;
+            }
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    alert('Push-Benachrichtigungen wurden erfolgreich aktiviert!');
+                } else {
+                    alert('Benachrichtigungsberechtigung wurde verweigert.');
+                }
+            } catch(e) {
+                console.warn("Push permission error:", e);
+            }
+        }
 
         function autoLocateUser() {
             if (!navigator.geolocation) return;
