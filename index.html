@@ -111,7 +111,7 @@
                 <span id="chatBadge" class="absolute -top-1 -right-1 w-2 h-2 bg-brand-500 rounded-full hidden"></span>
             </button>
             <button onclick="openProfileModal()" class="flex items-center space-x-1.5 px-2 py-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
-                <div class="w-6 h-6 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-[10px]" id="userAvatarInitials">
+                <div class="w-6 h-6 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-[10px] overflow-hidden" id="userAvatarInitials">
                     <i data-lucide="user" class="w-3.5 h-3.5"></i>
                 </div>
                 <span class="text-xs font-medium truncate max-w-[90px] sm:max-w-[120px]" id="userNameDisplay">Anmelden</span>
@@ -432,7 +432,7 @@
             </div>
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">1. Ebene: Art du Inserats</label>
+                    <label class="block text-xs text-slate-400 mb-1">1. Ebene: Art des Inserats</label>
                     <select id="marketType" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
                         <option value="biete">Biete</option>
                         <option value="suche">Suche</option>
@@ -512,6 +512,14 @@
                 </div>
 
                 <div class="pt-2 border-t border-slate-800 space-y-3">
+                    <!-- Profilbild Upload -->
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Profilbild</label>
+                        <input type="file" id="profileAvatarFile" accept="image/*" onchange="handleProfileAvatarUpload(event)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-300 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-500 file:text-slate-900 cursor-pointer">
+                        <div id="profileAvatarPreviewContainer" class="mt-2 hidden">
+                            <img id="profileAvatarPreview" class="w-12 h-12 rounded-full object-cover border border-slate-700 mx-auto" alt="Vorschau">
+                        </div>
+                    </div>
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Benutzername / Handle (einmalig festlegbar)</label>
                         <input type="text" id="profileNameInput" placeholder="z.B. Christian" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
@@ -533,7 +541,7 @@
                         <input type="text" id="profileSocialInput" placeholder="z.B. https://instagram.com/deinname" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
                     </div>
 
-                    <!-- Portfolio Upload Section (Feature 4) -->
+                    <!-- Portfolio Upload Section -->
                     <div class="pt-2 border-t border-slate-800 space-y-2">
                         <span class="text-xs font-bold text-white block">Portfolio-Galerie & EXIF-Daten</span>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -560,7 +568,7 @@
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-sm" id="pubProfileAvatar">U</div>
+                    <div class="w-12 h-12 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-sm overflow-hidden" id="pubProfileAvatar">U</div>
                     <div>
                         <h3 class="text-lg font-bold text-white" id="pubProfileName">Benutzername</h3>
                         <span class="text-xs text-brand-400" id="pubProfileRole">Fotograf</span>
@@ -588,13 +596,13 @@
                             <span id="pubProfileSocialText">Instagram / Website</span>
                         </a>
                     </div>
-                    <button onclick="openChatWithUser(window.currentPubProfileUser)" class="flex-1 bg-brand-500 hover:bg-brand-600 text-slate-900 text-xs py-2 px-3 rounded-xl flex items-center justify-center space-x-1.5 font-bold transition">
+                    <button onclick="openChatWithUser(window.currentPubProfileUser)" class="flex-1 bg-brand-500 hover:bg-brand-600 text-slate-900 text-xs py-2 px-3 rounded-xl flex items-center justify-center space-x-1.5 font-bold transition cursor-pointer">
                         <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
                         <span>Direktnachricht</span>
                     </button>
                 </div>
 
-                <!-- Feature 4: Portfolio Galerie -->
+                <!-- Portfolio Galerie -->
                 <div class="space-y-2 pt-2 border-t border-slate-800">
                     <span class="text-xs font-bold text-white block">Portfolio-Galerie</span>
                     <div id="pubProfilePortfolioGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-56 overflow-y-auto"></div>
@@ -615,7 +623,7 @@
         </div>
     </div>
 
-    <!-- MODAL: CHAT / NACHRICHTENSYSTEM (Feature 3) -->
+    <!-- MODAL: CHAT / NACHRICHTENSYSTEM -->
     <div id="chatModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl flex flex-col h-[500px]">
             <div class="flex justify-between items-center pb-3 border-b border-slate-800">
@@ -756,6 +764,7 @@
         let editingContribId = null;
         let compressedContribImage = '';
         let compressedPortfolioImage = '';
+        let compressedProfileAvatar = '';
         let currentCategoryFilter = 'all';
         let currentMarketFilter = 'all';
         let isPickingLocation = false;
@@ -767,7 +776,7 @@
         let favorites = JSON.parse(localStorage.getItem('lensconnect_favorites')) || { spots: [], market: [] };
         let messages = JSON.parse(localStorage.getItem('lensconnect_messages')) || [];
         let userProfilesMap = {}; 
-        let userProfile = JSON.parse(localStorage.getItem('lensconnect_user')) || { name: 'Christian', nameLocked: false, role: 'Fotograf', bio: '', social: '', email: '', portfolio: [] };
+        let userProfile = JSON.parse(localStorage.getItem('lensconnect_user')) || { name: 'Christian', nameLocked: false, role: 'Fotograf', bio: '', social: '', email: '', avatar: '', portfolio: [] };
         let currentUserEmail = null;
         let isAdmin = false;
 
@@ -916,6 +925,7 @@
                 userProfile.bio = data.bio || userProfile.bio;
                 userProfile.social = data.social || userProfile.social;
                 userProfile.email = data.email || currentUserEmail || '';
+                userProfile.avatar = data.avatar || userProfile.avatar || '';
                 userProfile.portfolio = data.portfolio || userProfile.portfolio || [];
                 userProfile.nameLocked = true;
                 localStorage.setItem('lensconnect_user', JSON.stringify(userProfile));
@@ -1126,7 +1136,13 @@
             
             if (!currentUserEmail) {
                 if(nameEl) nameEl.textContent = 'Anmelden';
-                if(initialsEl) initialsEl.innerHTML = '<i data-lucide="user" class="w-3.5 h-3.5"></i>';
+                if(initialsEl) {
+                    if(userProfile.avatar) {
+                        initialsEl.innerHTML = `<img src="${userProfile.avatar}" class="w-full h-full object-cover">`;
+                    } else {
+                        initialsEl.innerHTML = '<i data-lucide="user" class="w-3.5 h-3.5"></i>';
+                    }
+                }
                 if(inputEl) {
                     inputEl.disabled = false;
                     inputEl.value = userProfile.name || '';
@@ -1137,7 +1153,13 @@
             } else {
                 const name = userProfile.name || currentUserEmail.split('@')[0];
                 if(nameEl) nameEl.textContent = name;
-                if(initialsEl) initialsEl.textContent = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
+                if(initialsEl) {
+                    if(userProfile.avatar) {
+                        initialsEl.innerHTML = `<img src="${userProfile.avatar}" class="w-full h-full object-cover">`;
+                    } else {
+                        initialsEl.textContent = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
+                    }
+                }
                 if(inputEl) {
                     inputEl.value = name;
                     if (userProfile.nameLocked) {
@@ -1150,6 +1172,14 @@
                 if(roleEl) roleEl.value = userProfile.role || 'Fotograf';
                 if(bioEl) bioEl.value = userProfile.bio || '';
                 if(socialEl) socialEl.value = userProfile.social || '';
+            }
+            if(userProfile.avatar) {
+                const prev = document.getElementById('profileAvatarPreview');
+                const prevCont = document.getElementById('profileAvatarPreviewContainer');
+                if(prev && prevCont) {
+                    prev.src = userProfile.avatar;
+                    prevCont.classList.remove('hidden');
+                }
             }
             if(window.lucide) lucide.createIcons();
         }
@@ -1193,7 +1223,36 @@
             history.back();
         }
 
-        // --- FEATURE 4: PORTFOLIO UPLOAD & RENDER ---
+        // --- PROFILBILD UPLOAD ---
+        function handleProfileAvatarUpload(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let w = img.width, h = img.height;
+                    const max = 300;
+                    if(w > h && w > max) { h *= max/w; w = max; }
+                    else if(h > max) { w *= max/h; h = max; }
+                    canvas.width = w; canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    compressedProfileAvatar = canvas.toDataURL('image/jpeg', 0.8);
+                    const prev = document.getElementById('profileAvatarPreview');
+                    const prevCont = document.getElementById('profileAvatarPreviewContainer');
+                    if(prev && prevCont) {
+                        prev.src = compressedProfileAvatar;
+                        prevCont.classList.remove('hidden');
+                    }
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // --- PORTFOLIO UPLOAD & RENDER ---
         function handlePortfolioImageUpload(event) {
             const file = event.target.files[0];
             if(!file) return;
@@ -1280,6 +1339,10 @@
             const socialInput = document.getElementById('profileSocialInput');
             if(socialInput) userProfile.social = socialInput.value.trim();
 
+            if(compressedProfileAvatar) {
+                userProfile.avatar = compressedProfileAvatar;
+            }
+
             userProfile.email = currentUserEmail || userProfile.email || '';
 
             localStorage.setItem('lensconnect_user', JSON.stringify(userProfile));
@@ -1295,6 +1358,7 @@
                             bio: userProfile.bio,
                             social: userProfile.social,
                             email: user.email,
+                            avatar: userProfile.avatar,
                             portfolio: userProfile.portfolio
                         });
                     }
@@ -1305,7 +1369,7 @@
             closeProfileModal();
         }
 
-        // --- FEATURE 2: FAVORITEN / MERKLISTEN ---
+        // --- FAVORITEN / MERKLISTEN ---
         function toggleSpotFavorite(spotId, event) {
             if(event) event.stopPropagation();
             const index = favorites.spots.indexOf(spotId);
@@ -1331,12 +1395,12 @@
             renderMarket();
         }
 
-        // --- FEATURE 3: CHAT / NACHRICHTENSYSTEM ---
+        // --- CHAT / NACHRICHTENSYSTEM ---
         window.currentPubProfileUser = null;
         function openChatWithUser(partnerName) {
             if(!currentUserEmail) { alert('Bitte zuerst anmelden, um Nachrichten zu senden.'); return; }
             if(!partnerName) return;
-            closePublicProfileModal();
+            document.getElementById('publicProfileModal').style.display = 'none';
             currentChatPartner = partnerName;
             document.getElementById('chatTitle').textContent = `Chat mit ${partnerName}`;
             renderChatMessages();
@@ -1408,22 +1472,31 @@
             }
         }
 
-        // ÖFFENTLICHES PROFIL ANSEHEN (Mit Feature 4 Portfolio)
+        // ÖFFENTLICHES PROFIL ANSEHEN
         function openPublicProfile(authorName) {
             if(!authorName) return;
             window.currentPubProfileUser = authorName;
-            const profile = userProfilesMap[authorName] || {
+            
+            const profile = (authorName === userProfile.name) ? userProfile : (userProfilesMap[authorName] || {
                 username: authorName,
                 role: 'Fotograf',
                 bio: 'Keine Beschreibung hinterlegt.',
                 social: '',
                 email: '',
+                avatar: '',
                 portfolio: []
-            };
+            });
 
             document.getElementById('pubProfileName').textContent = profile.username || authorName;
             document.getElementById('pubProfileRole').textContent = profile.role || 'Fotograf';
-            document.getElementById('pubProfileAvatar').textContent = (profile.username || authorName).split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
+            
+            const avatarEl = document.getElementById('pubProfileAvatar');
+            if(profile.avatar) {
+                avatarEl.innerHTML = `<img src="${profile.avatar}" class="w-full h-full object-cover">`;
+            } else {
+                avatarEl.textContent = (profile.username || authorName).split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
+            }
+
             document.getElementById('pubProfileBio').textContent = profile.bio || 'Keine Beschreibung hinterlegt.';
 
             // E-Mail Kontakt Button
@@ -1451,7 +1524,7 @@
             const socialText = document.getElementById('pubProfileSocialText');
             if(profile.social) {
                 socialContainer.classList.remove('hidden');
-                let targetUrl = profile.social;
+                let targetUrl = profile.social.trim();
                 if(!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
                     targetUrl = 'https://' + targetUrl;
                 }
@@ -1461,10 +1534,10 @@
                 socialContainer.classList.add('hidden');
             }
 
-            // Render Portfolio Grid (Feature 4)
+            // Render Portfolio Grid
             const portGrid = document.getElementById('pubProfilePortfolioGrid');
             portGrid.innerHTML = '';
-            const pList = (profile.username === (userProfile.name)) ? userProfile.portfolio : (profile.portfolio || []);
+            const pList = (authorName === userProfile.name) ? userProfile.portfolio : (profile.portfolio || []);
             if(pList && pList.length > 0) {
                 pList.forEach(p => {
                     const div = document.createElement('div');
