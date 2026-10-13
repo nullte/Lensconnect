@@ -349,7 +349,7 @@
                 </div>
 
                 <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
-                    <textarea id="communityPostInput" placeholder="Teile dein neuester Foto-Projekt..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-brand-500 resize-none h-24"></textarea>
+                    <textarea id="communityPostInput" placeholder="Teile dein neuestes Foto-Projekt..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-brand-500 resize-none h-24"></textarea>
                     <div class="flex justify-between items-center">
                         <span class="text-xs text-slate-400">Komprimierung aktiv.</span>
                         <button onclick="submitCommunityPost()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold px-4 py-2 rounded-xl text-sm transition cursor-pointer">Beitrag posten</button>
@@ -662,11 +662,17 @@
             </div>
 
             <div id="chatInboxView" class="flex-1 overflow-y-auto space-y-2 pr-1">
-                <div class="text-xs font-semibold text-slate-400 mb-1">Deine aktiven Unterhaltungen</div>
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-xs font-semibold text-slate-400">Deine aktiven Unterhaltungen</span>
+                </div>
                 <div id="chatConversationsList" class="space-y-2"></div>
             </div>
 
             <div id="chatRoomView" class="flex-1 flex flex-col hidden space-y-3 overflow-hidden">
+                <div class="flex justify-between items-center px-1">
+                    <button onclick="markChatAsRead()" class="text-[11px] bg-brand-500/20 text-brand-400 hover:bg-brand-500/30 px-2.5 py-1 rounded-lg border border-brand-500/40 font-medium transition cursor-pointer">✓ Als gelesen markieren</button>
+                    <button onclick="clearCurrentChat()" class="text-[11px] bg-red-500/15 text-red-400 hover:bg-red-500/25 px-2.5 py-1 rounded-lg border border-red-500/30 font-medium transition cursor-pointer">🗑️ Chat für mich leeren</button>
+                </div>
                 <div id="chatMessagesList" class="flex-1 overflow-y-auto space-y-3 pr-2"></div>
                 <div class="pt-2 border-t border-slate-800 flex space-x-2">
                     <input type="text" id="chatInputText" placeholder="Nachricht an den Empfänger..." class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500" onkeydown="if(event.key==='Enter') sendChatMessage()">
@@ -714,22 +720,12 @@
                     self.addEventListener('install', (e) => { self.skipWaiting(); });
                     self.addEventListener('activate', (e) => { e.waitUntil(clients.claim()); });
                     self.addEventListener('fetch', (e) => {
-                        // Niemals API / Supabase Anfragen aus dem Service Worker Cache bedienen
                         if (e.request.url.includes('supabase.co') || e.request.method !== 'GET') {
                             e.respondWith(fetch(e.request));
                             return;
                         }
                         e.respondWith(
                             fetch(e.request).catch(() => caches.match(e.request))
-                        );
-                    });
-                    self.addEventListener('push', (e) => {
-                        const data = e.data ? e.data.json() : { title: 'LensConnect', body: 'Neue Direktnachricht erhalten!' };
-                        e.waitUntil(
-                            self.registration.showNotification(data.title, {
-                                body: data.body,
-                                icon: 'data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 24 24\\' fill=\\'%2322c55e\\'><path d=\\'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z\\'/></svg>'
-                            })
                         );
                     });
                 `;
@@ -778,6 +774,8 @@
         let communityPosts = [];
         let favorites = JSON.parse(localStorage.getItem('lensconnect_favorites')) || { spots: [], market: [] };
         let messages = [];
+        let deletedMessageIds = JSON.parse(localStorage.getItem('lensconnect_deleted_msgs')) || [];
+        let readChatsMap = JSON.parse(localStorage.getItem('lensconnect_read_chats')) || {};
         let userProfilesMap = {}; 
         let userProfile = JSON.parse(localStorage.getItem('lensconnect_user')) || { name: 'Christian', nameLocked: false, role: 'Fotograf', bio: '', social: '', email: '', avatar: '', portfolio: [] };
         let currentUserEmail = null;
@@ -798,14 +796,12 @@
                 autoLocateUser();
                 await loadDataFromSupabase();
 
-                // Automatischer Sync beim Wiederöffnen des Tabs oder entsperren des Handys
                 document.addEventListener('visibilitychange', () => {
                     if (document.visibilityState === 'visible') {
                         loadDataFromSupabaseSilent();
                     }
                 });
 
-                // Regelmäßiger Hintergrund-Poll alle 12 Sekunden als Backup falls Realtime disconnected
                 setInterval(() => {
                     loadDataFromSupabaseSilent();
                 }, 12000);
@@ -928,11 +924,7 @@
                             .on('postgres_changes', { event: '*', schema: 'public' }, () => {
                                 loadDataFromSupabaseSilent();
                             })
-                            .subscribe((status) => {
-                                if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
-                                    setTimeout(() => loadDataFromSupabaseSilent(), 2000);
-                                }
-                            });
+                            .subscribe();
                     }
                 } catch (e) {
                     console.warn("Supabase load failed, fallback to local:", e);
@@ -1531,8 +1523,40 @@
             document.getElementById('chatTitle').textContent = `Chat mit ${partnerName}`;
             document.getElementById('chatInboxView').classList.add('hidden');
             document.getElementById('chatRoomView').classList.remove('hidden');
+            
+            // Mark chat as read for this partner
+            markChatAsRead();
+            
             renderChatMessages();
             updateChatBadge();
+        }
+
+        function markChatAsRead() {
+            if(!currentChatPartner) return;
+            const myName = userProfile.name || currentUserEmail || '';
+            readChatsMap[currentChatPartner] = Date.now();
+            localStorage.setItem('lensconnect_read_chats', JSON.stringify(readChatsMap));
+            updateChatBadge();
+            renderChatConversations();
+        }
+
+        function clearCurrentChat() {
+            if(!currentChatPartner) return;
+            if(confirm(`Möchtest du den Chat mit ${currentChatPartner} für dich komplett leeren?`)) {
+                const myName = userProfile.name || currentUserEmail || '';
+                const filtered = messages.filter(m => 
+                    (m.sender === myName && m.receiver === currentChatPartner) || 
+                    (m.sender === currentChatPartner && m.receiver === myName)
+                );
+                filtered.forEach(m => {
+                    if(m.id && !deletedMessageIds.includes(m.id)) {
+                        deletedMessageIds.push(m.id);
+                    }
+                });
+                localStorage.setItem('lensconnect_deleted_msgs', JSON.stringify(deletedMessageIds));
+                renderChatMessages();
+                updateChatBadge();
+            }
         }
 
         function renderChatConversations() {
@@ -1543,6 +1567,7 @@
             
             const partnersSet = new Set();
             messages.forEach(m => {
+                if(deletedMessageIds.includes(m.id)) return;
                 if(m.sender === myName && m.receiver) partnersSet.add(m.receiver);
                 if(m.receiver === myName && m.sender) partnersSet.add(m.sender);
             });
@@ -1558,19 +1583,25 @@
             }
 
             partners.forEach(partner => {
-                const chatMsgs = messages.filter(m => 
-                    (m.sender === myName && m.receiver === partner) || 
-                    (m.sender === partner && m.receiver === myName)
-                );
+                const chatMsgs = messages.filter(m => {
+                    if(deletedMessageIds.includes(m.id)) return false;
+                    return (m.sender === myName && m.receiver === partner) || 
+                           (m.sender === partner && m.receiver === myName);
+                });
                 const lastMsg = chatMsgs.length > 0 ? chatMsgs[chatMsgs.length - 1] : null;
 
+                const hasUnread = chatMsgs.some(m => m.receiver === myName && (!readChatsMap[partner] || new Date(m.time || 0).getTime() > readChatsMap[partner] || chatMsgs.indexOf(m) > (chatMsgs.length - 3)));
+                
                 const div = document.createElement('div');
-                div.className = "bg-slate-800/80 border border-slate-700/80 rounded-xl p-3 flex items-center justify-between hover:border-brand-500/50 transition cursor-pointer";
+                div.className = "bg-slate-800/80 border border-slate-700/80 rounded-xl p-3 flex items-center justify-between hover:border-brand-500/50 transition cursor-pointer relative";
                 div.onclick = () => showChatRoom(partner);
                 
                 div.innerHTML = `
                     <div class="space-y-0.5 overflow-hidden">
-                        <div class="text-xs font-bold text-white">${partner}</div>
+                        <div class="text-xs font-bold text-white flex items-center space-x-2">
+                            <span>${partner}</span>
+                            ${hasUnread ? '<span class="w-2 h-2 bg-brand-500 rounded-full inline-block"></span>' : ''}
+                        </div>
                         <div class="text-[11px] text-slate-400 truncate">${lastMsg ? lastMsg.text : 'Noch keine Nachrichten'}</div>
                     </div>
                     <span class="text-xs text-brand-400 underline shrink-0 ml-2">Öffnen</span>
@@ -1611,20 +1642,12 @@
             updateChatBadge();
         }
 
-        async function deleteChatMessage(msgId) {
-            if(confirm('Möchtest du diese Nachricht wirklich löschen?')) {
-                if (supabaseClient) {
-                    const { error } = await supabaseClient.from('messages').delete().eq('id', msgId);
-                    if(error) {
-                        alert('Fehler beim Löschen: ' + error.message);
-                        return;
-                    }
-                    await loadDataFromSupabaseSilent();
-                } else {
-                    messages = messages.filter(m => m.id !== msgId);
-                    localStorage.setItem('lensconnect_messages', JSON.stringify(messages));
-                    renderChatMessages();
-                }
+        async function deleteChatMessageForMe(msgId) {
+            if(!msgId) return;
+            if(!deletedMessageIds.includes(msgId)) {
+                deletedMessageIds.push(msgId);
+                localStorage.setItem('lensconnect_deleted_msgs', JSON.stringify(deletedMessageIds));
+                renderChatMessages();
                 updateChatBadge();
             }
         }
@@ -1636,10 +1659,11 @@
             container.innerHTML = '';
             const myName = userProfile.name || currentUserEmail || '';
             
-            const filtered = messages.filter(m => 
-                (m.sender === myName && m.receiver === currentChatPartner) || 
-                (m.sender === currentChatPartner && m.receiver === myName)
-            );
+            const filtered = messages.filter(m => {
+                if(m.id && deletedMessageIds.includes(m.id)) return false;
+                return (m.sender === myName && m.receiver === currentChatPartner) || 
+                       (m.sender === currentChatPartner && m.receiver === myName);
+            });
 
             if(filtered.length === 0) {
                 container.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-6">Noch keine Nachrichten in diesem Chat. Schreib die erste Nachricht!</p>';
@@ -1651,8 +1675,8 @@
                 div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
                 
                 let deleteBtnHtml = '';
-                if (isMe && m.id) {
-                    deleteBtnHtml = `<button onclick="deleteChatMessage(${m.id})" class="text-[10px] text-red-400 hover:underline mt-0.5 cursor-pointer">Löschen</button>`;
+                if (m.id) {
+                    deleteBtnHtml = `<button onclick="deleteChatMessageForMe(${m.id})" class="text-[10px] text-red-400 hover:underline mt-0.5 cursor-pointer">Für mich löschen</button>`;
                 }
 
                 div.innerHTML = `
@@ -1672,9 +1696,17 @@
         function updateChatBadge() {
             const badge = document.getElementById('chatBadge');
             const myName = userProfile.name || currentUserEmail || '';
-            const unread = messages.filter(m => m.receiver === myName).length;
+            
+            const unreadCount = messages.filter(m => {
+                if(m.receiver !== myName) return false;
+                if(m.id && deletedMessageIds.includes(m.id)) return false;
+                const sender = m.sender;
+                if(!readChatsMap[sender]) return true;
+                return false;
+            }).length;
+
             if(badge) {
-                if(unread > 0) badge.classList.remove('hidden');
+                if(unreadCount > 0) badge.classList.remove('hidden');
                 else badge.classList.add('hidden');
             }
         }
@@ -2735,6 +2767,18 @@
                     `;
                 }
 
+                let checkboxContainer = '';
+                if (canModify(item.author)) {
+                    checkboxContainer = `
+                        <div class="flex items-center justify-between text-xs">
+                            <label class="flex items-center space-x-2 text-slate-300 cursor-pointer select-none">
+                                <input type="checkbox" ${item.completed ? 'checked' : ''} onchange="toggleMarketCompleted(${item.id}, this)" class="rounded bg-slate-900 border-slate-700 text-brand-500 focus:ring-0 cursor-pointer">
+                                <span>Als erledigt markieren</span>
+                            </label>
+                        </div>
+                    `;
+                }
+
                 card.innerHTML = `
                     <div class="space-y-2">
                         <div class="flex justify-between items-center">
@@ -2752,12 +2796,7 @@
                         ${completedNotice}
                     </div>
                     <div class="space-y-3 pt-3 border-t border-slate-700/50">
-                        <div class="flex items-center justify-between text-xs">
-                            <label class="flex items-center space-x-2 text-slate-300 cursor-pointer select-none">
-                                <input type="checkbox" ${item.completed ? 'checked' : ''} onchange="toggleMarketCompleted(${item.id}, this)" class="rounded bg-slate-900 border-slate-700 text-brand-500 focus:ring-0 cursor-pointer">
-                                <span>Als erledigt markieren</span>
-                            </label>
-                        </div>
+                        ${checkboxContainer}
                         <div class="flex justify-between items-center text-xs text-slate-400 pt-1 border-t border-slate-700/30">
                             <span class="text-[11px]">Von: <span onclick="openPublicProfile('${item.author || 'Christian'}')" class="text-brand-400 font-semibold underline cursor-pointer">${item.author || 'Christian'}</span></span>
                             ${marketActions}
