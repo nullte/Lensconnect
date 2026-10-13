@@ -106,6 +106,10 @@
 
         <!-- Right User / Actions (Kompakt) -->
         <div class="flex items-center space-x-2">
+            <button onclick="openChatModal()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition cursor-pointer relative" title="Nachrichten & Chat">
+                <i data-lucide="message-square" class="w-4 h-4"></i>
+                <span id="chatBadge" class="absolute -top-1 -right-1 w-2 h-2 bg-brand-500 rounded-full hidden"></span>
+            </button>
             <button onclick="openProfileModal()" class="flex items-center space-x-1.5 px-2 py-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
                 <div class="w-6 h-6 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-[10px]" id="userAvatarInitials">
                     <i data-lucide="user" class="w-3.5 h-3.5"></i>
@@ -279,6 +283,7 @@
                             <button onclick="setCategoryFilter('Urbex / Lost Place')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Lost Place</button>
                             <button onclick="setCategoryFilter('Architektur')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Architektur</button>
                             <button onclick="setCategoryFilter('Porträt')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Porträt</button>
+                            <button onclick="setCategoryFilter('favorites')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-brand-400 hover:bg-slate-700 transition cursor-pointer flex items-center space-x-1"><i data-lucide="heart" class="w-3.5 h-3.5"></i><span>Favoriten</span></button>
                         </div>
                     </div>
                 </div>
@@ -307,6 +312,7 @@
                     <button onclick="filterMarket('suche')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Suche</button>
                     <button onclick="filterMarket('shooting')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Fotoshootings</button>
                     <button onclick="filterMarket('location')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Locations / Studios</button>
+                    <button onclick="filterMarket('favorites')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-brand-400 hover:bg-slate-700 text-xs transition cursor-pointer flex items-center space-x-1"><i data-lucide="heart" class="w-3.5 h-3.5"></i><span>Merkliste</span></button>
                 </div>
 
                 <div id="marketGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-6"></div>
@@ -342,12 +348,29 @@
             </div>
             <div class="space-y-3">
                 <input type="text" id="newSpotTitle" placeholder="Spot Titel (z.B. Burgruine)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
-                <select id="newSpotCategory" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
-                    <option value="Landschaft">Landschaft</option>
-                    <option value="Urbex / Lost Place">Urbex / Lost Place</option>
-                    <option value="Architektur">Architektur</option>
-                    <option value="Porträt">Porträt</option>
-                </select>
+                <div class="grid grid-cols-2 gap-2">
+                    <select id="newSpotCategory" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
+                        <option value="Landschaft">Landschaft</option>
+                        <option value="Urbex / Lost Place">Urbex / Lost Place</option>
+                        <option value="Architektur">Architektur</option>
+                        <option value="Porträt">Porträt</option>
+                    </select>
+                    <select id="newSpotStatus" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
+                        <option value="frei">🟢 Frei zugänglich</option>
+                        <option value="baustelle">🟡 Baustelle / Eingeschränkt</option>
+                        <option value="gesperrt">🔴 Gesperrt / Privatgrund</option>
+                    </select>
+                </div>
+                <div class="flex items-center space-x-2 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2">
+                    <span class="text-xs text-slate-400">Deine Bewertung:</span>
+                    <select id="newSpotRating" class="bg-slate-900 text-brand-400 border border-slate-700 rounded px-2 py-1 text-xs">
+                        <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                        <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                        <option value="3">⭐⭐⭐ (3/5)</option>
+                        <option value="2">⭐⭐ (2/5)</option>
+                        <option value="1">⭐ (1/5)</option>
+                    </select>
+                </div>
                 <input type="text" id="newSpotTags" placeholder="Tags (kommagetrennt, z.B. Drohne, Nachtfotografie, Indoor)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
                 <textarea id="newSpotDesc" placeholder="Kurze Beschreibung..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-20 resize-none focus:outline-none focus:border-brand-500"></textarea>
                 
@@ -409,7 +432,7 @@
             </div>
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">1. Ebene: Art des Inserats</label>
+                    <label class="block text-xs text-slate-400 mb-1">1. Ebene: Art du Inserats</label>
                     <select id="marketType" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
                         <option value="biete">Biete</option>
                         <option value="suche">Suche</option>
@@ -466,7 +489,7 @@
 
     <!-- MODAL: PROFILE & AUTH -->
     <div id="profileModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white">Profil & Anmelden</h3>
                 <button onclick="closeProfileModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -509,6 +532,20 @@
                         <label class="block text-xs text-slate-400 mb-1">Instagram / Website Link</label>
                         <input type="text" id="profileSocialInput" placeholder="z.B. https://instagram.com/deinname" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
                     </div>
+
+                    <!-- Portfolio Upload Section (Feature 4) -->
+                    <div class="pt-2 border-t border-slate-800 space-y-2">
+                        <span class="text-xs font-bold text-white block">Portfolio-Galerie & EXIF-Daten</span>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <input type="text" id="portTitleInput" placeholder="Titel des Fotos" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs">
+                            <input type="text" id="portCameraInput" placeholder="Kamera (z.B. Sony A6400)" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs">
+                            <input type="text" id="portLensInput" placeholder="Objektiv (z.B. 50mm f/1.8)" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs">
+                            <input type="text" id="portSettingsInput" placeholder="Blende/ISO (z.B. f/2.8, ISO 200, 1/500s)" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs">
+                        </div>
+                        <input type="file" id="portImageFile" accept="image/*" onchange="handlePortfolioImageUpload(event)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-300 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-500 file:text-slate-900 cursor-pointer">
+                        <button onclick="addPortfolioItem()" class="w-full bg-slate-800 hover:bg-slate-700 text-brand-400 border border-slate-700 text-xs py-2 rounded-xl font-semibold transition cursor-pointer">+ Zum Portfolio hinzufügen</button>
+                        <div id="myPortfolioGrid" class="grid grid-cols-3 gap-2 pt-2 max-h-32 overflow-y-auto"></div>
+                    </div>
                 </div>
             </div>
             <div class="flex justify-between items-center pt-2">
@@ -520,7 +557,7 @@
 
     <!-- MODAL: PUBLIC PROFILE (ÖFFENTLICHES PROFIL) -->
     <div id="publicProfileModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-sm" id="pubProfileAvatar">U</div>
@@ -551,6 +588,16 @@
                             <span id="pubProfileSocialText">Instagram / Website</span>
                         </a>
                     </div>
+                    <button onclick="openChatWithUser(window.currentPubProfileUser)" class="flex-1 bg-brand-500 hover:bg-brand-600 text-slate-900 text-xs py-2 px-3 rounded-xl flex items-center justify-center space-x-1.5 font-bold transition">
+                        <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+                        <span>Direktnachricht</span>
+                    </button>
+                </div>
+
+                <!-- Feature 4: Portfolio Galerie -->
+                <div class="space-y-2 pt-2 border-t border-slate-800">
+                    <span class="text-xs font-bold text-white block">Portfolio-Galerie</span>
+                    <div id="pubProfilePortfolioGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-56 overflow-y-auto"></div>
                 </div>
 
                 <div class="space-y-2 pt-2 border-t border-slate-800">
@@ -564,6 +611,24 @@
             </div>
             <div class="flex justify-end pt-2">
                 <button onclick="closePublicProfileModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition cursor-pointer">Schließen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CHAT / NACHRICHTENSYSTEM (Feature 3) -->
+    <div id="chatModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl flex flex-col h-[500px]">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-800">
+                <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+                    <i data-lucide="message-square" class="w-5 h-5 text-brand-400"></i>
+                    <span id="chatTitle">Nachrichten</span>
+                </h3>
+                <button onclick="closeChatModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div id="chatMessagesList" class="flex-1 overflow-y-auto space-y-3 pr-2"></div>
+            <div class="pt-2 border-t border-slate-800 flex space-x-2">
+                <input type="text" id="chatInputText" placeholder="Nachricht schreiben..." class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500" onkeydown="if(event.key==='Enter') sendChatMessage()">
+                <button onclick="sendChatMessage()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold px-4 py-2 rounded-xl text-sm transition cursor-pointer">Senden</button>
             </div>
         </div>
     </div>
@@ -690,15 +755,19 @@
         let editingContribSpotId = null;
         let editingContribId = null;
         let compressedContribImage = '';
+        let compressedPortfolioImage = '';
         let currentCategoryFilter = 'all';
         let currentMarketFilter = 'all';
         let isPickingLocation = false;
+        let currentChatPartner = null;
 
         let spots = [];
         let marketItems = [];
         let communityPosts = [];
-        let userProfilesMap = {}; // Cache für öffentliche Profile
-        let userProfile = JSON.parse(localStorage.getItem('lensconnect_user')) || { name: 'Christian', nameLocked: false, role: 'Fotograf', bio: '', social: '', email: '' };
+        let favorites = JSON.parse(localStorage.getItem('lensconnect_favorites')) || { spots: [], market: [] };
+        let messages = JSON.parse(localStorage.getItem('lensconnect_messages')) || [];
+        let userProfilesMap = {}; 
+        let userProfile = JSON.parse(localStorage.getItem('lensconnect_user')) || { name: 'Christian', nameLocked: false, role: 'Fotograf', bio: '', social: '', email: '', portfolio: [] };
         let currentUserEmail = null;
         let isAdmin = false;
 
@@ -718,6 +787,8 @@
                 if(window.lucide) lucide.createIcons();
                 initUserDisplay();
                 renderImpressum();
+                renderMyPortfolio();
+                updateChatBadge();
 
                 autoLocateUser();
 
@@ -798,7 +869,9 @@
                         spots = spotsData.map(s => ({
                             ...s,
                             desc: s.desc,
-                            contributions: s.spot_contributions || []
+                            contributions: s.spot_contributions || [],
+                            status: s.status || 'frei',
+                            rating: s.rating || 5
                         }));
                     }
 
@@ -843,9 +916,11 @@
                 userProfile.bio = data.bio || userProfile.bio;
                 userProfile.social = data.social || userProfile.social;
                 userProfile.email = data.email || currentUserEmail || '';
+                userProfile.portfolio = data.portfolio || userProfile.portfolio || [];
                 userProfile.nameLocked = true;
                 localStorage.setItem('lensconnect_user', JSON.stringify(userProfile));
                 initUserDisplay();
+                renderMyPortfolio();
             }
         }
 
@@ -863,7 +938,9 @@
                     spots = spotsData.map(s => ({
                         ...s,
                         desc: s.desc,
-                        contributions: s.spot_contributions || []
+                        contributions: s.spot_contributions || [],
+                        status: s.status || 'frei',
+                        rating: s.rating || 5
                     }));
                 }
                 const { data: marketData } = await supabaseClient.from('market_items').select('*');
@@ -887,8 +964,8 @@
 
         function loadLocalFallback() {
             spots = JSON.parse(localStorage.getItem('lensconnect_spots')) || [
-                { id: 1, title: 'Burgruine Landskron', category: 'Urbex / Lost Place', tags: 'Ruine, Aussicht, Drohne', lat: 46.621, lng: 13.904, desc: 'Toller Ausblick über den Villacher Raum, perfekt bei Sonnenuntergang.', author: 'Christian', image: '', contributions: [] },
-                { id: 2, title: 'Wörthersee Ostbucht', category: 'Landschaft', tags: 'See, Spiegelung, Nachtfotografie', lat: 46.622, lng: 14.286, desc: 'Spiegelungen und Stege zur blauen Stunde.', author: 'Christian', image: '', contributions: [] }
+                { id: 1, title: 'Burgruine Landskron', category: 'Urbex / Lost Place', status: 'frei', rating: 5, tags: 'Ruine, Aussicht, Drohne', lat: 46.621, lng: 13.904, desc: 'Toller Ausblick über den Villacher Raum, perfekt bei Sonnenuntergang.', author: 'Christian', image: '', contributions: [] },
+                { id: 2, title: 'Wörthersee Ostbucht', category: 'Landschaft', status: 'frei', rating: 4, tags: 'See, Spiegelung, Nachtfotografie', lat: 46.622, lng: 14.286, desc: 'Spiegelungen und Stege zur blauen Stunde.', author: 'Christian', image: '', contributions: [] }
             ];
             marketItems = JSON.parse(localStorage.getItem('lensconnect_market')) || [
                 { id: 1, type: 'biete', category: 'shooting', title: 'Porträt-Shooting am See', level: 'Profi', price: 'TFP oder Spende', contact: 'christian@example.com', desc: 'Suche Model für ein entspanntes Outdoor-Shooting.' },
@@ -991,6 +1068,8 @@
             if(pm) pm.style.display = 'none';
             const ppm = document.getElementById('publicProfileModal');
             if(ppm) ppm.style.display = 'none';
+            const ctm = document.getElementById('chatModal');
+            if(ctm) ctm.style.display = 'none';
             const im = document.getElementById('impressumModal');
             if(im) im.style.display = 'none';
             const lb = document.getElementById('imageLightboxModal');
@@ -1114,6 +1193,75 @@
             history.back();
         }
 
+        // --- FEATURE 4: PORTFOLIO UPLOAD & RENDER ---
+        function handlePortfolioImageUpload(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let w = img.width, h = img.height;
+                    const max = 1200;
+                    if(w > h && w > max) { h *= max/w; w = max; }
+                    else if(h > max) { w *= max/h; h = max; }
+                    canvas.width = w; canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    compressedPortfolioImage = canvas.toDataURL('image/jpeg', 0.8);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function addPortfolioItem() {
+            if(!compressedPortfolioImage) { alert('Bitte ein Foto auswählen.'); return; }
+            if(!userProfile.portfolio) userProfile.portfolio = [];
+            userProfile.portfolio.push({
+                id: Date.now(),
+                title: document.getElementById('portTitleInput').value || 'Ohne Titel',
+                camera: document.getElementById('portCameraInput').value || '',
+                lens: document.getElementById('portLensInput').value || '',
+                settings: document.getElementById('portSettingsInput').value || '',
+                image: compressedPortfolioImage
+            });
+            document.getElementById('portTitleInput').value = '';
+            document.getElementById('portCameraInput').value = '';
+            document.getElementById('portLensInput').value = '';
+            document.getElementById('portSettingsInput').value = '';
+            document.getElementById('portImageFile').value = '';
+            compressedPortfolioImage = '';
+            localStorage.setItem('lensconnect_user', JSON.stringify(userProfile));
+            renderMyPortfolio();
+        }
+
+        function deletePortfolioItem(id) {
+            userProfile.portfolio = userProfile.portfolio.filter(p => p.id !== id);
+            localStorage.setItem('lensconnect_user', JSON.stringify(userProfile));
+            renderMyPortfolio();
+        }
+
+        function renderMyPortfolio() {
+            const grid = document.getElementById('myPortfolioGrid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            if(!userProfile.portfolio || userProfile.portfolio.length === 0) {
+                grid.innerHTML = '<span class="text-[11px] text-slate-400 italic">Keine Portfolio-Bilder.</span>';
+                return;
+            }
+            userProfile.portfolio.forEach(item => {
+                const div = document.createElement('div');
+                div.className = "relative bg-slate-950 rounded-lg overflow-hidden border border-slate-700 h-20 flex items-center justify-center group";
+                div.innerHTML = `
+                    <img src="${item.image}" class="h-full w-full object-cover cursor-pointer" onclick="openImageLightbox('${item.image}')">
+                    <button onclick="deletePortfolioItem(${item.id})" class="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 text-[10px] opacity-0 group-hover:opacity-100 transition cursor-pointer">✕</button>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
         async function saveProfile() {
             const input = document.getElementById('profileNameInput');
             if (input && !input.disabled) {
@@ -1136,7 +1284,6 @@
 
             localStorage.setItem('lensconnect_user', JSON.stringify(userProfile));
 
-            // Sync with Supabase profiles table if logged in
             if(supabaseClient) {
                 try {
                     const { data: { user } } = await supabaseClient.auth.getUser();
@@ -1147,7 +1294,8 @@
                             role: userProfile.role,
                             bio: userProfile.bio,
                             social: userProfile.social,
-                            email: user.email
+                            email: user.email,
+                            portfolio: userProfile.portfolio
                         });
                     }
                 } catch(e) { console.warn("Profile sync error:", e); }
@@ -1157,15 +1305,120 @@
             closeProfileModal();
         }
 
-        // ÖFFENTLICHES PROFIL ANSEHEN
+        // --- FEATURE 2: FAVORITEN / MERKLISTEN ---
+        function toggleSpotFavorite(spotId, event) {
+            if(event) event.stopPropagation();
+            const index = favorites.spots.indexOf(spotId);
+            if(index > -1) {
+                favorites.spots.splice(index, 1);
+            } else {
+                favorites.spots.push(spotId);
+            }
+            localStorage.setItem('lensconnect_favorites', JSON.stringify(favorites));
+            renderSpots();
+            plotMapMarkers();
+        }
+
+        function toggleMarketFavorite(marketId, event) {
+            if(event) event.stopPropagation();
+            const index = favorites.market.indexOf(marketId);
+            if(index > -1) {
+                favorites.market.splice(index, 1);
+            } else {
+                favorites.market.push(marketId);
+            }
+            localStorage.setItem('lensconnect_favorites', JSON.stringify(favorites));
+            renderMarket();
+        }
+
+        // --- FEATURE 3: CHAT / NACHRICHTENSYSTEM ---
+        window.currentPubProfileUser = null;
+        function openChatWithUser(partnerName) {
+            if(!currentUserEmail) { alert('Bitte zuerst anmelden, um Nachrichten zu senden.'); return; }
+            if(!partnerName) return;
+            closePublicProfileModal();
+            currentChatPartner = partnerName;
+            document.getElementById('chatTitle').textContent = `Chat mit ${partnerName}`;
+            renderChatMessages();
+            history.pushState({ view: currentView, modal: 'chat' }, '', '');
+            document.getElementById('chatModal').style.display = 'flex';
+        }
+
+        function openChatModal() {
+            if(!currentUserEmail) { alert('Bitte zuerst anmelden.'); return; }
+            currentChatPartner = 'Community';
+            document.getElementById('chatTitle').textContent = `Nachrichten & Chat`;
+            renderChatMessages();
+            history.pushState({ view: currentView, modal: 'chat' }, '', '');
+            document.getElementById('chatModal').style.display = 'flex';
+        }
+
+        function closeChatModal() {
+            history.back();
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInputText');
+            if(!input || !input.value.trim()) return;
+            const text = input.value.trim();
+            const msg = {
+                id: Date.now(),
+                sender: userProfile.name || currentUserEmail,
+                receiver: currentChatPartner,
+                text: text,
+                time: 'Gerade eben'
+            };
+            messages.push(msg);
+            localStorage.setItem('lensconnect_messages', JSON.stringify(messages));
+            input.value = '';
+            renderChatMessages();
+            updateChatBadge();
+        }
+
+        function renderChatMessages() {
+            const container = document.getElementById('chatMessagesList');
+            if(!container) return;
+            container.innerHTML = '';
+            const myName = userProfile.name || currentUserEmail || '';
+            const filtered = messages.filter(m => currentChatPartner === 'Community' || m.sender === currentChatPartner || m.receiver === currentChatPartner);
+            if(filtered.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-6">Noch keine Nachrichten vorhanden. Starte die Unterhaltung!</p>';
+                return;
+            }
+            filtered.forEach(m => {
+                const isMe = m.sender === myName;
+                const div = document.createElement('div');
+                div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
+                div.innerHTML = `
+                    <div class="max-w-[80%] rounded-2xl px-3.5 py-2 text-xs ${isMe ? 'bg-brand-500 text-slate-900 font-medium' : 'bg-slate-800 text-slate-200 border border-slate-700'}">
+                        ${!isMe ? `<span class="text-[10px] text-brand-400 font-bold block mb-0.5">${m.sender}</span>` : ''}
+                        <span>${m.text}</span>
+                    </div>
+                    <span class="text-[9px] text-slate-500 mt-0.5 px-1">${m.time}</span>
+                `;
+                container.appendChild(div);
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function updateChatBadge() {
+            const badge = document.getElementById('chatBadge');
+            if(badge && messages.length > 0) {
+                badge.classList.remove('hidden');
+            }
+        }
+
+        // ÖFFENTLICHES PROFIL ANSEHEN (Mit Feature 4 Portfolio)
         function openPublicProfile(authorName) {
             if(!authorName) return;
+            window.currentPubProfileUser = authorName;
             const profile = userProfilesMap[authorName] || {
                 username: authorName,
                 role: 'Fotograf',
                 bio: 'Keine Beschreibung hinterlegt.',
                 social: '',
-                email: ''
+                email: '',
+                portfolio: []
             };
 
             document.getElementById('pubProfileName').textContent = profile.username || authorName;
@@ -1178,7 +1431,6 @@
             const emailBtn = document.getElementById('pubProfileEmailBtn');
             const emailText = document.getElementById('pubProfileEmailText');
             
-            // Suche ggf. nach Inseratskontakten des Autors falls keine direkte Profil-Email angegeben ist
             let contactEmail = profile.email;
             if(!contactEmail) {
                 const authorItem = marketItems.find(m => m.author === authorName && m.contact && m.contact.includes('@'));
@@ -1207,6 +1459,29 @@
                 socialText.textContent = profile.social.replace(/^https?:\/\/(www\.)?/, '');
             } else {
                 socialContainer.classList.add('hidden');
+            }
+
+            // Render Portfolio Grid (Feature 4)
+            const portGrid = document.getElementById('pubProfilePortfolioGrid');
+            portGrid.innerHTML = '';
+            const pList = (profile.username === (userProfile.name)) ? userProfile.portfolio : (profile.portfolio || []);
+            if(pList && pList.length > 0) {
+                pList.forEach(p => {
+                    const div = document.createElement('div');
+                    div.className = "bg-slate-950 rounded-xl overflow-hidden border border-slate-700/80 p-2 space-y-1 flex flex-col justify-between";
+                    div.innerHTML = `
+                        <img src="${p.image}" class="h-24 w-full object-cover rounded-lg cursor-pointer" onclick="openImageLightbox('${p.image}')">
+                        <span class="text-[11px] font-bold text-white truncate">${p.title}</span>
+                        <div class="text-[9px] text-slate-400 space-y-0.5">
+                            ${p.camera ? `<div>📷 ${p.camera}</div>` : ''}
+                            ${p.lens ? `<div>🔍 ${p.lens}</div>` : ''}
+                            ${p.settings ? `<div>⚙️ ${p.settings}</div>` : ''}
+                        </div>
+                    `;
+                    portGrid.appendChild(div);
+                });
+            } else {
+                portGrid.innerHTML = '<span class="text-xs text-slate-400 italic col-span-full">Keine Portfolio-Bilder vorhanden.</span>';
             }
 
             // Filter user spots
@@ -1397,6 +1672,13 @@
                     const marker = L.marker([spot.lat, spot.lng]);
                     let imgHtml = spot.image ? `<div class="w-full mt-1 overflow-hidden rounded-lg border border-slate-200 bg-slate-950 flex items-center justify-center cursor-pointer" onclick="openImageLightbox('${spot.image}')"><img src="${spot.image}" class="max-h-48 w-full object-contain"></div>` : '';
                     
+                    let statusBadge = '';
+                    if(spot.status === 'gesperrt') statusBadge = '<span class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded font-bold">🔴 Gesperrt / Privatgrund</span>';
+                    else if(spot.status === 'baustelle') statusBadge = '<span class="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded font-bold">🟡 Baustelle</span>';
+                    else statusBadge = '<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold">🟢 Frei zugänglich</span>';
+
+                    let ratingStars = '⭐'.repeat(spot.rating || 5);
+
                     let ownerButtonsHtml = '';
                     if (canModify(spot.author)) {
                         ownerButtonsHtml = `
@@ -1410,7 +1692,11 @@
                             <div class="flex justify-between items-start">
                                 <b class="text-sm text-slate-900">${spot.title}</b>
                             </div>
-                            <span class="inline-block text-[10px] bg-brand-500/15 text-brand-700 px-2 py-0.5 rounded font-semibold">${spot.category}</span>
+                            <div class="flex items-center space-x-1">
+                                <span class="inline-block text-[10px] bg-brand-500/15 text-brand-700 px-2 py-0.5 rounded font-semibold">${spot.category}</span>
+                                <span class="text-[10px]">${ratingStars}</span>
+                            </div>
+                            <div>${statusBadge}</div>
                             ${imgHtml}
                             <p class="text-xs text-slate-700">${spot.desc || ''}</p>
                             <span class="text-[10px] text-slate-500 block">Von: <span onclick="openPublicProfile('${spot.author || 'Christian'}')" class="text-brand-600 font-bold underline cursor-pointer">${spot.author || 'Christian'}</span></span>
@@ -1687,7 +1973,11 @@
             const radiusFilter = document.getElementById('spotRadiusFilter') ? document.getElementById('spotRadiusFilter').value : 'all';
 
             spots.forEach(spot => {
-                if(currentCategoryFilter !== 'all' && spot.category !== currentCategoryFilter) return;
+                if(currentCategoryFilter === 'favorites') {
+                    if(!favorites.spots.includes(spot.id)) return;
+                } else if(currentCategoryFilter !== 'all' && spot.category !== currentCategoryFilter) {
+                    return;
+                }
                 
                 if(searchVal && !spot.title.toLowerCase().includes(searchVal) && !spot.desc?.toLowerCase().includes(searchVal) && !spot.tags?.toLowerCase().includes(searchVal)) return;
 
@@ -1699,12 +1989,20 @@
                     }
                 }
 
+                const isFav = favorites.spots.includes(spot.id);
                 const card = document.createElement('div');
-                card.className = "bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg space-y-3 flex flex-col justify-between hover:border-brand-500/50 transition";
+                card.className = "bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg space-y-3 flex flex-col justify-between hover:border-brand-500/50 transition relative";
                 
                 let tagsHtml = spot.tags ? `<div class="flex flex-wrap gap-1 mt-1">${spot.tags.split(',').map(t => `<span onclick="filterByTag('${t.trim()}')" class="text-[10px] bg-slate-900 text-brand-400 px-2 py-0.5 rounded border border-slate-700/80 cursor-pointer hover:bg-slate-700 transition">#${t.trim()}</span>`).join('')}</div>` : '';
 
                 let imgHtml = spot.image ? `<div class="w-full max-h-96 mt-2 mb-2 overflow-hidden rounded-xl border border-slate-700 bg-slate-950 flex items-center justify-center cursor-pointer" onclick="openImageLightbox('${spot.image}')"><img src="${spot.image}" class="max-h-96 w-full object-contain"></div>` : '';
+
+                let statusBadge = '';
+                if(spot.status === 'gesperrt') statusBadge = '<span class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded font-bold">🔴 Gesperrt / Privatgrund</span>';
+                else if(spot.status === 'baustelle') statusBadge = '<span class="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded font-bold">🟡 Baustelle</span>';
+                else statusBadge = '<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold">🟢 Frei zugänglich</span>';
+
+                let ratingStars = '⭐'.repeat(spot.rating || 5);
 
                 let distText = '';
                 if(userCoords && spot.lat && spot.lng) {
@@ -1763,10 +2061,17 @@
                     <div class="space-y-2">
                         <div class="flex justify-between items-start">
                             <h3 class="font-semibold text-white text-base">${spot.title}</h3>
-                            <div class="flex items-center">
+                            <div class="flex items-center space-x-2">
+                                <button onclick="toggleSpotFavorite(${spot.id}, event)" class="text-slate-400 hover:text-red-500 transition cursor-pointer" title="Zu Favoriten hinzufügen">
+                                    <i data-lucide="heart" class="w-5 h-5 ${isFav ? 'fill-red-500 text-red-500' : ''}"></i>
+                                </button>
                                 <span class="text-xs bg-slate-900 text-brand-400 px-2.5 py-1 rounded-lg border border-slate-700">${spot.category}</span>
                                 ${distText}
                             </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            ${statusBadge}
+                            <span class="text-xs">${ratingStars}</span>
                         </div>
                         ${imgHtml}
                         <p class="text-xs text-slate-300 line-clamp-3">${spot.desc || ''}</p>
@@ -1800,10 +2105,15 @@
         function setCategoryFilter(cat) {
             currentCategoryFilter = cat;
             document.querySelectorAll('.cat-pill').forEach(btn => {
-                if(btn.textContent.trim().toLowerCase() === cat.toLowerCase() || (cat === 'all' && btn.textContent.trim() === 'Alle')) {
-                    btn.className = "cat-pill px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium transition cursor-pointer";
+                const text = btn.textContent.trim().toLowerCase();
+                let match = false;
+                if(cat === 'favorites' && text.includes('favoriten')) match = true;
+                else if(text === cat.toLowerCase() || (cat === 'all' && text === 'alle')) match = true;
+
+                if(match) {
+                    btn.className = "cat-pill px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium transition cursor-pointer flex items-center space-x-1";
                 } else {
-                    btn.className = "cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer";
+                    btn.className = "cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer flex items-center space-x-1";
                 }
             });
             renderSpots();
@@ -1824,6 +2134,8 @@
             document.getElementById('newSpotTitle').value = '';
             document.getElementById('newSpotTags').value = '';
             document.getElementById('newSpotDesc').value = '';
+            document.getElementById('newSpotStatus').value = 'frei';
+            document.getElementById('newSpotRating').value = '5';
             const fileInput = document.getElementById('newSpotImageFile');
             if(fileInput) fileInput.value = '';
             const previewContainer = document.getElementById('imagePreviewContainer');
@@ -1849,6 +2161,8 @@
 
             document.getElementById('newSpotTitle').value = spot.title;
             document.getElementById('newSpotCategory').value = spot.category;
+            document.getElementById('newSpotStatus').value = spot.status || 'frei';
+            document.getElementById('newSpotRating').value = spot.rating || '5';
             document.getElementById('newSpotTags').value = spot.tags || '';
             document.getElementById('newSpotDesc').value = spot.desc || '';
             document.getElementById('newSpotLat').value = spot.lat || '';
@@ -1887,6 +2201,8 @@
             const spotData = {
                 title: titleEl.value,
                 category: document.getElementById('newSpotCategory').value,
+                status: document.getElementById('newSpotStatus').value,
+                rating: parseInt(document.getElementById('newSpotRating').value) || 5,
                 tags: document.getElementById('newSpotTags').value,
                 desc: document.getElementById('newSpotDesc').value,
                 lat: parseFloat(document.getElementById('newSpotLat').value) || (map ? map.getCenter().lat : 46.61),
@@ -2097,11 +2413,12 @@
             document.querySelectorAll('.market-filter-btn').forEach(btn => {
                 const text = btn.textContent.trim().toLowerCase();
                 let match = false;
-                if(filter === 'all' && (text.includes('alle') || text.includes('anzeigen'))) match = true;
-                if(filter === 'biete' && text === 'biete') match = true;
-                if(filter === 'suche' && text === 'suche') match = true;
-                if(filter === 'shooting' && text.includes('shooting')) match = true;
-                if(filter === 'location' && text.includes('location')) match = true;
+                if(filter === 'favorites' && text.includes('merkliste')) match = true;
+                else if(filter === 'all' && (text.includes('alle') || text.includes('anzeigen'))) match = true;
+                else if(filter === 'biete' && text === 'biete') match = true;
+                else if(filter === 'suche' && text === 'suche') match = true;
+                else if(filter === 'shooting' && text.includes('shooting')) match = true;
+                else if(filter === 'location' && text.includes('location')) match = true;
 
                 if(match) {
                     btn.className = "market-filter-btn px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium text-xs transition cursor-pointer";
@@ -2119,11 +2436,16 @@
 
             marketItems.forEach(item => {
                 if(item.completed) return;
-                if(currentMarketFilter === 'biete' && item.type !== 'biete') return;
-                if(currentMarketFilter === 'suche' && item.type !== 'suche') return;
-                if(currentMarketFilter === 'shooting' && item.category !== 'shooting') return;
-                if(currentMarketFilter === 'location' && item.category !== 'location') return;
+                if(currentMarketFilter === 'favorites') {
+                    if(!favorites.market.includes(item.id)) return;
+                } else {
+                    if(currentMarketFilter === 'biete' && item.type !== 'biete') return;
+                    if(currentMarketFilter === 'suche' && item.type !== 'suche') return;
+                    if(currentMarketFilter === 'shooting' && item.category !== 'shooting') return;
+                    if(currentMarketFilter === 'location' && item.category !== 'location') return;
+                }
 
+                const isFav = favorites.market.includes(item.id);
                 const card = document.createElement('div');
                 card.className = "market-card bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg space-y-3 flex flex-col justify-between";
                 
@@ -2149,7 +2471,12 @@
                 card.innerHTML = `
                     <div class="space-y-2">
                         <div class="flex justify-between items-center">
-                            <span class="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded ${item.type === 'biete' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${item.type}</span>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded ${item.type === 'biete' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${item.type}</span>
+                                <button onclick="toggleMarketFavorite(${item.id}, event)" class="text-slate-400 hover:text-red-500 transition cursor-pointer">
+                                    <i data-lucide="heart" class="w-4 h-4 ${isFav ? 'fill-red-500 text-red-500' : ''}"></i>
+                                </button>
+                            </div>
                             ${badgeSub}
                         </div>
                         <h3 class="font-semibold text-white text-base">${item.title}</h3>
