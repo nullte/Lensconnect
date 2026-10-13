@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LensConnect – Spot-Finder & Community</title>
+    <!-- Copyright & Legal Metadata -->
+    <meta name="copyright" content="© 2026 Christian Arnold. Alle Rechte vorbehalten.">
+    <meta name="author" content="Christian Arnold">
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#22c55e">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -228,10 +231,14 @@
                 </div>
             </div>
 
-            <!-- DISCREET TRANSPARENT IMPRESSUM FOOTER -->
+            <!-- DISCREET TRANSPARENT IMPRESSUM & COPYRIGHT FOOTER -->
             <div class="max-w-4xl mx-auto w-full mt-12 pt-4 border-t border-slate-700/30 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400/60 gap-2 px-2 shrink-0">
-                <span id="impressumTextDisplay">Impressum: Christian Arnold, Neubaugasse 16, 9601 Arnoldstein | E-Mail: christian.arnold10@gmail.com</span>
-                <button onclick="openImpressumModal()" class="hover:text-slate-300 transition underline cursor-pointer">Impressum ändern</button>
+                <div class="flex flex-col sm:flex-row items-center gap-1 sm:gap-3 text-center sm:text-left">
+                    <span>© 2026 Christian Arnold. Alle Rechte vorbehalten.</span>
+                    <span class="hidden sm:inline">|</span>
+                    <span id="impressumTextDisplay">Impressum: Christian Arnold, Neubaugasse 16, 9601 Arnoldstein | E-Mail: christian.arnold10@gmail.com</span>
+                </div>
+                <button onclick="openImpressumModal()" class="hover:text-slate-300 transition underline cursor-pointer shrink-0">Impressum ändern</button>
             </div>
         </div>
 
@@ -512,7 +519,7 @@
                 </div>
 
                 <div class="pt-2 border-t border-slate-800 space-y-3">
-                    <!-- Push Benachrichtigungen (Feature #1) -->
+                    <!-- Push Benachrichtigungen -->
                     <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50 space-y-2">
                         <span class="text-xs font-bold text-white block">PWA Push-Benachrichtigungen</span>
                         <p class="text-[11px] text-slate-400">Erhalte Benachrichtigungen bei neuen Nachrichten oder Inseraten direkt auf deinem Gerät.</p>
@@ -836,7 +843,7 @@
             }
         };
 
-        // Push Benachrichtigungen anfordern (Feature #1)
+        // Push Benachrichtigungen anfordern
         async function requestPushPermission() {
             if (!('Notification' in window)) {
                 alert('Dein Browser unterstützt keine Push-Benachrichtigungen.');
@@ -1265,7 +1272,7 @@
             history.back();
         }
 
-        // --- PROFILBILD UPLOAD ---
+        // PROFILBILD UPLOAD
         function handleProfileAvatarUpload(event) {
             const file = event.target.files[0];
             if(!file) return;
@@ -1294,7 +1301,7 @@
             reader.readAsDataURL(file);
         }
 
-        // --- PORTFOLIO UPLOAD & RENDER ---
+        // PORTFOLIO UPLOAD & RENDER
         function handlePortfolioImageUpload(event) {
             const file = event.target.files[0];
             if(!file) return;
@@ -1411,7 +1418,7 @@
             closeProfileModal();
         }
 
-        // --- FAVORITEN / MERKLISTEN ---
+        // FAVORITEN / MERKLISTEN
         function toggleSpotFavorite(spotId, event) {
             if(event) event.stopPropagation();
             const index = favorites.spots.indexOf(spotId);
@@ -1437,7 +1444,7 @@
             renderMarket();
         }
 
-        // --- CHAT / NACHRICHTENSYSTEM ---
+        // CHAT / NACHRICHTENSYSTEM
         window.currentPubProfileUser = null;
         function openChatWithUser(partnerName) {
             if(!currentUserEmail) { alert('Bitte zuerst anmelden, um Nachrichten zu senden.'); return; }
