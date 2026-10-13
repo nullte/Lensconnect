@@ -1400,7 +1400,8 @@
         function openChatWithUser(partnerName) {
             if(!currentUserEmail) { alert('Bitte zuerst anmelden, um Nachrichten zu senden.'); return; }
             if(!partnerName) return;
-            document.getElementById('publicProfileModal').style.display = 'none';
+            const ppm = document.getElementById('publicProfileModal');
+            if(ppm) ppm.style.display = 'none';
             currentChatPartner = partnerName;
             document.getElementById('chatTitle').textContent = `Chat mit ${partnerName}`;
             renderChatMessages();
