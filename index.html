@@ -28,6 +28,19 @@
             max-width: none !important;
             max-height: none !important;
         }
+        /* Mobile-Anpassung für Karten-Popups */
+        .leaflet-popup-content-wrapper {
+            max-width: min(88vw, 360px) !important;
+            max-height: 70vh !important;
+            overflow-y: auto !important;
+            border-radius: 1rem !important;
+        }
+        .leaflet-popup-content {
+            max-height: 65vh !important;
+            overflow-y: auto !important;
+            margin: 12px 14px !important;
+        }
+
         html.light body { background-color: #f1f5f9 !important; color: #0f172a !important; }
         html.light header, html.light .bg-slate-800, html.light [class*="bg-slate-800"] { background-color: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         html.light .bg-slate-700, html.light [class*="bg-slate-700"] { background-color: #e2e8f0 !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
