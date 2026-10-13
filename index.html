@@ -513,11 +513,16 @@
                     </select>
                 </div>
 
-                <input type="text" id="marketTitle" placeholder="Titel (z.B. Outdoor Porträt oder Familien-Shooting)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                <input type="text" id="marketTitle" placeholder="Titel (z.B. Outdoor Porträt oder Mietstudio Kärnten)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
 
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Datum / Zeitraum (optional)</label>
-                    <input type="text" id="marketDateText" placeholder="z.B. 15.06.2026 oder 10.06 - 15.06" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                    <input type="text" id="marketDateText" placeholder="z.B. 15.06.2026 oder Ab sofort / Nach Vereinbarung" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Preisvorstellung / Miete</label>
+                    <input type="text" id="marketPrice" placeholder="z.B. 20€ / Stunde, Pauschal 120€, Gratis oder TFP" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
                 </div>
 
                 <div id="shootingFields" class="space-y-3 p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
@@ -527,10 +532,6 @@
                             <option value="Profi">Profi</option>
                             <option value="Amateur">Amateur</option>
                         </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">Preisvorstellung / Paket</label>
-                        <input type="text" id="marketPrice" placeholder="z.B. Pauschal 120€ inkl. 10 Bilder oder TFP" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
                     </div>
                     <label class="flex items-center space-x-2 text-xs text-slate-300 cursor-pointer pt-1">
                         <input type="checkbox" id="marketSafeShooting" class="rounded bg-slate-900 border-slate-700 text-brand-500 cursor-pointer">
@@ -1003,6 +1004,7 @@
                         marketItems = marketData.map(m => ({
                             ...m,
                             desc: m.desc,
+                            price: m.price || '',
                             locationType: m.location_type,
                             safe_shooting: m.safe_shooting || false,
                             date_text: m.date_text || m.dateText || ''
@@ -1087,6 +1089,7 @@
                     marketItems = marketData.map(m => ({
                         ...m,
                         desc: m.desc,
+                        price: m.price || '',
                         locationType: m.location_type,
                         safe_shooting: m.safe_shooting || false,
                         date_text: m.date_text || m.dateText || ''
@@ -1117,7 +1120,7 @@
             ];
             marketItems = JSON.parse(localStorage.getItem('lensconnect_market')) || [
                 { id: 1, type: 'biete', category: 'einzel', title: 'Porträt-Shooting am See', level: 'Profi', price: 'TFP oder Spende', contact: 'christian@example.com', desc: 'Suche Model für ein entspanntes Outdoor-Shooting.', author: 'Christian', safe_shooting: true, date_text: '15.06.2026' },
-                { id: 2, type: 'biete', category: 'familie', title: 'Familienfotografie in der Natur', level: 'Profi', price: '99€ inkl. 5 bearbeitete Bilder', contact: 'christian@example.com', desc: 'Natürliche Familienaufnahmen im Grünen.', author: 'Christian', safe_shooting: false, date_text: 'Wochenende' }
+                { id: 2, type: 'biete', category: 'location', title: 'Fotostudio Arnoldstein', level: 'Profi', price: '20€ / Stunde', locationType: 'Profi Studio', contact: 'christian@example.com', desc: 'Mietstudio mit Hohlkehle und Profi-Blitzanlage.', author: 'Christian', safe_shooting: false, date_text: 'Nach Vereinbarung' }
             ];
             communityPosts = JSON.parse(localStorage.getItem('lensconnect_posts')) || [
                 { id: 1, author: 'Christian', text: 'Erster Test mit der analogen Kamera und Kodak Portra 400. Die Farben sind einfach genial!', time: 'Vor 2 Stunden' }
@@ -2447,7 +2450,7 @@
         async function deleteSpot(id) {
             const spot = spots.find(s => s.id === id);
             if(spot && !canModify(spot.author)) {
-                alert('Du hast keine Berechtigung, diesen Spot zu löschen.');
+                alert('Du hast keine Berechtigung, diesen Spot zu bearbeiten.');
                 return;
             }
 
@@ -2821,11 +2824,11 @@
             onMarketCategoryChange();
             document.getElementById('marketTitle').value = item.title;
             document.getElementById('marketDateText').value = item.date_text || '';
+            document.getElementById('marketPrice').value = item.price || '';
             document.getElementById('marketContact').value = item.contact || '';
             document.getElementById('marketDesc').value = item.desc || '';
             if(item.category === 'einzel' || item.category === 'lifestyle' || item.category === 'familie' || item.category === 'event' || item.category === 'anderes' || item.category === 'shooting') {
                 document.getElementById('marketShootingLevel').value = item.level || 'Profi';
-                document.getElementById('marketPrice').value = item.price || '';
                 document.getElementById('marketSafeShooting').checked = item.safe_shooting || false;
             } else {
                 document.getElementById('marketLocationType').value = item.locationType || 'Profi Studio';
@@ -2854,25 +2857,25 @@
                 category: category,
                 title: titleEl.value,
                 date_text: document.getElementById('marketDateText').value.trim(),
+                price: document.getElementById('marketPrice').value.trim() || 'Kostenlos / Auf Anfrage',
                 contact: document.getElementById('marketContact').value,
                 desc: document.getElementById('marketDesc').value
             };
 
             if(category === 'einzel' || category === 'lifestyle' || category === 'familie' || category === 'event' || category === 'anderes') {
                 itemData.level = document.getElementById('marketShootingLevel').value;
-                itemData.price = document.getElementById('marketPrice').value || 'TFP';
                 itemData.safe_shooting = document.getElementById('marketSafeShooting').checked;
                 itemData.location_type = null;
             } else {
                 itemData.location_type = document.getElementById('marketLocationType').value;
                 itemData.level = null;
-                itemData.price = null;
                 itemData.safe_shooting = false;
             }
 
             if(editingMarketId) {
                 if(supabaseClient) {
-                    await supabaseClient.from('market_items').update(itemData).eq('id', editingMarketId);
+                    const { error } = await supabaseClient.from('market_items').update(itemData).eq('id', editingMarketId);
+                    if(error) alert('Fehler beim Speichern: ' + error.message);
                 } else {
                     const item = marketItems.find(m => m.id === editingMarketId);
                     if(item) Object.assign(item, itemData);
@@ -2885,7 +2888,8 @@
                 itemData.completed_at = null;
 
                 if(supabaseClient) {
-                    await supabaseClient.from('market_items').insert([itemData]);
+                    const { error } = await supabaseClient.from('market_items').insert([itemData]);
+                    if(error) alert('Fehler beim Erstellen: ' + error.message);
                 } else {
                     itemData.id = Date.now();
                     marketItems.push(itemData);
@@ -3012,18 +3016,19 @@
                 card.className = `market-card bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg space-y-3 flex flex-col justify-between ${isCompletedStyle}`;
                 
                 let badgeSub = '';
+                const displayPrice = item.price ? ` • ${item.price}` : '';
                 if(item.category === 'einzel' || item.category === 'shooting') {
-                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Einzelfotografie (${item.level || 'Profi'}) • ${item.price}</span>`;
+                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Einzelfotografie (${item.level || 'Profi'})${displayPrice}</span>`;
                 } else if(item.category === 'lifestyle') {
-                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Lifestylefotografie • ${item.price}</span>`;
+                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Lifestylefotografie${displayPrice}</span>`;
                 } else if(item.category === 'familie') {
-                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Familienfotografie • ${item.price}</span>`;
+                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Familienfotografie${displayPrice}</span>`;
                 } else if(item.category === 'event') {
-                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Eventfotografie • ${item.price}</span>`;
+                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Eventfotografie${displayPrice}</span>`;
                 } else if(item.category === 'anderes') {
-                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Anderes Shooting (${item.level || 'Profi'}) • ${item.price}</span>`;
+                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Anderes Shooting (${item.level || 'Profi'})${displayPrice}</span>`;
                 } else {
-                    badgeSub = `<span class="text-xs bg-purple-500/10 text-purple-400 px-2.5 py-1 rounded-lg border border-purple-500/20">Location: ${item.locationType || 'Profi Studio'}</span>`;
+                    badgeSub = `<span class="text-xs bg-purple-500/10 text-purple-400 px-2.5 py-1 rounded-lg border border-purple-500/20">Location: ${item.locationType || 'Studio'}${displayPrice}</span>`;
                 }
 
                 let dateHtml = item.date_text ? `<div class="text-xs text-brand-400 font-semibold flex items-center space-x-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5 shrink-0"></i><span>Datum / Zeitraum: ${item.date_text}</span></div>` : '';
@@ -3052,7 +3057,7 @@
                 let chatButtonHtml = '';
                 const itemAuthor = item.author || 'Christian';
                 if (!currentUserEmail || itemAuthor !== (userProfile.name || currentUserEmail)) {
-                    chatButtonHtml = `<button onclick="openChatWithUser('${itemAuthor}')" class="w-full bg-brand-500/15 hover:bg-brand-500/25 text-brand-400 border border-brand-500/30 text-xs py-2 px-3 rounded-xl flex items-center justify-center space-x-1.5 font-bold transition cursor-pointer"><i data-lucide="message-square" class="w-3.5 h-3.5"></i><span>Direktnachricht an ${itemAuthor}</span></button>`;
+                    chatButtonHtml = `<button onclick="openChatWithUser('${itemAuthor}')" class="w-full bg-brand-500/15 hover:bg-brand-500/25 text-brand-400 border border-brand-500/30 text-xs py-2 px-3 rounded-xl flex items-center justify-center space-x-1.5 font-bold transition cursor-pointer"><i data-lucide="message-square" class="w-3.5 h-3.5"></i><span>Direktnachrichten an ${itemAuthor}</span></button>`;
                 }
 
                 let marketActions = '';
