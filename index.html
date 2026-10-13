@@ -349,7 +349,7 @@
                 </div>
 
                 <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
-                    <textarea id="communityPostInput" placeholder="Teile dein neuestes Foto-Projekt..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-brand-500 resize-none h-24"></textarea>
+                    <textarea id="communityPostInput" placeholder="Teile dein neuester Foto-Projekt..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-brand-500 resize-none h-24"></textarea>
                     <div class="flex justify-between items-center">
                         <span class="text-xs text-slate-400">Komprimierung aktiv.</span>
                         <button onclick="submitCommunityPost()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold px-4 py-2 rounded-xl text-sm transition cursor-pointer">Beitrag posten</button>
@@ -714,7 +714,8 @@
                     self.addEventListener('install', (e) => { self.skipWaiting(); });
                     self.addEventListener('activate', (e) => { e.waitUntil(clients.claim()); });
                     self.addEventListener('fetch', (e) => {
-                        if (e.request.url.includes('supabase.co')) {
+                        // Niemals API / Supabase Anfragen aus dem Service Worker Cache bedienen
+                        if (e.request.url.includes('supabase.co') || e.request.method !== 'GET') {
                             e.respondWith(fetch(e.request));
                             return;
                         }
@@ -727,7 +728,7 @@
                         e.waitUntil(
                             self.registration.showNotification(data.title, {
                                 body: data.body,
-                                icon: 'data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 24 24\' fill=\\'%2322c55e\\'><path d=\\'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z\\'/></svg>'
+                                icon: 'data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 24 24\\' fill=\\'%2322c55e\\'><path d=\\'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z\\'/></svg>'
                             })
                         );
                     });
@@ -796,6 +797,18 @@
 
                 autoLocateUser();
                 await loadDataFromSupabase();
+
+                // Automatischer Sync beim Wiederöffnen des Tabs oder entsperren des Handys
+                document.addEventListener('visibilitychange', () => {
+                    if (document.visibilityState === 'visible') {
+                        loadDataFromSupabaseSilent();
+                    }
+                });
+
+                // Regelmäßiger Hintergrund-Poll alle 12 Sekunden als Backup falls Realtime disconnected
+                setInterval(() => {
+                    loadDataFromSupabaseSilent();
+                }, 12000);
 
                 history.replaceState({ view: 'home', modal: null }, '', '');
                 history.pushState({ view: 'home', modal: null }, '', '');
@@ -915,7 +928,11 @@
                             .on('postgres_changes', { event: '*', schema: 'public' }, () => {
                                 loadDataFromSupabaseSilent();
                             })
-                            .subscribe();
+                            .subscribe((status) => {
+                                if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+                                    setTimeout(() => loadDataFromSupabaseSilent(), 2000);
+                                }
+                            });
                     }
                 } catch (e) {
                     console.warn("Supabase load failed, fallback to local:", e);
@@ -2679,7 +2696,6 @@
             const now = Date.now();
 
             marketItems.forEach(item => {
-                // If completed and more than 3 days passed, filter it out completely
                 if(item.completed && item.completed_at && (now - item.completed_at > THREE_DAYS)) {
                     return;
                 }
