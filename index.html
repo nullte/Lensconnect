@@ -299,7 +299,7 @@
                             <button onclick="setCategoryFilter('Urbex / Lost Place')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Lost Place</button>
                             <button onclick="setCategoryFilter('Architektur')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Architektur</button>
                             <button onclick="setCategoryFilter('Porträt')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Porträt</button>
-                            <button onclick="setCategoryFilter('familienfreundlich')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-brand-400 hover:bg-slate-700 transition cursor-pointer flex items-center space-x-1"><i data-lucide="baby" class="w-3.5 h-3.5"></i><span>👶 Familienfreundlich</span></button>
+                            <button onclick="setCategoryFilter('familienfreundlich')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-brand-400 hover:bg-slate-700 transition cursor-pointer flex items-center space-x-1"><i data-lucide="baby" class="w-3.5 h-3.5"></i><span>Familienfreundlich</span></button>
                             <button onclick="setCategoryFilter('favorites')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-brand-400 hover:bg-slate-700 transition cursor-pointer flex items-center space-x-1"><i data-lucide="heart" class="w-3.5 h-3.5"></i><span>Favoriten</span></button>
                         </div>
                     </div>
@@ -315,7 +315,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-700">
                     <div>
                         <h1 class="text-2xl font-bold text-white">Community Marktplatz</h1>
-                        <p class="text-sm text-slate-400">Fotoshootings, Familien-Shootings, Profi-Studios & Locations.</p>
+                        <p class="text-sm text-slate-400">Einzelshootings, Lifestyle, Familien-Shootings, Profi-Studios & Locations.</p>
                     </div>
                     <button onclick="openNewMarketModal()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-medium px-4 py-2 rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow-lg shadow-brand-500/10 cursor-pointer">
                         <i data-lucide="plus-circle" class="w-4 h-4"></i>
@@ -327,8 +327,9 @@
                     <button onclick="filterMarket('all')" class="market-filter-btn px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium text-xs transition cursor-pointer">Alle anzeigen</button>
                     <button onclick="filterMarket('biete')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Biete</button>
                     <button onclick="filterMarket('suche')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Suche</button>
-                    <button onclick="filterMarket('shooting')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Fotoshootings</button>
-                    <button onclick="filterMarket('familie')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">👶 Familie & Lifestyle</button>
+                    <button onclick="filterMarket('einzel')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Einzelshooting</button>
+                    <button onclick="filterMarket('lifestyle')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Lifestyle shooting</button>
+                    <button onclick="filterMarket('familie')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Familien shooting</button>
                     <button onclick="filterMarket('location')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Locations / Studios</button>
                     <button onclick="filterMarket('favorites')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-brand-400 hover:bg-slate-700 text-xs transition cursor-pointer flex items-center space-x-1"><i data-lucide="heart" class="w-3.5 h-3.5"></i><span>Merkliste</span></button>
                 </div>
@@ -395,7 +396,7 @@
                 </div>
                 <label class="flex items-center space-x-2 text-xs text-slate-300 cursor-pointer bg-slate-800 border border-slate-700 rounded-xl px-3 py-2">
                     <input type="checkbox" id="newSpotFamily" class="rounded bg-slate-900 border-slate-700 text-brand-500 cursor-pointer">
-                    <span>👶 Familien- & kinderfreundlich (Sicher, kinderwagengeeignet)</span>
+                    <span>Familien- & kinderfreundlich (Sicher, kinderwagengeeignet)</span>
                 </label>
                 <div class="flex items-center space-x-2 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2">
                     <span class="text-xs text-slate-400">Deine Bewertung für diesen Spot:</span>
@@ -487,13 +488,14 @@
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">2. Ebene: Kategorie</label>
                     <select id="marketCategory" onchange="onMarketCategoryChange()" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
-                        <option value="shooting">Fotoshooting</option>
-                        <option value="familie">👶 Familie & Lifestyle Shooting</option>
+                        <option value="einzel">Einzelshooting</option>
+                        <option value="lifestyle">Lifestyle shooting</option>
+                        <option value="familie">Familien shooting</option>
                         <option value="location">Location / Studio</option>
                     </select>
                 </div>
 
-                <input type="text" id="marketTitle" placeholder="Titel (z.B. Familien-Shooting im Herbst)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                <input type="text" id="marketTitle" placeholder="Titel (z.B. Outdoor Porträt oder Familien-Shooting)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
 
                 <div id="shootingFields" class="space-y-3 p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
                     <div>
@@ -592,7 +594,7 @@
                     </div>
                     <label class="flex items-center space-x-2 text-xs text-slate-300 cursor-pointer bg-slate-800 border border-slate-700 rounded-xl px-3 py-2">
                         <input type="checkbox" id="profileCompanionInput" class="rounded bg-slate-900 border-slate-700 text-brand-500 cursor-pointer">
-                        <span>🤝 Begleitperson bei Shootings willkommen / Safe Shooting</span>
+                        <span>Begleitperson bei Shootings willkommen / Safe Shooting</span>
                     </label>
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Über mich / Bio</label>
@@ -1084,7 +1086,7 @@
                 { id: 2, title: 'Wörthersee Ostbucht', category: 'Landschaft', status: 'frei', family_friendly: true, rating: 4, tags: 'See, Spiegelung, Familie', lat: 46.622, lng: 14.286, desc: 'Spiegelungen und Stege zur blauen Stunde. Ideal auch mit Kindern.', author: 'Christian', image: '', contributions: [], ratings_list: [4] }
             ];
             marketItems = JSON.parse(localStorage.getItem('lensconnect_market')) || [
-                { id: 1, type: 'biete', category: 'shooting', title: 'Porträt-Shooting am See', level: 'Profi', price: 'TFP oder Spende', contact: 'christian@example.com', desc: 'Suche Model für ein entspanntes Outdoor-Shooting.', author: 'Christian' },
+                { id: 1, type: 'biete', category: 'einzel', title: 'Porträt-Shooting am See', level: 'Profi', price: 'TFP oder Spende', contact: 'christian@example.com', desc: 'Suche Model für ein entspanntes Outdoor-Shooting.', author: 'Christian' },
                 { id: 2, type: 'biete', category: 'familie', title: 'Familienshooting in der Natur', level: 'Familienfotograf', price: '99€ inkl. 5 bearbeitete Bilder', contact: 'christian@example.com', desc: 'Natürliche Familienaufnahmen im Grünen.', author: 'Christian' }
             ];
             communityPosts = JSON.parse(localStorage.getItem('lensconnect_posts')) || [
@@ -2134,7 +2136,7 @@
                     else if(spot.status === 'baustelle') statusBadge = '<span class="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded font-bold">🟡 Baustelle</span>';
                     else statusBadge = '<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold">🟢 Frei zugänglich</span>';
 
-                    let familyBadge = spot.family_friendly ? '<span class="text-[10px] bg-brand-500/20 text-brand-400 px-2 py-0.5 rounded font-bold">👶 Familienfreundlich</span>' : '';
+                    let familyBadge = spot.family_friendly ? '<span class="text-[10px] bg-brand-500/20 text-brand-400 px-2 py-0.5 rounded font-bold">Familienfreundlich</span>' : '';
 
                     const ratingData = getSpotAverageRating(spot);
 
@@ -2326,7 +2328,7 @@
                 }
             } else {
                 const previewContainer = document.getElementById('contribImagePreviewContainer');
-                if(previewContainer) previewContainer.classList.add('hidden');
+                if(previewContainer) previewContainer.classList.remove('hidden');
             }
 
             history.pushState({ view: currentView, modal: 'contrib' }, '', '');
@@ -2470,7 +2472,7 @@
                 else if(spot.status === 'baustelle') statusBadge = '<span class="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded font-bold">🟡 Baustelle</span>';
                 else statusBadge = '<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold">🟢 Frei zugänglich</span>';
 
-                let familyBadge = spot.family_friendly ? '<span class="text-[10px] bg-brand-500/20 text-brand-400 px-2 py-0.5 rounded font-bold">👶 Familienfreundlich</span>' : '';
+                let familyBadge = spot.family_friendly ? '<span class="text-[10px] bg-brand-500/20 text-brand-400 px-2 py-0.5 rounded font-bold">Familienfreundlich</span>' : '';
 
                 const ratingData = getSpotAverageRating(spot);
 
@@ -2743,7 +2745,7 @@
             const cat = document.getElementById('marketCategory').value;
             const shootingF = document.getElementById('shootingFields');
             const locF = document.getElementById('locationFields');
-            if(cat === 'shooting' || cat === 'familie') {
+            if(cat === 'einzel' || cat === 'lifestyle' || cat === 'familie') {
                 if(shootingF) shootingF.classList.remove('hidden');
                 if(locF) locF.classList.add('hidden');
             } else {
@@ -2763,7 +2765,7 @@
             document.getElementById('marketContact').value = '';
             document.getElementById('marketDesc').value = '';
             document.getElementById('marketPrice').value = '';
-            document.getElementById('marketCategory').value = 'shooting';
+            document.getElementById('marketCategory').value = 'einzel';
             onMarketCategoryChange();
 
             history.pushState({ view: currentView, modal: 'market' }, '', '');
@@ -2788,7 +2790,7 @@
             document.getElementById('marketTitle').value = item.title;
             document.getElementById('marketContact').value = item.contact || '';
             document.getElementById('marketDesc').value = item.desc || '';
-            if(item.category === 'shooting' || item.category === 'familie') {
+            if(item.category === 'einzel' || item.category === 'lifestyle' || item.category === 'familie' || item.category === 'shooting') {
                 document.getElementById('marketShootingLevel').value = item.level || 'Profi';
                 document.getElementById('marketPrice').value = item.price || '';
             } else {
@@ -2821,7 +2823,7 @@
                 desc: document.getElementById('marketDesc').value
             };
 
-            if(category === 'shooting' || category === 'familie') {
+            if(category === 'einzel' || category === 'lifestyle' || category === 'familie') {
                 itemData.level = document.getElementById('marketShootingLevel').value;
                 itemData.price = document.getElementById('marketPrice').value || 'TFP';
                 itemData.location_type = null;
@@ -2908,8 +2910,9 @@
                 else if(filter === 'all' && (text.includes('alle') || text.includes('anzeigen'))) match = true;
                 else if(filter === 'biete' && text === 'biete') match = true;
                 else if(filter === 'suche' && text === 'suche') match = true;
-                else if(filter === 'shooting' && text.includes('fotoshootings')) match = true;
-                else if(filter === 'familie' && text.includes('familie')) match = true;
+                else if(filter === 'einzel' && text.includes('einzelshooting')) match = true;
+                else if(filter === 'lifestyle' && text.includes('lifestyle')) match = true;
+                else if(filter === 'familie' && text.includes('familien')) match = true;
                 else if(filter === 'location' && text.includes('location')) match = true;
 
                 if(match) {
@@ -2939,7 +2942,8 @@
                 } else {
                     if(currentMarketFilter === 'biete' && item.type !== 'biete') return;
                     if(currentMarketFilter === 'suche' && item.type !== 'suche') return;
-                    if(currentMarketFilter === 'shooting' && item.category !== 'shooting') return;
+                    if(currentMarketFilter === 'einzel' && item.category !== 'einzel' && item.category !== 'shooting') return;
+                    if(currentMarketFilter === 'lifestyle' && item.category !== 'lifestyle') return;
                     if(currentMarketFilter === 'familie' && item.category !== 'familie') return;
                     if(currentMarketFilter === 'location' && item.category !== 'location') return;
                 }
@@ -2950,10 +2954,12 @@
                 card.className = `market-card bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg space-y-3 flex flex-col justify-between ${isCompletedStyle}`;
                 
                 let badgeSub = '';
-                if(item.category === 'familie') {
-                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">👶 Familie & Lifestyle • ${item.price}</span>`;
-                } else if(item.category === 'shooting') {
-                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Shooting (${item.level}) • ${item.price}</span>`;
+                if(item.category === 'einzel' || item.category === 'shooting') {
+                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Einzelshooting (${item.level || 'Profi'}) • ${item.price}</span>`;
+                } else if(item.category === 'lifestyle') {
+                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Lifestyle shooting • ${item.price}</span>`;
+                } else if(item.category === 'familie') {
+                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Familien shooting • ${item.price}</span>`;
                 } else {
                     badgeSub = `<span class="text-xs bg-purple-500/10 text-purple-400 px-2.5 py-1 rounded-lg border border-purple-500/20">Location: ${item.locationType || 'Profi Studio'}</span>`;
                 }
