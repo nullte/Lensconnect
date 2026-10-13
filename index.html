@@ -536,12 +536,23 @@
                     <span class="text-[11px] font-bold text-slate-400 block">Über mich</span>
                     <p id="pubProfileBio" class="text-xs text-slate-300 italic">Keine Beschreibung hinterlegt.</p>
                 </div>
-                <div id="pubProfileSocialContainer" class="hidden">
-                    <a id="pubProfileSocialLink" href="#" target="_blank" class="text-xs text-brand-400 hover:underline flex items-center space-x-1.5">
-                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        <span id="pubProfileSocialText">Website / Instagram</span>
-                    </a>
+                
+                <!-- Kontakt & Social Buttons -->
+                <div class="flex flex-col sm:flex-row gap-2 pt-1">
+                    <div id="pubProfileEmailContainer" class="hidden flex-1">
+                        <a id="pubProfileEmailBtn" href="#" class="w-full bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 text-xs py-2 px-3 rounded-xl flex items-center justify-center space-x-1.5 font-medium transition">
+                            <i data-lucide="mail" class="w-3.5 h-3.5 text-brand-400"></i>
+                            <span id="pubProfileEmailText">E-Mail senden</span>
+                        </a>
+                    </div>
+                    <div id="pubProfileSocialContainer" class="hidden flex-1">
+                        <a id="pubProfileSocialBtn" href="#" target="_blank" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-xs py-2 px-3 rounded-xl flex items-center justify-center space-x-1.5 font-semibold shadow transition">
+                            <i data-lucide="instagram" class="w-3.5 h-3.5"></i>
+                            <span id="pubProfileSocialText">Instagram / Website</span>
+                        </a>
+                    </div>
                 </div>
+
                 <div class="space-y-2 pt-2 border-t border-slate-800">
                     <span class="text-xs font-bold text-white block">Erstellte Spots (<span id="pubProfileSpotsCount">0</span>)</span>
                     <div id="pubProfileSpotsList" class="space-y-2 max-h-40 overflow-y-auto"></div>
@@ -687,7 +698,7 @@
         let marketItems = [];
         let communityPosts = [];
         let userProfilesMap = {}; // Cache für öffentliche Profile
-        let userProfile = JSON.parse(localStorage.getItem('lensconnect_user')) || { name: 'Christian', nameLocked: false, role: 'Fotograf', bio: '', social: '' };
+        let userProfile = JSON.parse(localStorage.getItem('lensconnect_user')) || { name: 'Christian', nameLocked: false, role: 'Fotograf', bio: '', social: '', email: '' };
         let currentUserEmail = null;
         let isAdmin = false;
 
@@ -831,6 +842,7 @@
                 userProfile.role = data.role || userProfile.role;
                 userProfile.bio = data.bio || userProfile.bio;
                 userProfile.social = data.social || userProfile.social;
+                userProfile.email = data.email || currentUserEmail || '';
                 userProfile.nameLocked = true;
                 localStorage.setItem('lensconnect_user', JSON.stringify(userProfile));
                 initUserDisplay();
@@ -929,6 +941,7 @@
         function updateAuthUI(user) {
             if (user) {
                 currentUserEmail = user.email;
+                userProfile.email = user.email;
                 isAdmin = (currentUserEmail.toLowerCase() === 'christian.arnold10@gmail.com');
 
                 document.getElementById('authSection').classList.add('hidden');
@@ -1119,6 +1132,8 @@
             const socialInput = document.getElementById('profileSocialInput');
             if(socialInput) userProfile.social = socialInput.value.trim();
 
+            userProfile.email = currentUserEmail || userProfile.email || '';
+
             localStorage.setItem('lensconnect_user', JSON.stringify(userProfile));
 
             // Sync with Supabase profiles table if logged in
@@ -1131,7 +1146,8 @@
                             username: userProfile.name,
                             role: userProfile.role,
                             bio: userProfile.bio,
-                            social: userProfile.social
+                            social: userProfile.social,
+                            email: user.email
                         });
                     }
                 } catch(e) { console.warn("Profile sync error:", e); }
@@ -1148,7 +1164,8 @@
                 username: authorName,
                 role: 'Fotograf',
                 bio: 'Keine Beschreibung hinterlegt.',
-                social: ''
+                social: '',
+                email: ''
             };
 
             document.getElementById('pubProfileName').textContent = profile.username || authorName;
@@ -1156,13 +1173,38 @@
             document.getElementById('pubProfileAvatar').textContent = (profile.username || authorName).split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
             document.getElementById('pubProfileBio').textContent = profile.bio || 'Keine Beschreibung hinterlegt.';
 
+            // E-Mail Kontakt Button
+            const emailContainer = document.getElementById('pubProfileEmailContainer');
+            const emailBtn = document.getElementById('pubProfileEmailBtn');
+            const emailText = document.getElementById('pubProfileEmailText');
+            
+            // Suche ggf. nach Inseratskontakten des Autors falls keine direkte Profil-Email angegeben ist
+            let contactEmail = profile.email;
+            if(!contactEmail) {
+                const authorItem = marketItems.find(m => m.author === authorName && m.contact && m.contact.includes('@'));
+                if(authorItem) contactEmail = authorItem.contact;
+            }
+
+            if(contactEmail) {
+                emailContainer.classList.remove('hidden');
+                emailBtn.href = `mailto:${contactEmail}`;
+                emailText.textContent = contactEmail;
+            } else {
+                emailContainer.classList.add('hidden');
+            }
+
+            // Social Button (Instagram / Web)
             const socialContainer = document.getElementById('pubProfileSocialContainer');
-            const socialLink = document.getElementById('pubProfileSocialLink');
+            const socialBtn = document.getElementById('pubProfileSocialBtn');
             const socialText = document.getElementById('pubProfileSocialText');
             if(profile.social) {
                 socialContainer.classList.remove('hidden');
-                socialLink.href = profile.social;
-                socialText.textContent = profile.social;
+                let targetUrl = profile.social;
+                if(!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+                    targetUrl = 'https://' + targetUrl;
+                }
+                socialBtn.href = targetUrl;
+                socialText.textContent = profile.social.replace(/^https?:\/\/(www\.)?/, '');
             } else {
                 socialContainer.classList.add('hidden');
             }
@@ -1202,6 +1244,7 @@
             history.pushState({ view: currentView, modal: 'publicProfile' }, '', '');
             const m = document.getElementById('publicProfileModal');
             if(m) m.style.display = 'flex';
+            if(window.lucide) lucide.createIcons();
         }
 
         function closePublicProfileModal() {
