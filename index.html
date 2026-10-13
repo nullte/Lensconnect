@@ -333,6 +333,20 @@
                     <h1 class="text-2xl font-bold text-white">Community Feed & Gruppen</h1>
                     <p class="text-sm text-slate-400">Tausche dich mit Fotografen & Models aus.</p>
                 </div>
+
+                <!-- Profile Search & Member Directory -->
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
+                    <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                        <i data-lucide="search" class="w-4 h-4 text-brand-400"></i>
+                        <span>Fotografen & Models suchen</span>
+                    </h3>
+                    <div class="relative">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+                        <input type="text" id="communityProfileSearchInput" oninput="renderCommunityProfiles()" placeholder="Suche nach Name, Rolle (Fotograf/Model), Bio..." class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div id="communityProfilesGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 max-h-60 overflow-y-auto"></div>
+                </div>
+
                 <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
                     <textarea id="communityPostInput" placeholder="Teile dein neuestes Foto-Projekt..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-brand-500 resize-none h-24"></textarea>
                     <div class="flex justify-between items-center">
@@ -963,6 +977,7 @@
             renderSpots();
             renderMarket();
             renderCommunity();
+            renderCommunityProfiles();
         }
 
         async function loadUserProfileFromSupabase(userId) {
@@ -1016,6 +1031,7 @@
                 renderSpots();
                 renderMarket();
                 renderCommunity();
+                renderCommunityProfiles();
             } catch(e) {
                 console.warn("Silent reload failed:", e);
             }
@@ -1168,6 +1184,10 @@
                 } else {
                     setTimeout(() => map.invalidateSize(), 150);
                 }
+            }
+
+            if(viewName === 'community') {
+                renderCommunityProfiles();
             }
 
             if(push) {
@@ -1416,6 +1436,91 @@
 
             initUserDisplay();
             closeProfileModal();
+            renderCommunityProfiles();
+        }
+
+        // PROFIL-SUCHFUNKTION (NEU)
+        function renderCommunityProfiles() {
+            const container = document.getElementById('communityProfilesGrid');
+            if(!container) return;
+            const searchInput = document.getElementById('communityProfileSearchInput');
+            const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+            const usersMap = {};
+            if(userProfile.name) {
+                usersMap[userProfile.name.toLowerCase()] = {
+                    username: userProfile.name,
+                    role: userProfile.role || 'Fotograf',
+                    bio: userProfile.bio || '',
+                    avatar: userProfile.avatar || ''
+                };
+            }
+            Object.values(userProfilesMap).forEach(p => {
+                if(p.username) {
+                    usersMap[p.username.toLowerCase()] = {
+                        username: p.username,
+                        role: p.role || 'Fotograf',
+                        bio: p.bio || '',
+                        avatar: p.avatar || ''
+                    };
+                }
+            });
+            spots.forEach(s => {
+                if(s.author && !usersMap[s.author.toLowerCase()]) {
+                    usersMap[s.author.toLowerCase()] = { username: s.author, role: 'Fotograf', bio: '', avatar: '' };
+                }
+            });
+            marketItems.forEach(m => {
+                if(m.author && !usersMap[m.author.toLowerCase()]) {
+                    usersMap[m.author.toLowerCase()] = { username: m.author, role: 'Fotograf', bio: '', avatar: '' };
+                }
+            });
+            communityPosts.forEach(p => {
+                if(p.author && !usersMap[p.author.toLowerCase()]) {
+                    usersMap[p.author.toLowerCase()] = { username: p.author, role: 'Fotograf', bio: '', avatar: '' };
+                }
+            });
+
+            const usersList = Object.values(usersMap).filter(u => {
+                if(!query) return true;
+                return u.username.toLowerCase().includes(query) || 
+                       u.role.toLowerCase().includes(query) || 
+                       u.bio.toLowerCase().includes(query);
+            });
+
+            container.innerHTML = '';
+            if(usersList.length === 0) {
+                container.innerHTML = '<span class="text-xs text-slate-400 italic col-span-full text-center py-4">Keine passenden Profile gefunden.</span>';
+                return;
+            }
+
+            usersList.forEach(u => {
+                const div = document.createElement('div');
+                div.className = "bg-slate-900/70 border border-slate-700/60 rounded-xl p-3 flex items-center justify-between hover:border-brand-500/50 transition cursor-pointer";
+                div.onclick = () => openPublicProfile(u.username);
+                
+                let avatarHtml = '';
+                if(u.avatar) {
+                    avatarHtml = `<div class="w-10 h-10 rounded-full overflow-hidden bg-brand-500/20 shrink-0"><img src="${u.avatar}" class="w-full h-full object-cover"></div>`;
+                } else {
+                    const initials = u.username.split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
+                    avatarHtml = `<div class="w-10 h-10 rounded-full bg-brand-500/20 text-brand-400 font-bold text-xs flex items-center justify-center shrink-0">${initials}</div>`;
+                }
+
+                div.innerHTML = `
+                    <div class="flex items-center space-x-3 overflow-hidden">
+                        ${avatarHtml}
+                        <div class="overflow-hidden">
+                            <h4 class="text-xs font-bold text-white truncate">${u.username}</h4>
+                            <span class="text-[10px] text-brand-400 font-medium block">${u.role}</span>
+                            ${u.bio ? `<p class="text-[10px] text-slate-400 truncate">${u.bio}</p>` : ''}
+                        </div>
+                    </div>
+                    <span class="text-xs text-brand-400 underline shrink-0 ml-2">Profil</span>
+                `;
+                container.appendChild(div);
+            });
+            if(window.lucide) lucide.createIcons();
         }
 
         // FAVORITEN / MERKLISTEN
