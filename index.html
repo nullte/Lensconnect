@@ -2362,6 +2362,8 @@
             if(previewContainer) previewContainer.classList.add('hidden');
             const textInput = document.getElementById('contribText');
             if(textInput) textInput.value = '';
+            const ratingInput = document.getElementById('contribRating');
+            if(ratingInput) ratingInput.value = '5';
             
             history.pushState({ view: currentView, modal: 'contrib' }, '', '');
             const m = document.getElementById('spotContributionModal');
@@ -2383,7 +2385,7 @@
 
             document.getElementById('contribModalTitle').textContent = 'Bericht bearbeiten';
             document.getElementById('contribText').value = contrib.text;
-            if (contrib.rating) document.getElementById('contribRating').value = contrib.rating;
+            if (contrib.rating) document.getElementById('contribRating').value = String(contrib.rating);
             compressedContribImage = contrib.image || '';
 
             if(contrib.image) {
@@ -2444,6 +2446,8 @@
                     } else {
                         newContrib.id = Date.now();
                         spot.contributions.push(newContrib);
+                        if(!spot.ratings_list) spot.ratings_list = [];
+                        spot.ratings_list.push(ratingVal);
                         localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
                     }
                 }
@@ -2710,7 +2714,7 @@
             document.getElementById('newSpotCategory').value = spot.category;
             document.getElementById('newSpotStatus').value = spot.status || 'frei';
             document.getElementById('newSpotFamily').checked = spot.family_friendly || false;
-            document.getElementById('newSpotRating').value = spot.rating || '5';
+            document.getElementById('newSpotRating').value = String(spot.rating || 5);
             document.getElementById('newSpotTags').value = spot.tags || '';
             document.getElementById('newSpotDesc').value = spot.desc || '';
             document.getElementById('newSpotLat').value = spot.lat || '';
@@ -2750,13 +2754,13 @@
             
             if(editingSpotId) {
                 const existingSpot = spots.find(s => s.id === editingSpotId);
-                const originalAuthor = existingSpot ? existingSpot.author : (userProfile.name || 'Christian');
 
                 const updateData = {
                     title: titleEl.value,
                     category: document.getElementById('newSpotCategory').value,
                     status: document.getElementById('newSpotStatus').value,
                     family_friendly: document.getElementById('newSpotFamily').checked,
+                    rating: ratingVal,
                     tags: document.getElementById('newSpotTags').value,
                     desc: document.getElementById('newSpotDesc').value,
                     lat: parseFloat(document.getElementById('newSpotLat').value) || (map ? map.getCenter().lat : 46.61),
