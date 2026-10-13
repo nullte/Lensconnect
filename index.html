@@ -323,30 +323,37 @@
                     </button>
                 </div>
 
-                <!-- Sortierung & Erledigte ausblenden Filterleiste -->
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-800/60 p-3 rounded-xl border border-slate-700/60">
-                    <div class="flex flex-wrap gap-2 text-xs">
-                        <button onclick="filterMarket('all')" class="market-filter-btn px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium text-xs transition cursor-pointer">Alle anzeigen</button>
-                        <button onclick="filterMarket('biete')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Biete</button>
-                        <button onclick="filterMarket('suche')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Suche</button>
-                        <button onclick="filterMarket('einzel')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Einzelfotografie</button>
-                        <button onclick="filterMarket('lifestyle')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Lifestylefotografie</button>
-                        <button onclick="filterMarket('familie')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Familienfotografie</button>
-                        <button onclick="filterMarket('event')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Eventfotografie</button>
-                        <button onclick="filterMarket('anderes')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Anderes Shooting</button>
-                        <button onclick="filterMarket('location')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Locations / Studios</button>
-                        <button onclick="filterMarket('favorites')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-brand-400 hover:bg-slate-700 text-xs transition cursor-pointer flex items-center space-x-1"><i data-lucide="heart" class="w-3.5 h-3.5"></i><span>Merkliste</span></button>
+                <!-- Suche & Filterleiste -->
+                <div class="flex flex-col space-y-3 bg-slate-800/60 p-3 rounded-xl border border-slate-700/60">
+                    <div class="relative w-full">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+                        <input type="text" id="marketSearchInput" oninput="renderMarket()" placeholder="Suche nach Titel, Ort/Region (z.B. Villach, Kärnten)..." class="w-full bg-slate-800 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-brand-500">
                     </div>
 
-                    <div class="flex items-center space-x-3 shrink-0">
-                        <label class="flex items-center space-x-2 text-xs text-slate-300 cursor-pointer select-none">
-                            <input type="checkbox" id="hideCompletedMarket" onchange="renderMarket()" class="rounded bg-slate-900 border-slate-700 text-brand-500 cursor-pointer">
-                            <span>Erledigte ausblenden</span>
-                        </label>
-                        <select id="marketSortOrder" onchange="renderMarket()" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-brand-500">
-                            <option value="newest">📅 Neueste zuerst</option>
-                            <option value="oldest">📅 Älteste zuerst</option>
-                        </select>
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div class="flex flex-wrap gap-2 text-xs">
+                            <button onclick="filterMarket('all')" class="market-filter-btn px-4 py-2 rounded-xl bg-brand-500 text-slate-900 font-medium text-xs transition cursor-pointer">Alle anzeigen</button>
+                            <button onclick="filterMarket('biete')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Biete</button>
+                            <button onclick="filterMarket('suche')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Suche</button>
+                            <button onclick="filterMarket('einzel')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Einzelfotografie</button>
+                            <button onclick="filterMarket('lifestyle')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Lifestylefotografie</button>
+                            <button onclick="filterMarket('familie')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Familienfotografie</button>
+                            <button onclick="filterMarket('event')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Eventfotografie</button>
+                            <button onclick="filterMarket('anderes')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Anderes Shooting</button>
+                            <button onclick="filterMarket('location')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Locations / Studios</button>
+                            <button onclick="filterMarket('favorites')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-brand-400 hover:bg-slate-700 text-xs transition cursor-pointer flex items-center space-x-1"><i data-lucide="heart" class="w-3.5 h-3.5"></i><span>Merkliste</span></button>
+                        </div>
+
+                        <div class="flex items-center space-x-3 shrink-0">
+                            <label class="flex items-center space-x-2 text-xs text-slate-300 cursor-pointer select-none">
+                                <input type="checkbox" id="hideCompletedMarket" onchange="renderMarket()" class="rounded bg-slate-900 border-slate-700 text-brand-500 cursor-pointer">
+                                <span>Erledigte ausblenden</span>
+                            </label>
+                            <select id="marketSortOrder" onchange="renderMarket()" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-brand-500">
+                                <option value="newest">📅 Neueste zuerst</option>
+                                <option value="oldest">📅 Älteste zuerst</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -513,7 +520,12 @@
                     </select>
                 </div>
 
-                <input type="text" id="marketTitle" placeholder="Titel (z.B. Outdoor Porträt oder Mietstudio Kärnten)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                <input type="text" id="marketTitle" placeholder="Titel (z.B. Outdoor Porträt oder Mietstudio Arnoldstein)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Ort / Region / Raum (optional)</label>
+                    <input type="text" id="marketLocationText" placeholder="z.B. Raum Villach, Kärnten, Klagenfurt, Wien..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                </div>
 
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Datum / Zeitraum (optional)</label>
@@ -1007,7 +1019,8 @@
                             price: m.price || '',
                             locationType: m.location_type,
                             safe_shooting: m.safe_shooting || false,
-                            date_text: m.date_text || m.dateText || ''
+                            date_text: m.date_text || m.dateText || '',
+                            location_text: m.location_text || m.locationText || ''
                         }));
                     }
 
@@ -1092,7 +1105,8 @@
                         price: m.price || '',
                         locationType: m.location_type,
                         safe_shooting: m.safe_shooting || false,
-                        date_text: m.date_text || m.dateText || ''
+                        date_text: m.date_text || m.dateText || '',
+                        location_text: m.location_text || m.locationText || ''
                     }));
                 }
                 const { data: postsData } = await supabaseClient.from('community_posts').select('*');
@@ -1119,8 +1133,8 @@
                 { id: 2, title: 'Wörthersee Ostbucht', category: 'Landschaft', status: 'frei', family_friendly: true, rating: 4, tags: 'See, Spiegelung, Familie', lat: 46.622, lng: 14.286, desc: 'Spiegelungen und Stege zur blauen Stunde. Ideal auch mit Kindern.', author: 'Christian', image: '', contributions: [], ratings_list: [4] }
             ];
             marketItems = JSON.parse(localStorage.getItem('lensconnect_market')) || [
-                { id: 1, type: 'biete', category: 'einzel', title: 'Porträt-Shooting am See', level: 'Profi', price: 'TFP oder Spende', contact: 'christian@example.com', desc: 'Suche Model für ein entspanntes Outdoor-Shooting.', author: 'Christian', safe_shooting: true, date_text: '15.06.2026' },
-                { id: 2, type: 'biete', category: 'location', title: 'Fotostudio Arnoldstein', level: 'Profi', price: '20€ / Stunde', locationType: 'Profi Studio', contact: 'christian@example.com', desc: 'Mietstudio mit Hohlkehle und Profi-Blitzanlage.', author: 'Christian', safe_shooting: false, date_text: 'Nach Vereinbarung' }
+                { id: 1, type: 'biete', category: 'einzel', title: 'Porträt-Shooting am See', level: 'Profi', price: 'TFP oder Spende', contact: 'christian@example.com', desc: 'Suche Model für ein entspanntes Outdoor-Shooting.', author: 'Christian', safe_shooting: true, date_text: '15.06.2026', location_text: 'Raum Villach / Wörthersee' },
+                { id: 2, type: 'biete', category: 'location', title: 'Fotostudio Arnoldstein', level: 'Profi', price: '20€ / Stunde', locationType: 'Profi Studio', contact: 'christian@example.com', desc: 'Mietstudio mit Hohlkehle und Profi-Blitzanlage.', author: 'Christian', safe_shooting: false, date_text: 'Nach Vereinbarung', location_text: 'Arnoldstein, Kärnten' }
             ];
             communityPosts = JSON.parse(localStorage.getItem('lensconnect_posts')) || [
                 { id: 1, author: 'Christian', text: 'Erster Test mit der analogen Kamera und Kodak Portra 400. Die Farben sind einfach genial!', time: 'Vor 2 Stunden' }
@@ -2795,6 +2809,7 @@
             editingMarketId = null;
             document.getElementById('marketModalTitle').textContent = 'Neues Inserat erstellen';
             document.getElementById('marketTitle').value = '';
+            document.getElementById('marketLocationText').value = '';
             document.getElementById('marketDateText').value = '';
             document.getElementById('marketContact').value = '';
             document.getElementById('marketDesc').value = '';
@@ -2823,6 +2838,7 @@
             document.getElementById('marketCategory').value = item.category;
             onMarketCategoryChange();
             document.getElementById('marketTitle').value = item.title;
+            document.getElementById('marketLocationText').value = item.location_text || '';
             document.getElementById('marketDateText').value = item.date_text || '';
             document.getElementById('marketPrice').value = item.price || '';
             document.getElementById('marketContact').value = item.contact || '';
@@ -2856,6 +2872,7 @@
                 type: document.getElementById('marketType').value,
                 category: category,
                 title: titleEl.value,
+                location_text: document.getElementById('marketLocationText').value.trim(),
                 date_text: document.getElementById('marketDateText').value.trim(),
                 price: document.getElementById('marketPrice').value.trim() || 'Kostenlos / Auf Anfrage',
                 contact: document.getElementById('marketContact').value,
@@ -2972,6 +2989,9 @@
             if(!grid) return;
             grid.innerHTML = '';
 
+            const searchInput = document.getElementById('marketSearchInput');
+            const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
             const hideCompleted = document.getElementById('hideCompletedMarket') ? document.getElementById('hideCompletedMarket').checked : false;
             const sortOrder = document.getElementById('marketSortOrder') ? document.getElementById('marketSortOrder').value : 'newest';
 
@@ -2982,6 +3002,14 @@
                 if(item.completed) {
                     if(hideCompleted) return false;
                     if(item.completed_at && (now - item.completed_at > THREE_DAYS)) return false;
+                }
+
+                if(searchVal) {
+                    const matchTitle = item.title && item.title.toLowerCase().includes(searchVal);
+                    const matchDesc = item.desc && item.desc.toLowerCase().includes(searchVal);
+                    const matchLocation = item.location_text && item.location_text.toLowerCase().includes(searchVal);
+                    const matchAuthor = item.author && item.author.toLowerCase().includes(searchVal);
+                    if(!matchTitle && !matchDesc && !matchLocation && !matchAuthor) return false;
                 }
 
                 if(currentMarketFilter === 'favorites') {
@@ -3030,6 +3058,8 @@
                 } else {
                     badgeSub = `<span class="text-xs bg-purple-500/10 text-purple-400 px-2.5 py-1 rounded-lg border border-purple-500/20">Location: ${item.locationType || 'Studio'}${displayPrice}</span>`;
                 }
+
+                let locationHtml = item.location_text ? `<div class="text-xs text-brand-300 font-medium flex items-center space-x-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0 text-brand-400"></i><span>Ort / Region: <strong>${item.location_text}</strong></span></div>` : '';
 
                 let dateHtml = item.date_text ? `<div class="text-xs text-brand-400 font-semibold flex items-center space-x-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5 shrink-0"></i><span>Datum / Zeitraum: ${item.date_text}</span></div>` : '';
 
@@ -3094,6 +3124,7 @@
                             ${badgeSub}
                         </div>
                         <h3 class="font-semibold text-white text-base">${item.title}</h3>
+                        ${locationHtml}
                         ${dateHtml}
                         <p class="text-xs text-slate-300 line-clamp-3">${item.desc || ''}</p>
                         ${safeShootingBadge}
