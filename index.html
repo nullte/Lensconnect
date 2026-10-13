@@ -44,6 +44,14 @@
         html.light .bg-slate-900\/60 p, html.light .bg-slate-900\/60 span, html.light .bg-slate-900\/65 p, html.light .bg-slate-900\/65 span { color: #1e293b !important; }
         html.light .text-brand-300, html.light .text-brand-400, html.light .text-brand-600 { color: #16a34a !important; }
         html.light .bg-brand-500 { background-color: #22c55e !important; color: #ffffff !important; }
+
+        @keyframes highlightPulse {
+            0% { border-color: #22c55e; box-shadow: 0 0 12px rgba(34, 197, 94, 0.4); }
+            100% { border-color: transparent; box-shadow: none; }
+        }
+        .unread-highlight {
+            animation: highlightPulse 4s ease-out forwards;
+        }
     </style>
     <script>
         tailwind.config = {
@@ -108,7 +116,7 @@
         <div class="flex items-center space-x-2">
             <button onclick="openChatModal()" class="p-2 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-slate-300 transition cursor-pointer relative" title="Direktnachrichten">
                 <i data-lucide="message-square" class="w-4 h-4"></i>
-                <span id="chatBadge" class="absolute -top-1 -right-1 w-2 h-2 bg-brand-500 rounded-full hidden"></span>
+                <span id="chatBadge" class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-brand-500 rounded-full hidden"></span>
             </button>
             <button onclick="openProfileModal()" class="flex items-center space-x-1.5 px-2 py-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
                 <div class="w-6 h-6 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-[10px] overflow-hidden" id="userAvatarInitials">
@@ -384,13 +392,13 @@
                     </select>
                 </div>
                 <div class="flex items-center space-x-2 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2">
-                    <span class="text-xs text-slate-400">Deine Bewertung:</span>
+                    <span class="text-xs text-slate-400">Deine Bewertung für diesen Spot:</span>
                     <select id="newSpotRating" class="bg-slate-900 text-brand-400 border border-slate-700 rounded px-2 py-1 text-xs">
-                        <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
-                        <option value="4">⭐⭐⭐⭐ (4/5)</option>
-                        <option value="3">⭐⭐⭐ (3/5)</option>
-                        <option value="2">⭐⭐ (2/5)</option>
-                        <option value="1">⭐ (1/5)</option>
+                        <option value="5">⭐⭐⭐⭐⭐ (5 Sterne)</option>
+                        <option value="4">⭐⭐⭐⭐★ (4 Sterne)</option>
+                        <option value="3">⭐⭐⭐★★ (3 Sterne)</option>
+                        <option value="2">⭐⭐★★★ (2 Sterne)</option>
+                        <option value="1">⭐★★★★ (1 Stern)</option>
                     </select>
                 </div>
                 <input type="text" id="newSpotTags" placeholder="Tags (kommagetrennt, z.B. Drohne, Nachtfotografie, Indoor)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
@@ -428,6 +436,16 @@
                 <button onclick="closeSpotContributionModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="space-y-3">
+                <div class="flex items-center space-x-2 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2">
+                    <span class="text-xs text-slate-400">Deine Sterne-Bewertung:</span>
+                    <select id="contribRating" class="bg-slate-900 text-brand-400 border border-slate-700 rounded px-2 py-1 text-xs">
+                        <option value="5">⭐⭐⭐⭐⭐ (5 Sterne)</option>
+                        <option value="4">⭐⭐⭐⭐★ (4 Sterne)</option>
+                        <option value="3">⭐⭐⭐★★ (3 Sterne)</option>
+                        <option value="2">⭐⭐★★★ (2 Sterne)</option>
+                        <option value="1">⭐★★★★ (1 Stern)</option>
+                    </select>
+                </div>
                 <textarea id="contribText" placeholder="Teile Bedingungen, Uhrzeiten, Licht-Tipps oder Fotos zu diesem Spot..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-28 resize-none focus:outline-none focus:border-brand-500"></textarea>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Foto hinzufügen (optional)</label>
@@ -623,7 +641,7 @@
                     </div>
                     <button onclick="openChatWithUser(window.currentPubProfileUser)" class="flex-1 bg-brand-500 hover:bg-brand-600 text-slate-900 text-xs py-2 px-3 rounded-xl flex items-center justify-center space-x-1.5 font-bold transition cursor-pointer">
                         <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
-                        <span>Direktnachricht</span>
+                        <span>Direktnachrichten</span>
                     </button>
                 </div>
 
@@ -653,10 +671,13 @@
             <div class="flex justify-between items-center pb-3 border-b border-slate-800">
                 <div class="flex items-center space-x-2">
                     <button id="chatBackBtn" onclick="showChatInbox()" class="hidden text-slate-400 hover:text-white cursor-pointer mr-1"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
-                    <h3 class="text-lg font-bold text-white flex items-center space-x-2">
-                        <i data-lucide="message-square" class="w-5 h-5 text-brand-400"></i>
-                        <span id="chatTitle">Direktnachrichten</span>
-                    </h3>
+                    <div>
+                        <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+                            <i data-lucide="message-square" class="w-5 h-5 text-brand-400"></i>
+                            <span id="chatTitle">Direktnachrichten</span>
+                        </h3>
+                        <span id="chatPartnerActiveStatus" class="text-[10px] text-brand-400 font-medium hidden"></span>
+                    </div>
                 </div>
                 <button onclick="closeChatModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
@@ -875,6 +896,30 @@
             return R * c;
         }
 
+        // Hilfsfunktion: Berechnet die Durchschnittsbewertung eines Spots
+        function getSpotAverageRating(spot) {
+            const ratings = [];
+            if (typeof spot.rating === 'number' && spot.rating > 0) {
+                ratings.push(spot.rating);
+            }
+            if (spot.ratings_list && Array.isArray(spot.ratings_list)) {
+                ratings.push(...spot.ratings_list);
+            }
+            if (spot.contributions && Array.isArray(spot.contributions)) {
+                spot.contributions.forEach(c => {
+                    if (c.rating && typeof c.rating === 'number') {
+                        ratings.push(c.rating);
+                    }
+                });
+            }
+            if (ratings.length === 0) return { avg: 5, count: 0, stars: '⭐⭐⭐⭐⭐' };
+            const sum = ratings.reduce((a, b) => a + b, 0);
+            const avg = Math.round((sum / ratings.length) * 10) / 10;
+            const starCount = Math.round(avg);
+            const stars = '⭐'.repeat(starCount) + '★'.repeat(5 - starCount);
+            return { avg, count: ratings.length, stars };
+        }
+
         async function loadDataFromSupabase() {
             if (supabaseClient) {
                 try {
@@ -900,7 +945,10 @@
                             desc: s.desc,
                             contributions: s.spot_contributions || [],
                             status: s.status || 'frei',
-                            rating: s.rating || 5
+                            rating: s.rating || 5,
+                            edited_by: s.edited_by || null,
+                            edited_at: s.edited_at || null,
+                            ratings_list: s.ratings_list || []
                         }));
                     }
 
@@ -977,7 +1025,10 @@
                         desc: s.desc,
                         contributions: s.spot_contributions || [],
                         status: s.status || 'frei',
-                        rating: s.rating || 5
+                        rating: s.rating || 5,
+                        edited_by: s.edited_by || null,
+                        edited_at: s.edited_at || null,
+                        ratings_list: s.ratings_list || []
                     }));
                 }
                 const { data: marketData } = await supabaseClient.from('market_items').select('*');
@@ -1008,12 +1059,12 @@
 
         function loadLocalFallback() {
             spots = JSON.parse(localStorage.getItem('lensconnect_spots')) || [
-                { id: 1, title: 'Burgruine Landskron', category: 'Urbex / Lost Place', status: 'frei', rating: 5, tags: 'Ruine, Aussicht, Drohne', lat: 46.621, lng: 13.904, desc: 'Toller Ausblick über den Villacher Raum, perfekt bei Sonnenuntergang.', author: 'Christian', image: '', contributions: [] },
-                { id: 2, title: 'Wörthersee Ostbucht', category: 'Landschaft', status: 'frei', rating: 4, tags: 'See, Spiegelung, Nachtfotografie', lat: 46.622, lng: 14.286, desc: 'Spiegelungen und Stege zur blauen Stunde.', author: 'Christian', image: '', contributions: [] }
+                { id: 1, title: 'Burgruine Landskron', category: 'Urbex / Lost Place', status: 'frei', rating: 5, tags: 'Ruine, Aussicht, Drohne', lat: 46.621, lng: 13.904, desc: 'Toller Ausblick über den Villacher Raum, perfekt bei Sonnenuntergang.', author: 'Christian', image: '', contributions: [], ratings_list: [5, 4] },
+                { id: 2, title: 'Wörthersee Ostbucht', category: 'Landschaft', status: 'frei', rating: 4, tags: 'See, Spiegelung, Nachtfotografie', lat: 46.622, lng: 14.286, desc: 'Spiegelungen und Stege zur blauen Stunde.', author: 'Christian', image: '', contributions: [], ratings_list: [4] }
             ];
             marketItems = JSON.parse(localStorage.getItem('lensconnect_market')) || [
-                { id: 1, type: 'biete', category: 'shooting', title: 'Porträt-Shooting am See', level: 'Profi', price: 'TFP oder Spende', contact: 'christian@example.com', desc: 'Suche Model für ein entspanntes Outdoor-Shooting.' },
-                { id: 2, type: 'biete', category: 'location', title: 'Heim-Studio mit Blitzanlage', locationType: 'Heim Studio', contact: '+43 660 1234567', desc: 'Voll ausgestattetes kleines Studio im Keller.' }
+                { id: 1, type: 'biete', category: 'shooting', title: 'Porträt-Shooting am See', level: 'Profi', price: 'TFP oder Spende', contact: 'christian@example.com', desc: 'Suche Model für ein entspanntes Outdoor-Shooting.', author: 'Christian' },
+                { id: 2, type: 'biete', category: 'location', title: 'Heim-Studio mit Blitzanlage', locationType: 'Heim Studio', contact: '+43 660 1234567', desc: 'Voll ausgestattetes kleines Studio im Keller.', author: 'Christian' }
             ];
             communityPosts = JSON.parse(localStorage.getItem('lensconnect_posts')) || [
                 { id: 1, author: 'Christian', text: 'Erster Test mit der analogen Kamera und Kodak Portra 400. Die Farben sind einfach genial!', time: 'Vor 2 Stunden' }
@@ -1511,6 +1562,9 @@
             currentChatPartner = null;
             document.getElementById('chatBackBtn').classList.add('hidden');
             document.getElementById('chatTitle').textContent = 'Direktnachrichten';
+            const activeStatusEl = document.getElementById('chatPartnerActiveStatus');
+            if(activeStatusEl) activeStatusEl.classList.add('hidden');
+
             document.getElementById('chatInboxView').classList.remove('hidden');
             document.getElementById('chatRoomView').classList.add('hidden');
             renderChatConversations();
@@ -1521,11 +1575,11 @@
             currentChatPartner = partnerName;
             document.getElementById('chatBackBtn').classList.remove('hidden');
             document.getElementById('chatTitle').textContent = `Chat mit ${partnerName}`;
+            
+            markChatAsRead();
+            
             document.getElementById('chatInboxView').classList.add('hidden');
             document.getElementById('chatRoomView').classList.remove('hidden');
-            
-            // Mark chat as read for this partner
-            markChatAsRead();
             
             renderChatMessages();
             updateChatBadge();
@@ -1533,11 +1587,10 @@
 
         function markChatAsRead() {
             if(!currentChatPartner) return;
-            const myName = userProfile.name || currentUserEmail || '';
             readChatsMap[currentChatPartner] = Date.now();
             localStorage.setItem('lensconnect_read_chats', JSON.stringify(readChatsMap));
             updateChatBadge();
-            renderChatConversations();
+            if(!currentChatPartner) renderChatConversations();
         }
 
         function clearCurrentChat() {
@@ -1557,6 +1610,12 @@
                 renderChatMessages();
                 updateChatBadge();
             }
+        }
+
+        function getMsgTime(m) {
+            if(m.created_at) return new Date(m.created_at).getTime();
+            if(m.id && typeof m.id === 'number') return m.id;
+            return Date.now();
         }
 
         function renderChatConversations() {
@@ -1584,14 +1643,27 @@
 
             partners.forEach(partner => {
                 const chatMsgs = messages.filter(m => {
-                    if(deletedMessageIds.includes(m.id)) return false;
+                    if(m.id && deletedMessageIds.includes(m.id)) return false;
                     return (m.sender === myName && m.receiver === partner) || 
                            (m.sender === partner && m.receiver === myName);
                 });
-                const lastMsg = chatMsgs.length > 0 ? chatMsgs[chatMsgs.length - 1] : null;
 
-                const hasUnread = chatMsgs.some(m => m.receiver === myName && (!readChatsMap[partner] || new Date(m.time || 0).getTime() > readChatsMap[partner] || chatMsgs.indexOf(m) > (chatMsgs.length - 3)));
-                
+                const lastMsg = chatMsgs.length > 0 ? chatMsgs[chatMsgs.length - 1] : null;
+                const lastReadTime = readChatsMap[partner] || 0;
+
+                const hasUnread = chatMsgs.some(m => m.receiver === myName && getMsgTime(m) > lastReadTime);
+
+                let lastActiveText = 'Noch keine Aktivität';
+                if(chatMsgs.length > 0) {
+                    const partnerMsgs = chatMsgs.filter(m => m.sender === partner);
+                    if(partnerMsgs.length > 0) {
+                        const lastP = partnerMsgs[partnerMsgs.length - 1];
+                        lastActiveText = `Zuletzt aktiv: ${lastP.time || 'kürzlich'}`;
+                    } else {
+                        lastActiveText = `Antwort ausstehend`;
+                    }
+                }
+
                 const div = document.createElement('div');
                 div.className = "bg-slate-800/80 border border-slate-700/80 rounded-xl p-3 flex items-center justify-between hover:border-brand-500/50 transition cursor-pointer relative";
                 div.onclick = () => showChatRoom(partner);
@@ -1600,9 +1672,10 @@
                     <div class="space-y-0.5 overflow-hidden">
                         <div class="text-xs font-bold text-white flex items-center space-x-2">
                             <span>${partner}</span>
-                            ${hasUnread ? '<span class="w-2 h-2 bg-brand-500 rounded-full inline-block"></span>' : ''}
+                            ${hasUnread ? '<span class="w-2.5 h-2.5 bg-brand-500 rounded-full inline-block animate-pulse" title="Ungelesene Nachricht"></span>' : ''}
                         </div>
-                        <div class="text-[11px] text-slate-400 truncate">${lastMsg ? lastMsg.text : 'Noch keine Nachrichten'}</div>
+                        <div class="text-[11px] text-slate-300 truncate font-medium">${lastMsg ? lastMsg.text : 'Noch keine Nachrichten'}</div>
+                        <div class="text-[9px] text-slate-400">${lastActiveText}</div>
                     </div>
                     <span class="text-xs text-brand-400 underline shrink-0 ml-2">Öffnen</span>
                 `;
@@ -1639,7 +1712,7 @@
             }
 
             input.value = '';
-            updateChatBadge();
+            markChatAsRead();
         }
 
         async function deleteChatMessageForMe(msgId) {
@@ -1658,19 +1731,35 @@
             if(!container) return;
             container.innerHTML = '';
             const myName = userProfile.name || currentUserEmail || '';
-            
+            const lastReadTime = readChatsMap[currentChatPartner] || 0;
+
             const filtered = messages.filter(m => {
                 if(m.id && deletedMessageIds.includes(m.id)) return false;
                 return (m.sender === myName && m.receiver === currentChatPartner) || 
                        (m.sender === currentChatPartner && m.receiver === myName);
             });
 
+            const partnerMsgs = filtered.filter(m => m.sender === currentChatPartner);
+            const activeStatusEl = document.getElementById('chatPartnerActiveStatus');
+            if(activeStatusEl) {
+                if(partnerMsgs.length > 0) {
+                    const lastP = partnerMsgs[partnerMsgs.length - 1];
+                    activeStatusEl.textContent = `Zuletzt aktiv: Um ${lastP.time || 'kürzlich'}`;
+                    activeStatusEl.classList.remove('hidden');
+                } else {
+                    activeStatusEl.classList.add('hidden');
+                }
+            }
+
             if(filtered.length === 0) {
                 container.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-6">Noch keine Nachrichten in diesem Chat. Schreib die erste Nachricht!</p>';
                 return;
             }
+
             filtered.forEach(m => {
                 const isMe = (m.sender === myName);
+                const isNewAndUnread = (!isMe && getMsgTime(m) > lastReadTime);
+
                 const div = document.createElement('div');
                 div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
                 
@@ -1679,12 +1768,15 @@
                     deleteBtnHtml = `<button onclick="deleteChatMessageForMe(${m.id})" class="text-[10px] text-red-400 hover:underline mt-0.5 cursor-pointer">Für mich löschen</button>`;
                 }
 
+                let highlightClass = isNewAndUnread ? 'unread-highlight border-2 border-brand-500 bg-brand-500/10' : '';
+
                 div.innerHTML = `
-                    <div class="max-w-[80%] rounded-2xl px-3.5 py-2 text-xs ${isMe ? 'bg-brand-500 text-slate-900 font-medium' : 'bg-slate-800 text-slate-200 border border-slate-700'}">
+                    <div class="max-w-[80%] rounded-2xl px-3.5 py-2 text-xs transition-all ${highlightClass} ${isMe ? 'bg-brand-500 text-slate-900 font-medium' : 'bg-slate-800 text-slate-200 border border-slate-700'}">
                         <span>${m.text}</span>
                     </div>
                     <div class="flex items-center space-x-2 mt-0.5 px-1">
                         <span class="text-[9px] text-slate-500">${m.time || ''}</span>
+                        ${isNewAndUnread ? '<span class="text-[9px] text-brand-400 font-bold">Neu</span>' : ''}
                         ${deleteBtnHtml}
                     </div>
                 `;
@@ -1701,8 +1793,8 @@
                 if(m.receiver !== myName) return false;
                 if(m.id && deletedMessageIds.includes(m.id)) return false;
                 const sender = m.sender;
-                if(!readChatsMap[sender]) return true;
-                return false;
+                const lastReadTime = readChatsMap[sender] || 0;
+                return getMsgTime(m) > lastReadTime;
             }).length;
 
             if(badge) {
@@ -1977,7 +2069,9 @@
                     else if(spot.status === 'baustelle') statusBadge = '<span class="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded font-bold">🟡 Baustelle</span>';
                     else statusBadge = '<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold">🟢 Frei zugänglich</span>';
 
-                    let ratingStars = '⭐'.repeat(spot.rating || 5);
+                    const ratingData = getSpotAverageRating(spot);
+
+                    let editedInfoHtml = spot.edited_by ? `<span class="text-[9px] text-slate-400 italic block">Geändert von ${spot.edited_by} am ${spot.edited_at || ''}</span>` : '';
 
                     let ownerButtonsHtml = '';
                     if (canModify(spot.author)) {
@@ -1994,12 +2088,13 @@
                             </div>
                             <div class="flex items-center space-x-1">
                                 <span class="inline-block text-[10px] bg-brand-500/15 text-brand-700 px-2 py-0.5 rounded font-semibold">${spot.category}</span>
-                                <span class="text-[10px]">${ratingStars}</span>
+                                <span class="text-[10px] text-amber-600 font-bold">${ratingData.stars} (${ratingData.avg})</span>
                             </div>
                             <div>${statusBadge}</div>
                             ${imgHtml}
                             <p class="text-xs text-slate-700">${spot.desc || ''}</p>
-                            <span class="text-[10px] text-slate-500 block">Von: <span onclick="openPublicProfile('${spot.author || 'Christian'}')" class="text-brand-600 font-bold underline cursor-pointer">${spot.author || 'Christian'}</span></span>
+                            <span class="text-[10px] text-slate-500 block">Erstellt von: <span onclick="openPublicProfile('${spot.author || 'Christian'}')" class="text-brand-600 font-bold underline cursor-pointer">${spot.author || 'Christian'}</span></span>
+                            ${editedInfoHtml}
                             <div class="pt-2 border-t border-slate-200 grid grid-cols-2 gap-1.5">
                                 ${ownerButtonsHtml}
                                 <button onclick="openSpotContributionModal(${spot.id})" class="bg-brand-500 hover:bg-brand-600 text-slate-900 text-[11px] py-1 px-1.5 rounded font-medium cursor-pointer text-center">Bericht erfassen</button>
@@ -2151,6 +2246,7 @@
 
             document.getElementById('contribModalTitle').textContent = 'Bericht bearbeiten';
             document.getElementById('contribText').value = contrib.text;
+            if (contrib.rating) document.getElementById('contribRating').value = contrib.rating;
             compressedContribImage = contrib.image || '';
 
             if(contrib.image) {
@@ -2181,15 +2277,17 @@
             }
             const textEl = document.getElementById('contribText');
             if(!textEl || !textEl.value) { alert('Bitte Text eingeben'); return; }
-            
+            const ratingVal = parseInt(document.getElementById('contribRating').value) || 5;
+
             if(editingContribSpotId && editingContribId) {
                 const spot = spots.find(s => s.id === editingContribSpotId);
                 const contrib = spot?.contributions.find(c => c.id === editingContribId);
                 if(contrib) {
                     contrib.text = textEl.value;
                     contrib.image = compressedContribImage;
+                    contrib.rating = ratingVal;
                     if(supabaseClient) {
-                        await supabaseClient.from('spot_contributions').update({ text: contrib.text, image: contrib.image }).eq('id', editingContribId);
+                        await supabaseClient.from('spot_contributions').update({ text: contrib.text, image: contrib.image, rating: contrib.rating }).eq('id', editingContribId);
                     }
                 }
             } else {
@@ -2201,6 +2299,7 @@
                         author: userProfile.name || 'Christian',
                         text: textEl.value,
                         image: compressedContribImage,
+                        rating: ratingVal,
                         time: 'Gerade eben'
                     };
                     if(supabaseClient) {
@@ -2301,7 +2400,7 @@
                 else if(spot.status === 'baustelle') statusBadge = '<span class="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded font-bold">🟡 Baustelle</span>';
                 else statusBadge = '<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold">🟢 Frei zugänglich</span>';
 
-                let ratingStars = '⭐'.repeat(spot.rating || 5);
+                const ratingData = getSpotAverageRating(spot);
 
                 let distText = '';
                 if(userCoords && spot.lat && spot.lng) {
@@ -2310,6 +2409,8 @@
                 }
 
                 let navBtnHtml = spot.lat && spot.lng ? `<div class="pt-2"><a href="https://www.google.com/maps/search/?api=1&query=${spot.lat},${spot.lng}" target="_blank" style="color: #ffffff !important;" class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-[11px] py-1.5 px-2 rounded font-medium text-center transition shadow">🧭 Da hin navigieren</a></div>` : '';
+
+                let editedInfoHtml = spot.edited_by ? `<span class="text-[10px] text-slate-400 italic block">Geändert von ${spot.edited_by} am ${spot.edited_at || ''}</span>` : '';
 
                 let contributionsHtml = `
                     <div id="contrib-section-${spot.id}" class="hidden mt-3 pt-3 border-t border-slate-700/50 space-y-2">
@@ -2330,10 +2431,12 @@
                             `;
                         }
 
+                        let cRating = c.rating ? `<span class="text-amber-400 font-bold ml-1">⭐ ${c.rating}/5</span>` : '';
+
                         contributionsHtml += `
                             <div class="bg-slate-900/65 p-2.5 rounded-xl border border-slate-700/50 text-xs space-y-1">
                                 <div class="flex justify-between items-center font-semibold text-slate-200">
-                                    <span><span onclick="openPublicProfile('${c.author}')" class="text-brand-400 underline cursor-pointer">${c.author}</span> <span class="text-[10px] text-slate-400 font-normal">(${c.time || ''})</span></span>
+                                    <span><span onclick="openPublicProfile('${c.author}')" class="text-brand-400 underline cursor-pointer">${c.author}</span> ${cRating} <span class="text-[10px] text-slate-400 font-normal">(${c.time || ''})</span></span>
                                     ${cActions}
                                 </div>
                                 <p class="text-slate-200">${c.text}</p>
@@ -2370,11 +2473,12 @@
                         </div>
                         <div class="flex items-center space-x-2">
                             ${statusBadge}
-                            <span class="text-xs">${ratingStars}</span>
+                            <span class="text-xs text-amber-400 font-bold">${ratingData.stars} (${ratingData.avg}/5 aus ${ratingData.count} Bewertungen)</span>
                         </div>
                         ${imgHtml}
                         <p class="text-xs text-slate-300 line-clamp-3">${spot.desc || ''}</p>
-                        <span class="text-[11px] text-slate-400 block">Von: <span onclick="openPublicProfile('${spot.author || 'Christian'}')" class="text-brand-400 font-semibold underline cursor-pointer">${spot.author || 'Christian'}</span></span>
+                        <span class="text-[11px] text-slate-400 block">Erstellt von: <span onclick="openPublicProfile('${spot.author || 'Christian'}')" class="text-brand-400 font-semibold underline cursor-pointer">${spot.author || 'Christian'}</span></span>
+                        ${editedInfoHtml}
                         ${tagsHtml}
                         ${navBtnHtml}
                         ${contributionsHtml}
@@ -2496,30 +2600,48 @@
             }
             const titleEl = document.getElementById('newSpotTitle');
             if(!titleEl || !titleEl.value) { alert('Bitte Titel angeben'); return; }
+            const ratingVal = parseInt(document.getElementById('newSpotRating').value) || 5;
+            const todayStr = new Date().toLocaleDateString('de-DE');
             
-            const spotData = {
-                title: titleEl.value,
-                category: document.getElementById('newSpotCategory').value,
-                status: document.getElementById('newSpotStatus').value,
-                rating: parseInt(document.getElementById('newSpotRating').value) || 5,
-                tags: document.getElementById('newSpotTags').value,
-                desc: document.getElementById('newSpotDesc').value,
-                lat: parseFloat(document.getElementById('newSpotLat').value) || (map ? map.getCenter().lat : 46.61),
-                lng: parseFloat(document.getElementById('newSpotLng').value) || (map ? map.getCenter().lng : 14.30),
-                author: userProfile.name || 'Christian',
-                image: compressedSpotImage
-            };
-
             if(editingSpotId) {
+                const existingSpot = spots.find(s => s.id === editingSpotId);
+                const originalAuthor = existingSpot ? existingSpot.author : (userProfile.name || 'Christian');
+
+                const updateData = {
+                    title: titleEl.value,
+                    category: document.getElementById('newSpotCategory').value,
+                    status: document.getElementById('newSpotStatus').value,
+                    tags: document.getElementById('newSpotTags').value,
+                    desc: document.getElementById('newSpotDesc').value,
+                    lat: parseFloat(document.getElementById('newSpotLat').value) || (map ? map.getCenter().lat : 46.61),
+                    lng: parseFloat(document.getElementById('newSpotLng').value) || (map ? map.getCenter().lng : 14.30),
+                    image: compressedSpotImage,
+                    edited_by: userProfile.name || 'Christian',
+                    edited_at: todayStr
+                };
+
                 if(supabaseClient) {
-                    await supabaseClient.from('spots').update(spotData).eq('id', editingSpotId);
+                    await supabaseClient.from('spots').update(updateData).eq('id', editingSpotId);
                 } else {
-                    const spot = spots.find(s => s.id === editingSpotId);
-                    if(spot) Object.assign(spot, spotData);
+                    if(existingSpot) Object.assign(existingSpot, updateData);
                     localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
                 }
                 editingSpotId = null;
             } else {
+                const spotData = {
+                    title: titleEl.value,
+                    category: document.getElementById('newSpotCategory').value,
+                    status: document.getElementById('newSpotStatus').value,
+                    rating: ratingVal,
+                    ratings_list: [ratingVal],
+                    tags: document.getElementById('newSpotTags').value,
+                    desc: document.getElementById('newSpotDesc').value,
+                    lat: parseFloat(document.getElementById('newSpotLat').value) || (map ? map.getCenter().lat : 46.61),
+                    lng: parseFloat(document.getElementById('newSpotLng').value) || (map ? map.getCenter().lng : 14.30),
+                    author: userProfile.name || 'Christian',
+                    image: compressedSpotImage
+                };
+
                 if(supabaseClient) {
                     await supabaseClient.from('spots').insert([spotData]);
                 } else {
@@ -2618,10 +2740,7 @@
                 category: category,
                 title: titleEl.value,
                 contact: document.getElementById('marketContact').value,
-                desc: document.getElementById('marketDesc').value,
-                author: userProfile.name || 'Christian',
-                completed: false,
-                completed_at: null
+                desc: document.getElementById('marketDesc').value
             };
 
             if(category === 'shooting') {
@@ -2644,6 +2763,10 @@
                 }
                 editingMarketId = null;
             } else {
+                itemData.author = userProfile.name || 'Christian';
+                itemData.completed = false;
+                itemData.completed_at = null;
+
                 if(supabaseClient) {
                     await supabaseClient.from('market_items').insert([itemData]);
                 } else {
