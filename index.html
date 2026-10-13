@@ -998,6 +998,34 @@
             return { avg, count: ratings.length, stars };
         }
 
+        async function submitDirectSpotRating(spotId, ratingValue) {
+            if(!currentUserEmail) {
+                alert('Bitte melde dich an, um eine Bewertung abzugeben.');
+                return;
+            }
+            const spot = spots.find(s => s.id === spotId);
+            if(!spot) return;
+
+            if(!spot.ratings_list) spot.ratings_list = [];
+            spot.ratings_list.push(ratingValue);
+
+            if(supabaseClient) {
+                try {
+                    await supabaseClient.from('spots').update({ 
+                        ratings_list: spot.ratings_list 
+                    }).eq('id', spotId);
+                } catch(e) {
+                    console.warn("Rating update error:", e);
+                }
+            } else {
+                localStorage.setItem('lensconnect_spots', JSON.stringify(spots));
+            }
+
+            renderSpots();
+            plotMapMarkers();
+            alert('Vielen Dank für deine Bewertung!');
+        }
+
         async function loadDataFromSupabase() {
             if (supabaseClient) {
                 try {
@@ -2232,6 +2260,16 @@
                             <p class="text-xs text-slate-700">${spot.desc || ''}</p>
                             <span class="text-[10px] text-slate-500 block">Erstellt von: <span onclick="openPublicProfile('${spot.author || 'Christian'}')" class="text-brand-600 font-bold underline cursor-pointer">${spot.author || 'Christian'}</span></span>
                             ${editedInfoHtml}
+                            <div class="bg-slate-100 p-2 rounded-lg border border-slate-200 space-y-1">
+                                <span class="text-[11px] font-bold text-slate-800 block">Sterne vergeben:</span>
+                                <div class="flex justify-between">
+                                    <button onclick="submitDirectSpotRating(${spot.id}, 1)" class="text-sm hover:scale-125 transition">⭐</button>
+                                    <button onclick="submitDirectSpotRating(${spot.id}, 2)" class="text-sm hover:scale-125 transition">⭐⭐</button>
+                                    <button onclick="submitDirectSpotRating(${spot.id}, 3)" class="text-sm hover:scale-125 transition">⭐⭐⭐</button>
+                                    <button onclick="submitDirectSpotRating(${spot.id}, 4)" class="text-sm hover:scale-125 transition">⭐⭐⭐⭐</button>
+                                    <button onclick="submitDirectSpotRating(${spot.id}, 5)" class="text-sm hover:scale-125 transition">⭐⭐⭐⭐⭐</button>
+                                </div>
+                            </div>
                             <div class="pt-2 border-t border-slate-200 grid grid-cols-2 gap-1.5">
                                 ${ownerButtonsHtml}
                                 <button onclick="openSpotContributionModal(${spot.id})" class="bg-brand-500 hover:bg-brand-600 text-slate-900 text-[11px] py-1 px-1.5 rounded font-medium cursor-pointer text-center">Bericht erfassen</button>
@@ -2620,6 +2658,16 @@
                             ${statusBadge}
                             ${familyBadge}
                             <span class="text-xs text-amber-400 font-bold">${ratingData.stars} (${ratingData.avg}/5 aus ${ratingData.count} Bewertungen)</span>
+                        </div>
+                        <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/50 space-y-1">
+                            <span class="text-xs font-bold text-white block">Sterne vergeben:</span>
+                            <div class="flex justify-between items-center text-sm px-1">
+                                <button onclick="submitDirectSpotRating(${spot.id}, 1)" class="hover:scale-125 transition">⭐</button>
+                                <button onclick="submitDirectSpotRating(${spot.id}, 2)" class="hover:scale-125 transition">⭐⭐</button>
+                                <button onclick="submitDirectSpotRating(${spot.id}, 3)" class="hover:scale-125 transition">⭐⭐⭐</button>
+                                <button onclick="submitDirectSpotRating(${spot.id}, 4)" class="hover:scale-125 transition">⭐⭐⭐⭐</button>
+                                <button onclick="submitDirectSpotRating(${spot.id}, 5)" class="hover:scale-125 transition">⭐⭐⭐⭐⭐</button>
+                            </div>
                         </div>
                         ${imgHtml}
                         <p class="text-xs text-slate-300 line-clamp-3">${spot.desc || ''}</p>
