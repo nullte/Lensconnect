@@ -173,10 +173,10 @@
                         <span>Willkommen bei LensConnect</span>
                     </div>
                     <h1 class="text-3xl lg:text-5xl font-extrabold text-white tracking-tight">
-                        Die Community-Plattform für <span class="bg-gradient-to-r from-brand-400 to-emerald-200 bg-clip-text text-transparent">Fotografen & Models</span>
+                        Die Community-Plattform für <span class="bg-gradient-to-r from-brand-400 to-emerald-200 bg-clip-text text-transparent">Fotografen, Models & Familien</span>
                     </h1>
                     <p class="text-slate-200 text-base lg:text-lg leading-relaxed">
-                        LensConnect ist dein zentraler Hub, um versteckte Fotospots zu entdecken, sich auf dem Marktplatz für Shootings und Studios zu vernetzen und Foto-Projekte in der Community zu teilen.
+                        LensConnect ist dein zentraler Hub, um versteckte Fotospots zu entdecken, sich auf dem Marktplatz für Shootings, Familienfotos und Studios zu vernetzen und Foto-Projekte in der Community zu teilen.
                     </p>
                     <div class="flex flex-wrap gap-4 pt-2">
                         <button onclick="switchView('map')" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold px-6 py-3 rounded-2xl text-sm flex items-center space-x-2 shadow-lg shadow-brand-500/20 transition cursor-pointer">
@@ -203,7 +203,7 @@
                             </p>
                         </div>
                         <div class="pt-4 border-t border-slate-700 text-xs text-slate-300">
-                            Gemeinsam erschaffen wir das beste Tool für Fotografen & Models.
+                            Gemeinsam erschaffen wir das beste Tool für Fotografen, Models & Familien.
                         </div>
                     </div>
 
@@ -214,7 +214,7 @@
                             </div>
                             <h3 class="text-xl font-bold text-white">Fotografen & Programmierer gesucht</h3>
                             <p class="text-slate-200 text-sm leading-relaxed">
-                                Wir suchen vor allem engagierte <strong>Fotografen & Models</strong> für wertvollen Content sowie <strong>Programmierer / Entwickler</strong>, die Lust haben, an der Codebasis mitzuwirken und die App weiterzuentwickeln.
+                                Wir suchen vor allem engagierte <strong>Fotografen, Models & Familien</strong> für wertvollen Content sowie <strong>Programmierer / Entwickler</strong>, die Lust haben, an der Codebasis mitzuwirken und die App weiterzuentwickeln.
                             </p>
                         </div>
                         <div class="pt-4 border-t border-slate-700 text-xs text-slate-300">
@@ -299,6 +299,7 @@
                             <button onclick="setCategoryFilter('Urbex / Lost Place')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Lost Place</button>
                             <button onclick="setCategoryFilter('Architektur')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Architektur</button>
                             <button onclick="setCategoryFilter('Porträt')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Porträt</button>
+                            <button onclick="setCategoryFilter('familienfreundlich')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-brand-400 hover:bg-slate-700 transition cursor-pointer flex items-center space-x-1"><i data-lucide="baby" class="w-3.5 h-3.5"></i><span>👶 Familienfreundlich</span></button>
                             <button onclick="setCategoryFilter('favorites')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-brand-400 hover:bg-slate-700 transition cursor-pointer flex items-center space-x-1"><i data-lucide="heart" class="w-3.5 h-3.5"></i><span>Favoriten</span></button>
                         </div>
                     </div>
@@ -314,7 +315,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-700">
                     <div>
                         <h1 class="text-2xl font-bold text-white">Community Marktplatz</h1>
-                        <p class="text-sm text-slate-400">Fotoshootings, Profi-Studios, Heim-Studios & Locations.</p>
+                        <p class="text-sm text-slate-400">Fotoshootings, Familien-Shootings, Profi-Studios & Locations.</p>
                     </div>
                     <button onclick="openNewMarketModal()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-medium px-4 py-2 rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow-lg shadow-brand-500/10 cursor-pointer">
                         <i data-lucide="plus-circle" class="w-4 h-4"></i>
@@ -327,6 +328,7 @@
                     <button onclick="filterMarket('biete')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Biete</button>
                     <button onclick="filterMarket('suche')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Suche</button>
                     <button onclick="filterMarket('shooting')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Fotoshootings</button>
+                    <button onclick="filterMarket('familie')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">👶 Familie & Lifestyle</button>
                     <button onclick="filterMarket('location')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Locations / Studios</button>
                     <button onclick="filterMarket('favorites')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-brand-400 hover:bg-slate-700 text-xs transition cursor-pointer flex items-center space-x-1"><i data-lucide="heart" class="w-3.5 h-3.5"></i><span>Merkliste</span></button>
                 </div>
@@ -340,18 +342,18 @@
             <div class="max-w-4xl mx-auto w-full space-y-6">
                 <div>
                     <h1 class="text-2xl font-bold text-white">Community Feed & Gruppen</h1>
-                    <p class="text-sm text-slate-400">Tausche dich mit Fotografen & Models aus.</p>
+                    <p class="text-sm text-slate-400">Tausche dich mit Fotografen, Models & Familien aus.</p>
                 </div>
 
                 <!-- Profile Search & Member Directory -->
                 <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
                     <h3 class="text-base font-bold text-white flex items-center space-x-2">
                         <i data-lucide="search" class="w-4 h-4 text-brand-400"></i>
-                        <span>Fotografen & Models suchen</span>
+                        <span>Fotografen, Models & Familien suchen</span>
                     </h3>
                     <div class="relative">
                         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
-                        <input type="text" id="communityProfileSearchInput" oninput="renderCommunityProfiles()" placeholder="Suche nach Name, Rolle (Fotograf/Model), Bio..." class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-brand-500">
+                        <input type="text" id="communityProfileSearchInput" oninput="renderCommunityProfiles()" placeholder="Suche nach Name, Rolle, Genres, Bio..." class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-brand-500">
                     </div>
                     <div id="communityProfilesGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 max-h-60 overflow-y-auto"></div>
                 </div>
@@ -391,6 +393,10 @@
                         <option value="gesperrt">🔴 Gesperrt / Privatgrund</option>
                     </select>
                 </div>
+                <label class="flex items-center space-x-2 text-xs text-slate-300 cursor-pointer bg-slate-800 border border-slate-700 rounded-xl px-3 py-2">
+                    <input type="checkbox" id="newSpotFamily" class="rounded bg-slate-900 border-slate-700 text-brand-500 cursor-pointer">
+                    <span>👶 Familien- & kinderfreundlich (Sicher, kinderwagengeeignet)</span>
+                </label>
                 <div class="flex items-center space-x-2 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2">
                     <span class="text-xs text-slate-400">Deine Bewertung für diesen Spot:</span>
                     <select id="newSpotRating" class="bg-slate-900 text-brand-400 border border-slate-700 rounded px-2 py-1 text-xs">
@@ -401,7 +407,7 @@
                         <option value="1">⭐★★★★ (1 Stern)</option>
                     </select>
                 </div>
-                <input type="text" id="newSpotTags" placeholder="Tags (kommagetrennt, z.B. Drohne, Nachtfotografie, Indoor)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
+                <input type="text" id="newSpotTags" placeholder="Tags (kommagetrennt, z.B. Drohne, Familie, Natur)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
                 <textarea id="newSpotDesc" placeholder="Kurze Beschreibung..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-20 resize-none focus:outline-none focus:border-brand-500"></textarea>
                 
                 <div>
@@ -446,7 +452,7 @@
                         <option value="1">⭐★★★★ (1 Stern)</option>
                     </select>
                 </div>
-                <textarea id="contribText" placeholder="Teile Bedingungen, Uhrzeiten, Licht-Tipps oder Fotos zu diesem Spot..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-28 resize-none focus:outline-none focus:border-brand-500"></textarea>
+                <textarea id="contribText" placeholder="Teile Bedingungen, Uhrzeiten, Familienfreundlichkeit oder Licht-Tipps zu diesem Spot..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-28 resize-none focus:outline-none focus:border-brand-500"></textarea>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Foto hinzufügen (optional)</label>
                     <input type="file" id="contribImageFile" accept="image/*" onchange="handleContribImageUpload(event)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-300 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-500 file:text-slate-900 hover:file:bg-brand-600 cursor-pointer">
@@ -482,23 +488,25 @@
                     <label class="block text-xs text-slate-400 mb-1">2. Ebene: Kategorie</label>
                     <select id="marketCategory" onchange="onMarketCategoryChange()" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
                         <option value="shooting">Fotoshooting</option>
+                        <option value="familie">👶 Familie & Lifestyle Shooting</option>
                         <option value="location">Location / Studio</option>
                     </select>
                 </div>
 
-                <input type="text" id="marketTitle" placeholder="Titel (z.B. Outdoor Shooting)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                <input type="text" id="marketTitle" placeholder="Titel (z.B. Familien-Shooting im Herbst)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
 
                 <div id="shootingFields" class="space-y-3 p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
                     <div>
-                        <label class="block text-xs text-slate-400 mb-1">Level</label>
+                        <label class="block text-xs text-slate-400 mb-1">Level / Art</label>
                         <select id="marketShootingLevel" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
                             <option value="Profi">Profi</option>
                             <option value="Amateur">Amateur</option>
+                            <option value="Familienfotograf">Familienfotograf</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs text-slate-400 mb-1">Preisvorstellung</label>
-                        <input type="text" id="marketPrice" placeholder="z.B. TFP oder 50€ / Stunde" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                        <label class="block text-xs text-slate-400 mb-1">Preisvorstellung / Paket</label>
+                        <input type="text" id="marketPrice" placeholder="z.B. Pauschal 120€ inkl. 10 Bilder oder TFP" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
                     </div>
                 </div>
 
@@ -574,9 +582,18 @@
                         <select id="profileRoleInput" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
                             <option value="Fotograf">Fotograf</option>
                             <option value="Model">Model</option>
+                            <option value="Familie / Shooting-Suchender">Familie / Shooting-Suchender</option>
                             <option value="Beides">Beides (Fotograf & Model)</option>
                         </select>
                     </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Genres / Schwerpunkte (z.B. Fashion, Familie, Portrait)</label>
+                        <input type="text" id="profileGenresInput" placeholder="z.B. Familie, Newborn, Outdoor-Portraits" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                    </div>
+                    <label class="flex items-center space-x-2 text-xs text-slate-300 cursor-pointer bg-slate-800 border border-slate-700 rounded-xl px-3 py-2">
+                        <input type="checkbox" id="profileCompanionInput" class="rounded bg-slate-900 border-slate-700 text-brand-500 cursor-pointer">
+                        <span>🤝 Begleitperson bei Shootings willkommen / Safe Shooting</span>
+                    </label>
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Über mich / Bio</label>
                         <textarea id="profileBioInput" placeholder="Kurze Beschreibung über dich und deine Fotografie..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-20 resize-none"></textarea>
@@ -621,6 +638,7 @@
                 <button onclick="closePublicProfileModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="space-y-4 pt-2">
+                <div id="pubProfileMetaBadge" class="hidden flex flex-wrap gap-2"></div>
                 <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50 space-y-1">
                     <span class="text-[11px] font-bold text-slate-400 block">Über mich</span>
                     <p id="pubProfileBio" class="text-xs text-slate-300 italic">Keine Beschreibung hinterlegt.</p>
@@ -798,7 +816,7 @@
         let deletedMessageIds = JSON.parse(localStorage.getItem('lensconnect_deleted_msgs')) || [];
         let readChatsMap = JSON.parse(localStorage.getItem('lensconnect_read_chats')) || {};
         let userProfilesMap = {}; 
-        let userProfile = JSON.parse(localStorage.getItem('lensconnect_user')) || { name: 'Christian', nameLocked: false, role: 'Fotograf', bio: '', social: '', email: '', avatar: '', portfolio: [] };
+        let userProfile = JSON.parse(localStorage.getItem('lensconnect_user')) || { name: 'Christian', nameLocked: false, role: 'Fotograf', genres: '', companionWelcome: false, bio: '', social: '', email: '', avatar: '', portfolio: [] };
         let currentUserEmail = null;
         let isAdmin = false;
 
@@ -896,7 +914,6 @@
             return R * c;
         }
 
-        // Hilfsfunktion: Berechnet die Durchschnittsbewertung eines Spots
         function getSpotAverageRating(spot) {
             const ratings = [];
             if (typeof spot.rating === 'number' && spot.rating > 0) {
@@ -945,6 +962,7 @@
                             desc: s.desc,
                             contributions: s.spot_contributions || [],
                             status: s.status || 'frei',
+                            family_friendly: s.family_friendly || false,
                             rating: s.rating || 5,
                             edited_by: s.edited_by || null,
                             edited_at: s.edited_at || null,
@@ -997,6 +1015,8 @@
             if(data) {
                 userProfile.name = data.username || userProfile.name;
                 userProfile.role = data.role || userProfile.role;
+                userProfile.genres = data.genres || userProfile.genres || '';
+                userProfile.companionWelcome = data.companion_welcome || userProfile.companionWelcome || false;
                 userProfile.bio = data.bio || userProfile.bio;
                 userProfile.social = data.social || userProfile.social;
                 userProfile.email = data.email || currentUserEmail || '';
@@ -1025,6 +1045,7 @@
                         desc: s.desc,
                         contributions: s.spot_contributions || [],
                         status: s.status || 'frei',
+                        family_friendly: s.family_friendly || false,
                         rating: s.rating || 5,
                         edited_by: s.edited_by || null,
                         edited_at: s.edited_at || null,
@@ -1059,12 +1080,12 @@
 
         function loadLocalFallback() {
             spots = JSON.parse(localStorage.getItem('lensconnect_spots')) || [
-                { id: 1, title: 'Burgruine Landskron', category: 'Urbex / Lost Place', status: 'frei', rating: 5, tags: 'Ruine, Aussicht, Drohne', lat: 46.621, lng: 13.904, desc: 'Toller Ausblick über den Villacher Raum, perfekt bei Sonnenuntergang.', author: 'Christian', image: '', contributions: [], ratings_list: [5, 4] },
-                { id: 2, title: 'Wörthersee Ostbucht', category: 'Landschaft', status: 'frei', rating: 4, tags: 'See, Spiegelung, Nachtfotografie', lat: 46.622, lng: 14.286, desc: 'Spiegelungen und Stege zur blauen Stunde.', author: 'Christian', image: '', contributions: [], ratings_list: [4] }
+                { id: 1, title: 'Burgruine Landskron', category: 'Urbex / Lost Place', status: 'frei', family_friendly: false, rating: 5, tags: 'Ruine, Aussicht, Drohne', lat: 46.621, lng: 13.904, desc: 'Toller Ausblick über den Villacher Raum, perfekt bei Sonnenuntergang.', author: 'Christian', image: '', contributions: [], ratings_list: [5, 4] },
+                { id: 2, title: 'Wörthersee Ostbucht', category: 'Landschaft', status: 'frei', family_friendly: true, rating: 4, tags: 'See, Spiegelung, Familie', lat: 46.622, lng: 14.286, desc: 'Spiegelungen und Stege zur blauen Stunde. Ideal auch mit Kindern.', author: 'Christian', image: '', contributions: [], ratings_list: [4] }
             ];
             marketItems = JSON.parse(localStorage.getItem('lensconnect_market')) || [
                 { id: 1, type: 'biete', category: 'shooting', title: 'Porträt-Shooting am See', level: 'Profi', price: 'TFP oder Spende', contact: 'christian@example.com', desc: 'Suche Model für ein entspanntes Outdoor-Shooting.', author: 'Christian' },
-                { id: 2, type: 'biete', category: 'location', title: 'Heim-Studio mit Blitzanlage', locationType: 'Heim Studio', contact: '+43 660 1234567', desc: 'Voll ausgestattetes kleines Studio im Keller.', author: 'Christian' }
+                { id: 2, type: 'biete', category: 'familie', title: 'Familienshooting in der Natur', level: 'Familienfotograf', price: '99€ inkl. 5 bearbeitete Bilder', contact: 'christian@example.com', desc: 'Natürliche Familienaufnahmen im Grünen.', author: 'Christian' }
             ];
             communityPosts = JSON.parse(localStorage.getItem('lensconnect_posts')) || [
                 { id: 1, author: 'Christian', text: 'Erster Test mit der analogen Kamera und Kodak Portra 400. Die Farben sind einfach genial!', time: 'Vor 2 Stunden' }
@@ -1219,6 +1240,8 @@
             const initialsEl = document.getElementById('userAvatarInitials');
             const inputEl = document.getElementById('profileNameInput');
             const roleEl = document.getElementById('profileRoleInput');
+            const genresEl = document.getElementById('profileGenresInput');
+            const companionEl = document.getElementById('profileCompanionInput');
             const bioEl = document.getElementById('profileBioInput');
             const socialEl = document.getElementById('profileSocialInput');
             
@@ -1236,6 +1259,8 @@
                     inputEl.value = userProfile.name || '';
                 }
                 if(roleEl) roleEl.value = userProfile.role || 'Fotograf';
+                if(genresEl) genresEl.value = userProfile.genres || '';
+                if(companionEl) companionEl.checked = userProfile.companionWelcome || false;
                 if(bioEl) bioEl.value = userProfile.bio || '';
                 if(socialEl) socialEl.value = userProfile.social || '';
             } else {
@@ -1258,6 +1283,8 @@
                     }
                 }
                 if(roleEl) roleEl.value = userProfile.role || 'Fotograf';
+                if(genresEl) genresEl.value = userProfile.genres || '';
+                if(companionEl) companionEl.checked = userProfile.companionWelcome || false;
                 if(bioEl) bioEl.value = userProfile.bio || '';
                 if(socialEl) socialEl.value = userProfile.social || '';
             }
@@ -1389,6 +1416,12 @@
             const roleInput = document.getElementById('profileRoleInput');
             if(roleInput) userProfile.role = roleInput.value;
 
+            const genresInput = document.getElementById('profileGenresInput');
+            if(genresInput) userProfile.genres = genresInput.value.trim();
+
+            const companionInput = document.getElementById('profileCompanionInput');
+            if(companionInput) userProfile.companionWelcome = companionInput.checked;
+
             const bioInput = document.getElementById('profileBioInput');
             if(bioInput) userProfile.bio = bioInput.value.trim();
 
@@ -1411,6 +1444,8 @@
                             id: user.id,
                             username: userProfile.name,
                             role: userProfile.role,
+                            genres: userProfile.genres,
+                            companion_welcome: userProfile.companionWelcome,
                             bio: userProfile.bio,
                             social: userProfile.social,
                             email: user.email,
@@ -1437,6 +1472,8 @@
                 usersMap[userProfile.name.toLowerCase()] = {
                     username: userProfile.name,
                     role: userProfile.role || 'Fotograf',
+                    genres: userProfile.genres || '',
+                    companionWelcome: userProfile.companionWelcome || false,
                     bio: userProfile.bio || '',
                     avatar: userProfile.avatar || ''
                 };
@@ -1446,6 +1483,8 @@
                     usersMap[p.username.toLowerCase()] = {
                         username: p.username,
                         role: p.role || 'Fotograf',
+                        genres: p.genres || '',
+                        companionWelcome: p.companion_welcome || false,
                         bio: p.bio || '',
                         avatar: p.avatar || ''
                     };
@@ -1453,17 +1492,17 @@
             });
             spots.forEach(s => {
                 if(s.author && !usersMap[s.author.toLowerCase()]) {
-                    usersMap[s.author.toLowerCase()] = { username: s.author, role: 'Fotograf', bio: '', avatar: '' };
+                    usersMap[s.author.toLowerCase()] = { username: s.author, role: 'Fotograf', genres: '', companionWelcome: false, bio: '', avatar: '' };
                 }
             });
             marketItems.forEach(m => {
                 if(m.author && !usersMap[m.author.toLowerCase()]) {
-                    usersMap[m.author.toLowerCase()] = { username: m.author, role: 'Fotograf', bio: '', avatar: '' };
+                    usersMap[m.author.toLowerCase()] = { username: m.author, role: 'Fotograf', genres: '', companionWelcome: false, bio: '', avatar: '' };
                 }
             });
             communityPosts.forEach(p => {
                 if(p.author && !usersMap[p.author.toLowerCase()]) {
-                    usersMap[p.author.toLowerCase()] = { username: p.author, role: 'Fotograf', bio: '', avatar: '' };
+                    usersMap[p.author.toLowerCase()] = { username: p.author, role: 'Fotograf', genres: '', companionWelcome: false, bio: '', avatar: '' };
                 }
             });
 
@@ -1471,6 +1510,7 @@
                 if(!query) return true;
                 return u.username.toLowerCase().includes(query) || 
                        u.role.toLowerCase().includes(query) || 
+                       (u.genres && u.genres.toLowerCase().includes(query)) ||
                        u.bio.toLowerCase().includes(query);
             });
 
@@ -1493,13 +1533,20 @@
                     avatarHtml = `<div class="w-10 h-10 rounded-full bg-brand-500/20 text-brand-400 font-bold text-xs flex items-center justify-center shrink-0">${initials}</div>`;
                 }
 
+                let badgesHtml = `<span class="text-[10px] text-brand-400 font-medium block">${u.role}</span>`;
+                if(u.genres) {
+                    badgesHtml += `<span class="text-[9px] text-slate-300 block">🎨 ${u.genres}</span>`;
+                }
+                if(u.companionWelcome) {
+                    badgesHtml += `<span class="text-[9px] text-emerald-400 font-semibold block">🤝 Begleitperson willkommen</span>`;
+                }
+
                 div.innerHTML = `
                     <div class="flex items-center space-x-3 overflow-hidden">
                         ${avatarHtml}
                         <div class="overflow-hidden">
                             <h4 class="text-xs font-bold text-white truncate">${u.username}</h4>
-                            <span class="text-[10px] text-brand-400 font-medium block">${u.role}</span>
-                            ${u.bio ? `<p class="text-[10px] text-slate-400 truncate">${u.bio}</p>` : ''}
+                            ${badgesHtml}
                         </div>
                     </div>
                     <span class="text-xs text-brand-400 underline shrink-0 ml-2">Profil</span>
@@ -1810,6 +1857,8 @@
             const profile = (authorName === userProfile.name) ? userProfile : (userProfilesMap[authorName] || {
                 username: authorName,
                 role: 'Fotograf',
+                genres: '',
+                companionWelcome: false,
                 bio: 'Keine Beschreibung hinterlegt.',
                 social: '',
                 email: '',
@@ -1820,6 +1869,22 @@
             document.getElementById('pubProfileName').textContent = profile.username || authorName;
             document.getElementById('pubProfileRole').textContent = profile.role || 'Fotograf';
             
+            const metaBadgeEl = document.getElementById('pubProfileMetaBadge');
+            let metaHtml = '';
+            const userGenres = profile.genres || profile.genres_str;
+            if(userGenres) {
+                metaHtml += `<span class="text-[11px] bg-brand-500/15 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/30 font-medium">🎨 Schwerpunkte: ${userGenres}</span>`;
+            }
+            if(profile.companionWelcome || profile.companion_welcome) {
+                metaHtml += `<span class="text-[11px] bg-emerald-500/15 text-emerald-400 px-2.5 py-1 rounded-lg border border-emerald-500/30 font-semibold">🤝 Begleitperson willkommen</span>`;
+            }
+            if(metaHtml) {
+                metaBadgeEl.innerHTML = metaHtml;
+                metaBadgeEl.classList.remove('hidden');
+            } else {
+                metaBadgeEl.classList.add('hidden');
+            }
+
             const avatarEl = document.getElementById('pubProfileAvatar');
             if(profile.avatar) {
                 avatarEl.innerHTML = `<img src="${profile.avatar}" class="w-full h-full object-cover">`;
@@ -2069,6 +2134,8 @@
                     else if(spot.status === 'baustelle') statusBadge = '<span class="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded font-bold">🟡 Baustelle</span>';
                     else statusBadge = '<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold">🟢 Frei zugänglich</span>';
 
+                    let familyBadge = spot.family_friendly ? '<span class="text-[10px] bg-brand-500/20 text-brand-400 px-2 py-0.5 rounded font-bold">👶 Familienfreundlich</span>' : '';
+
                     const ratingData = getSpotAverageRating(spot);
 
                     let editedInfoHtml = spot.edited_by ? `<span class="text-[9px] text-slate-400 italic block">Geändert von ${spot.edited_by} am ${spot.edited_at || ''}</span>` : '';
@@ -2086,9 +2153,10 @@
                             <div class="flex justify-between items-start">
                                 <b class="text-sm text-slate-900">${spot.title}</b>
                             </div>
-                            <div class="flex items-center space-x-1">
+                            <div class="flex flex-wrap items-center gap-1">
                                 <span class="inline-block text-[10px] bg-brand-500/15 text-brand-700 px-2 py-0.5 rounded font-semibold">${spot.category}</span>
                                 <span class="text-[10px] text-amber-600 font-bold">${ratingData.stars} (${ratingData.avg})</span>
+                                ${familyBadge}
                             </div>
                             <div>${statusBadge}</div>
                             ${imgHtml}
@@ -2374,6 +2442,8 @@
             spots.forEach(spot => {
                 if(currentCategoryFilter === 'favorites') {
                     if(!favorites.spots.includes(spot.id)) return;
+                } else if(currentCategoryFilter === 'familienfreundlich') {
+                    if(!spot.family_friendly) return;
                 } else if(currentCategoryFilter !== 'all' && spot.category !== currentCategoryFilter) {
                     return;
                 }
@@ -2399,6 +2469,8 @@
                 if(spot.status === 'gesperrt') statusBadge = '<span class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded font-bold">🔴 Gesperrt / Privatgrund</span>';
                 else if(spot.status === 'baustelle') statusBadge = '<span class="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded font-bold">🟡 Baustelle</span>';
                 else statusBadge = '<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold">🟢 Frei zugänglich</span>';
+
+                let familyBadge = spot.family_friendly ? '<span class="text-[10px] bg-brand-500/20 text-brand-400 px-2 py-0.5 rounded font-bold">👶 Familienfreundlich</span>' : '';
 
                 const ratingData = getSpotAverageRating(spot);
 
@@ -2471,8 +2543,9 @@
                                 ${distText}
                             </div>
                         </div>
-                        <div class="flex items-center space-x-2">
+                        <div class="flex flex-wrap items-center gap-2">
                             ${statusBadge}
+                            ${familyBadge}
                             <span class="text-xs text-amber-400 font-bold">${ratingData.stars} (${ratingData.avg}/5 aus ${ratingData.count} Bewertungen)</span>
                         </div>
                         ${imgHtml}
@@ -2511,6 +2584,7 @@
                 const text = btn.textContent.trim().toLowerCase();
                 let match = false;
                 if(cat === 'favorites' && text.includes('favoriten')) match = true;
+                else if(cat === 'familienfreundlich' && text.includes('familienfreundlich')) match = true;
                 else if(text === cat.toLowerCase() || (cat === 'all' && text === 'alle')) match = true;
 
                 if(match) {
@@ -2538,6 +2612,7 @@
             document.getElementById('newSpotTags').value = '';
             document.getElementById('newSpotDesc').value = '';
             document.getElementById('newSpotStatus').value = 'frei';
+            document.getElementById('newSpotFamily').checked = false;
             document.getElementById('newSpotRating').value = '5';
             const fileInput = document.getElementById('newSpotImageFile');
             if(fileInput) fileInput.value = '';
@@ -2565,6 +2640,7 @@
             document.getElementById('newSpotTitle').value = spot.title;
             document.getElementById('newSpotCategory').value = spot.category;
             document.getElementById('newSpotStatus').value = spot.status || 'frei';
+            document.getElementById('newSpotFamily').checked = spot.family_friendly || false;
             document.getElementById('newSpotRating').value = spot.rating || '5';
             document.getElementById('newSpotTags').value = spot.tags || '';
             document.getElementById('newSpotDesc').value = spot.desc || '';
@@ -2611,6 +2687,7 @@
                     title: titleEl.value,
                     category: document.getElementById('newSpotCategory').value,
                     status: document.getElementById('newSpotStatus').value,
+                    family_friendly: document.getElementById('newSpotFamily').checked,
                     tags: document.getElementById('newSpotTags').value,
                     desc: document.getElementById('newSpotDesc').value,
                     lat: parseFloat(document.getElementById('newSpotLat').value) || (map ? map.getCenter().lat : 46.61),
@@ -2632,6 +2709,7 @@
                     title: titleEl.value,
                     category: document.getElementById('newSpotCategory').value,
                     status: document.getElementById('newSpotStatus').value,
+                    family_friendly: document.getElementById('newSpotFamily').checked,
                     rating: ratingVal,
                     ratings_list: [ratingVal],
                     tags: document.getElementById('newSpotTags').value,
@@ -2665,7 +2743,7 @@
             const cat = document.getElementById('marketCategory').value;
             const shootingF = document.getElementById('shootingFields');
             const locF = document.getElementById('locationFields');
-            if(cat === 'shooting') {
+            if(cat === 'shooting' || cat === 'familie') {
                 if(shootingF) shootingF.classList.remove('hidden');
                 if(locF) locF.classList.add('hidden');
             } else {
@@ -2710,7 +2788,7 @@
             document.getElementById('marketTitle').value = item.title;
             document.getElementById('marketContact').value = item.contact || '';
             document.getElementById('marketDesc').value = item.desc || '';
-            if(item.category === 'shooting') {
+            if(item.category === 'shooting' || item.category === 'familie') {
                 document.getElementById('marketShootingLevel').value = item.level || 'Profi';
                 document.getElementById('marketPrice').value = item.price || '';
             } else {
@@ -2743,7 +2821,7 @@
                 desc: document.getElementById('marketDesc').value
             };
 
-            if(category === 'shooting') {
+            if(category === 'shooting' || category === 'familie') {
                 itemData.level = document.getElementById('marketShootingLevel').value;
                 itemData.price = document.getElementById('marketPrice').value || 'TFP';
                 itemData.location_type = null;
@@ -2830,7 +2908,8 @@
                 else if(filter === 'all' && (text.includes('alle') || text.includes('anzeigen'))) match = true;
                 else if(filter === 'biete' && text === 'biete') match = true;
                 else if(filter === 'suche' && text === 'suche') match = true;
-                else if(filter === 'shooting' && text.includes('shooting')) match = true;
+                else if(filter === 'shooting' && text.includes('fotoshootings')) match = true;
+                else if(filter === 'familie' && text.includes('familie')) match = true;
                 else if(filter === 'location' && text.includes('location')) match = true;
 
                 if(match) {
@@ -2861,6 +2940,7 @@
                     if(currentMarketFilter === 'biete' && item.type !== 'biete') return;
                     if(currentMarketFilter === 'suche' && item.type !== 'suche') return;
                     if(currentMarketFilter === 'shooting' && item.category !== 'shooting') return;
+                    if(currentMarketFilter === 'familie' && item.category !== 'familie') return;
                     if(currentMarketFilter === 'location' && item.category !== 'location') return;
                 }
 
@@ -2870,7 +2950,9 @@
                 card.className = `market-card bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg space-y-3 flex flex-col justify-between ${isCompletedStyle}`;
                 
                 let badgeSub = '';
-                if(item.category === 'shooting') {
+                if(item.category === 'familie') {
+                    badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">👶 Familie & Lifestyle • ${item.price}</span>`;
+                } else if(item.category === 'shooting') {
                     badgeSub = `<span class="text-xs bg-brand-500/10 text-brand-400 px-2.5 py-1 rounded-lg border border-brand-500/20">Shooting (${item.level}) • ${item.price}</span>`;
                 } else {
                     badgeSub = `<span class="text-xs bg-purple-500/10 text-purple-400 px-2.5 py-1 rounded-lg border border-purple-500/20">Location: ${item.locationType || 'Profi Studio'}</span>`;
