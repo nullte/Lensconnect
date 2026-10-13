@@ -104,7 +104,7 @@
             </button>
         </nav>
 
-        <!-- Right User / Actions (Kompakter gemacht) -->
+        <!-- Right User / Actions (Kompakt) -->
         <div class="flex items-center space-x-2">
             <button onclick="openProfileModal()" class="flex items-center space-x-1.5 px-2 py-1.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 transition cursor-pointer">
                 <div class="w-6 h-6 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-[10px]" id="userAvatarInitials">
@@ -466,7 +466,7 @@
 
     <!-- MODAL: PROFILE & AUTH -->
     <div id="profileModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white">Profil & Anmelden</h3>
                 <button onclick="closeProfileModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -502,6 +502,10 @@
                         </select>
                     </div>
                     <div>
+                        <label class="block text-xs text-slate-400 mb-1">Über mich / Bio</label>
+                        <textarea id="profileBioInput" placeholder="Kurze Beschreibung über dich und deine Fotografie..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm h-20 resize-none"></textarea>
+                    </div>
+                    <div>
                         <label class="block text-xs text-slate-400 mb-1">Instagram / Website Link</label>
                         <input type="text" id="profileSocialInput" placeholder="z.B. https://instagram.com/deinname" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
                     </div>
@@ -510,6 +514,45 @@
             <div class="flex justify-between items-center pt-2">
                 <button onclick="closeProfileModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition cursor-pointer">Zurück</button>
                 <button onclick="saveProfile()" class="px-5 py-2 rounded-xl text-sm bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold transition cursor-pointer">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: PUBLIC PROFILE (ÖFFENTLICHES PROFIL) -->
+    <div id="publicProfileModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-sm" id="pubProfileAvatar">U</div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white" id="pubProfileName">Benutzername</h3>
+                        <span class="text-xs text-brand-400" id="pubProfileRole">Fotograf</span>
+                    </div>
+                </div>
+                <button onclick="closePublicProfileModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="space-y-4 pt-2">
+                <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50 space-y-1">
+                    <span class="text-[11px] font-bold text-slate-400 block">Über mich</span>
+                    <p id="pubProfileBio" class="text-xs text-slate-300 italic">Keine Beschreibung hinterlegt.</p>
+                </div>
+                <div id="pubProfileSocialContainer" class="hidden">
+                    <a id="pubProfileSocialLink" href="#" target="_blank" class="text-xs text-brand-400 hover:underline flex items-center space-x-1.5">
+                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                        <span id="pubProfileSocialText">Website / Instagram</span>
+                    </a>
+                </div>
+                <div class="space-y-2 pt-2 border-t border-slate-800">
+                    <span class="text-xs font-bold text-white block">Erstellte Spots (<span id="pubProfileSpotsCount">0</span>)</span>
+                    <div id="pubProfileSpotsList" class="space-y-2 max-h-40 overflow-y-auto"></div>
+                </div>
+                <div class="space-y-2 pt-2 border-t border-slate-800">
+                    <span class="text-xs font-bold text-white block">Marktplatz-Inserate (<span id="pubProfileMarketCount">0</span>)</span>
+                    <div id="pubProfileMarketList" class="space-y-2 max-h-40 overflow-y-auto"></div>
+                </div>
+            </div>
+            <div class="flex justify-end pt-2">
+                <button onclick="closePublicProfileModal()" class="px-4 py-2 rounded-xl text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition cursor-pointer">Schließen</button>
             </div>
         </div>
     </div>
@@ -643,7 +686,8 @@
         let spots = [];
         let marketItems = [];
         let communityPosts = [];
-        let userProfile = JSON.parse(localStorage.getItem('lensconnect_user')) || { name: 'Christian', nameLocked: false, role: 'Fotograf', social: '' };
+        let userProfilesMap = {}; // Cache für öffentliche Profile
+        let userProfile = JSON.parse(localStorage.getItem('lensconnect_user')) || { name: 'Christian', nameLocked: false, role: 'Fotograf', bio: '', social: '' };
         let currentUserEmail = null;
         let isAdmin = false;
 
@@ -726,8 +770,16 @@
                     const { data: { session } } = await supabaseClient.auth.getSession();
                     if (session) {
                         updateAuthUI(session.user);
+                        await loadUserProfileFromSupabase(session.user.id);
                     } else {
                         updateAuthUI(null);
+                    }
+
+                    const { data: profilesData } = await supabaseClient.from('profiles').select('*');
+                    if (profilesData) {
+                        profilesData.forEach(p => {
+                            if(p.username) userProfilesMap[p.username] = p;
+                        });
                     }
 
                     const { data: spotsData } = await supabaseClient.from('spots').select('*, spot_contributions(*)');
@@ -771,9 +823,29 @@
             renderCommunity();
         }
 
+        async function loadUserProfileFromSupabase(userId) {
+            if(!supabaseClient) return;
+            const { data } = await supabaseClient.from('profiles').select('*').eq('id', userId).single();
+            if(data) {
+                userProfile.name = data.username || userProfile.name;
+                userProfile.role = data.role || userProfile.role;
+                userProfile.bio = data.bio || userProfile.bio;
+                userProfile.social = data.social || userProfile.social;
+                userProfile.nameLocked = true;
+                localStorage.setItem('lensconnect_user', JSON.stringify(userProfile));
+                initUserDisplay();
+            }
+        }
+
         async function loadDataFromSupabaseSilent() {
             if (!supabaseClient) return;
             try {
+                const { data: profilesData } = await supabaseClient.from('profiles').select('*');
+                if (profilesData) {
+                    profilesData.forEach(p => {
+                        if(p.username) userProfilesMap[p.username] = p;
+                    });
+                }
                 const { data: spotsData } = await supabaseClient.from('spots').select('*, spot_contributions(*)');
                 if (spotsData) {
                     spots = spotsData.map(s => ({
@@ -834,6 +906,7 @@
             if (error) { alert('Login fehlgeschlagen: ' + error.message); }
             else {
                 updateAuthUI(data.user);
+                await loadUserProfileFromSupabase(data.user.id);
                 closeProfileModal();
                 loadDataFromSupabase();
             }
@@ -903,6 +976,8 @@
             if(mm) mm.style.display = 'none';
             const pm = document.getElementById('profileModal');
             if(pm) pm.style.display = 'none';
+            const ppm = document.getElementById('publicProfileModal');
+            if(ppm) ppm.style.display = 'none';
             const im = document.getElementById('impressumModal');
             if(im) im.style.display = 'none';
             const lb = document.getElementById('imageLightboxModal');
@@ -954,6 +1029,7 @@
             const initialsEl = document.getElementById('userAvatarInitials');
             const inputEl = document.getElementById('profileNameInput');
             const roleEl = document.getElementById('profileRoleInput');
+            const bioEl = document.getElementById('profileBioInput');
             const socialEl = document.getElementById('profileSocialInput');
             
             if (!currentUserEmail) {
@@ -964,10 +1040,11 @@
                     inputEl.value = userProfile.name || '';
                 }
                 if(roleEl) roleEl.value = userProfile.role || 'Fotograf';
+                if(bioEl) bioEl.value = userProfile.bio || '';
                 if(socialEl) socialEl.value = userProfile.social || '';
             } else {
                 const name = userProfile.name || currentUserEmail.split('@')[0];
-                if(nameEl) nameEl.textContent = name; // Kompakt nur Name
+                if(nameEl) nameEl.textContent = name;
                 if(initialsEl) initialsEl.textContent = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
                 if(inputEl) {
                     inputEl.value = name;
@@ -979,6 +1056,7 @@
                     }
                 }
                 if(roleEl) roleEl.value = userProfile.role || 'Fotograf';
+                if(bioEl) bioEl.value = userProfile.bio || '';
                 if(socialEl) socialEl.value = userProfile.social || '';
             }
             if(window.lucide) lucide.createIcons();
@@ -1022,7 +1100,8 @@
         function closeProfileModal() {
             history.back();
         }
-        function saveProfile() {
+
+        async function saveProfile() {
             const input = document.getElementById('profileNameInput');
             if (input && !input.disabled) {
                 const newName = input.value.trim();
@@ -1034,12 +1113,109 @@
             const roleInput = document.getElementById('profileRoleInput');
             if(roleInput) userProfile.role = roleInput.value;
 
+            const bioInput = document.getElementById('profileBioInput');
+            if(bioInput) userProfile.bio = bioInput.value.trim();
+
             const socialInput = document.getElementById('profileSocialInput');
             if(socialInput) userProfile.social = socialInput.value.trim();
 
             localStorage.setItem('lensconnect_user', JSON.stringify(userProfile));
+
+            // Sync with Supabase profiles table if logged in
+            if(supabaseClient) {
+                try {
+                    const { data: { user } } = await supabaseClient.auth.getUser();
+                    if(user) {
+                        await supabaseClient.from('profiles').upsert({
+                            id: user.id,
+                            username: userProfile.name,
+                            role: userProfile.role,
+                            bio: userProfile.bio,
+                            social: userProfile.social
+                        });
+                    }
+                } catch(e) { console.warn("Profile sync error:", e); }
+            }
+
             initUserDisplay();
             closeProfileModal();
+        }
+
+        // ÖFFENTLICHES PROFIL ANSEHEN
+        function openPublicProfile(authorName) {
+            if(!authorName) return;
+            const profile = userProfilesMap[authorName] || {
+                username: authorName,
+                role: 'Fotograf',
+                bio: 'Keine Beschreibung hinterlegt.',
+                social: ''
+            };
+
+            document.getElementById('pubProfileName').textContent = profile.username || authorName;
+            document.getElementById('pubProfileRole').textContent = profile.role || 'Fotograf';
+            document.getElementById('pubProfileAvatar').textContent = (profile.username || authorName).split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
+            document.getElementById('pubProfileBio').textContent = profile.bio || 'Keine Beschreibung hinterlegt.';
+
+            const socialContainer = document.getElementById('pubProfileSocialContainer');
+            const socialLink = document.getElementById('pubProfileSocialLink');
+            const socialText = document.getElementById('pubProfileSocialText');
+            if(profile.social) {
+                socialContainer.classList.remove('hidden');
+                socialLink.href = profile.social;
+                socialText.textContent = profile.social;
+            } else {
+                socialContainer.classList.add('hidden');
+            }
+
+            // Filter user spots
+            const userSpots = spots.filter(s => s.author === authorName);
+            document.getElementById('pubProfileSpotsCount').textContent = userSpots.length;
+            const spotsListEl = document.getElementById('pubProfileSpotsList');
+            spotsListEl.innerHTML = '';
+            if(userSpots.length > 0) {
+                userSpots.forEach(s => {
+                    const item = document.createElement('div');
+                    item.className = "bg-slate-800 p-2.5 rounded-xl border border-slate-700/50 text-xs flex justify-between items-center";
+                    item.innerHTML = `<span><b>${s.title}</b> (${s.category})</span><button onclick="closePublicProfileModal(); gotoSpotFromProfile(${s.id})" class="text-brand-400 hover:underline">Ansehen</button>`;
+                    spotsListEl.appendChild(item);
+                });
+            } else {
+                spotsListEl.innerHTML = '<span class="text-xs text-slate-400 italic">Keine Spots erstellt.</span>';
+            }
+
+            // Filter user market items
+            const userMarket = marketItems.filter(m => m.author === authorName);
+            document.getElementById('pubProfileMarketCount').textContent = userMarket.length;
+            const marketListEl = document.getElementById('pubProfileMarketList');
+            marketListEl.innerHTML = '';
+            if(userMarket.length > 0) {
+                userMarket.forEach(m => {
+                    const item = document.createElement('div');
+                    item.className = "bg-slate-800 p-2.5 rounded-xl border border-slate-700/50 text-xs flex justify-between items-center";
+                    item.innerHTML = `<span><b>${m.title}</b> (${m.type})</span><button onclick="closePublicProfileModal(); switchView('market')" class="text-brand-400 hover:underline">Zum Markt</button>`;
+                    marketListEl.appendChild(item);
+                });
+            } else {
+                marketListEl.innerHTML = '<span class="text-xs text-slate-400 italic">Keine Inserate vorhanden.</span>';
+            }
+
+            history.pushState({ view: currentView, modal: 'publicProfile' }, '', '');
+            const m = document.getElementById('publicProfileModal');
+            if(m) m.style.display = 'flex';
+        }
+
+        function closePublicProfileModal() {
+            history.back();
+        }
+
+        function gotoSpotFromProfile(spotId) {
+            switchView('spots');
+            setTimeout(() => {
+                const spot = spots.find(s => s.id === spotId);
+                if(spot && spot.lat && spot.lng && map) {
+                    map.setView([spot.lat, spot.lng], 16);
+                }
+            }, 150);
         }
 
         function openImageLightbox(src) {
@@ -1194,7 +1370,7 @@
                             <span class="inline-block text-[10px] bg-brand-500/15 text-brand-700 px-2 py-0.5 rounded font-semibold">${spot.category}</span>
                             ${imgHtml}
                             <p class="text-xs text-slate-700">${spot.desc || ''}</p>
-                            <span class="text-[10px] text-slate-500 block">Von: ${spot.author || 'Christian'}</span>
+                            <span class="text-[10px] text-slate-500 block">Von: <span onclick="openPublicProfile('${spot.author || 'Christian'}')" class="text-brand-600 font-bold underline cursor-pointer">${spot.author || 'Christian'}</span></span>
                             <div class="pt-2 border-t border-slate-200 grid grid-cols-2 gap-1.5">
                                 ${ownerButtonsHtml}
                                 <button onclick="openSpotContributionModal(${spot.id})" class="bg-brand-500 hover:bg-brand-600 text-slate-900 text-[11px] py-1 px-1.5 rounded font-medium cursor-pointer text-center">Bericht erfassen</button>
@@ -1517,7 +1693,7 @@
                         contributionsHtml += `
                             <div class="bg-slate-900/65 p-2.5 rounded-xl border border-slate-700/50 text-xs space-y-1">
                                 <div class="flex justify-between items-center font-semibold text-slate-200">
-                                    <span>${c.author} <span class="text-[10px] text-slate-400 font-normal">(${c.time || ''})</span></span>
+                                    <span><span onclick="openPublicProfile('${c.author}')" class="text-brand-400 underline cursor-pointer">${c.author}</span> <span class="text-[10px] text-slate-400 font-normal">(${c.time || ''})</span></span>
                                     ${cActions}
                                 </div>
                                 <p class="text-slate-200">${c.text}</p>
@@ -1551,6 +1727,7 @@
                         </div>
                         ${imgHtml}
                         <p class="text-xs text-slate-300 line-clamp-3">${spot.desc || ''}</p>
+                        <span class="text-[11px] text-slate-400 block">Von: <span onclick="openPublicProfile('${spot.author || 'Christian'}')" class="text-brand-400 font-semibold underline cursor-pointer">${spot.author || 'Christian'}</span></span>
                         ${tagsHtml}
                         ${navBtnHtml}
                         ${contributionsHtml}
@@ -1944,7 +2121,7 @@
                             </label>
                         </div>
                         <div class="flex justify-between items-center text-xs text-slate-400 pt-1 border-t border-slate-700/30">
-                            <span class="text-[11px]">Von: ${item.author || 'Christian'}</span>
+                            <span class="text-[11px]">Von: <span onclick="openPublicProfile('${item.author || 'Christian'}')" class="text-brand-400 font-semibold underline cursor-pointer">${item.author || 'Christian'}</span></span>
                             ${marketActions}
                         </div>
                     </div>
@@ -1963,7 +2140,7 @@
                 card.className = "bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg space-y-2";
                 card.innerHTML = `
                     <div class="flex justify-between items-center">
-                        <span class="font-semibold text-sm text-white">${post.author}</span>
+                        <span class="font-semibold text-sm text-white cursor-pointer hover:underline" onclick="openPublicProfile('${post.author}')">${post.author}</span>
                         <span class="text-xs text-slate-400">${post.time || ''}</span>
                     </div>
                     <p class="text-sm text-slate-300">${post.text}</p>
