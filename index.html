@@ -1594,6 +1594,24 @@
             updateChatBadge();
         }
 
+        async function deleteChatMessage(msgId) {
+            if(confirm('Möchtest du diese Nachricht wirklich löschen?')) {
+                if (supabaseClient) {
+                    const { error } = await supabaseClient.from('messages').delete().eq('id', msgId);
+                    if(error) {
+                        alert('Fehler beim Löschen: ' + error.message);
+                        return;
+                    }
+                    await loadDataFromSupabaseSilent();
+                } else {
+                    messages = messages.filter(m => m.id !== msgId);
+                    localStorage.setItem('lensconnect_messages', JSON.stringify(messages));
+                    renderChatMessages();
+                }
+                updateChatBadge();
+            }
+        }
+
         function renderChatMessages() {
             if(!currentChatPartner) return;
             const container = document.getElementById('chatMessagesList');
@@ -1611,14 +1629,23 @@
                 return;
             }
             filtered.forEach(m => {
-                const isMe = m.sender === myName;
+                const isMe = (m.sender === myName);
                 const div = document.createElement('div');
                 div.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
+                
+                let deleteBtnHtml = '';
+                if (isMe && m.id) {
+                    deleteBtnHtml = `<button onclick="deleteChatMessage(${m.id})" class="text-[10px] text-red-400 hover:underline mt-0.5 cursor-pointer">Löschen</button>`;
+                }
+
                 div.innerHTML = `
                     <div class="max-w-[80%] rounded-2xl px-3.5 py-2 text-xs ${isMe ? 'bg-brand-500 text-slate-900 font-medium' : 'bg-slate-800 text-slate-200 border border-slate-700'}">
                         <span>${m.text}</span>
                     </div>
-                    <span class="text-[9px] text-slate-500 mt-0.5 px-1">${m.time || ''}</span>
+                    <div class="flex items-center space-x-2 mt-0.5 px-1">
+                        <span class="text-[9px] text-slate-500">${m.time || ''}</span>
+                        ${deleteBtnHtml}
+                    </div>
                 `;
                 container.appendChild(div);
             });
