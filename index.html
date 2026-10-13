@@ -819,7 +819,7 @@
         let marketItems = [];
         let communityPosts = [];
         let favorites = JSON.parse(localStorage.getItem('lensconnect_favorites')) || { spots: [], market: [] };
-        let messages = JSON.parse(localStorage.getItem('lensconnect_messages')) || [];
+        let messages = [];
         let userProfilesMap = {}; 
         let userProfile = JSON.parse(localStorage.getItem('lensconnect_user')) || { name: 'Christian', nameLocked: false, role: 'Fotograf', bio: '', social: '', email: '', avatar: '', portfolio: [] };
         let currentUserEmail = null;
@@ -959,6 +959,9 @@
                     const { data: postsData } = await supabaseClient.from('community_posts').select('*');
                     if (postsData) communityPosts = postsData;
 
+                    const { data: messagesData } = await supabaseClient.from('messages').select('*').order('id', { ascending: true });
+                    if (messagesData) messages = messagesData;
+
                     if (!realtimeChannel) {
                         realtimeChannel = supabaseClient.channel('public:lensconnect_realtime')
                             .on('postgres_changes', { event: '*', schema: 'public' }, () => {
@@ -978,6 +981,8 @@
             renderMarket();
             renderCommunity();
             renderCommunityProfiles();
+            renderChatMessages();
+            updateChatBadge();
         }
 
         async function loadUserProfileFromSupabase(userId) {
@@ -1028,10 +1033,15 @@
                 const { data: postsData } = await supabaseClient.from('community_posts').select('*');
                 if (postsData) communityPosts = postsData;
 
+                const { data: messagesData } = await supabaseClient.from('messages').select('*').order('id', { ascending: true });
+                if (messagesData) messages = messagesData;
+
                 renderSpots();
                 renderMarket();
                 renderCommunity();
                 renderCommunityProfiles();
+                renderChatMessages();
+                updateChatBadge();
             } catch(e) {
                 console.warn("Silent reload failed:", e);
             }
@@ -1049,6 +1059,7 @@
             communityPosts = JSON.parse(localStorage.getItem('lensconnect_posts')) || [
                 { id: 1, author: 'Christian', text: 'Erster Test mit der analogen Kamera und Kodak Portra 400. Die Farben sind einfach genial!', time: 'Vor 2 Stunden' }
             ];
+            messages = JSON.parse(localStorage.getItem('lensconnect_messages')) || [];
         }
 
         async function supabaseRegister() {
@@ -1439,7 +1450,7 @@
             renderCommunityProfiles();
         }
 
-        // PROFIL-SUCHFUNKTION (NEU)
+        // PROFIL-SUCHFUNKTION
         function renderCommunityProfiles() {
             const container = document.getElementById('communityProfilesGrid');
             if(!container) return;
@@ -1501,7 +1512,7 @@
                 
                 let avatarHtml = '';
                 if(u.avatar) {
-                    avatarHtml = `<div class="w-10 h-10 rounded-full overflow-hidden bg-brand-500/20 shrink-0"><img src="${u.avatar}" class="w-full h-full object-cover"></div>`;
+                    avatarHtml = `<div class="w-10 h-10 rounded-full overflow-hidden bg-brand-500/25 shrink-0"><img src="${u.avatar}" class="w-full h-full object-cover"></div>`;
                 } else {
                     const initials = u.username.split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
                     avatarHtml = `<div class="w-10 h-10 rounded-full bg-brand-500/20 text-brand-400 font-bold text-xs flex items-center justify-center shrink-0">${initials}</div>`;
@@ -1549,7 +1560,7 @@
             renderMarket();
         }
 
-        // CHAT / NACHRICHTENSYSTEM
+        // CHAT / SUPABASE NACHRICHTENSYSTEM
         window.currentPubProfileUser = null;
         function openChatWithUser(partnerName) {
             if(!currentUserEmail) { alert('Bitte zuerst anmelden, um Nachrichten zu senden.'); return; }
@@ -1576,21 +1587,32 @@
             history.back();
         }
 
-        function sendChatMessage() {
+        async function sendChatMessage() {
             const input = document.getElementById('chatInputText');
             if(!input || !input.value.trim()) return;
             const text = input.value.trim();
             const msg = {
-                id: Date.now(),
                 sender: userProfile.name || currentUserEmail,
                 receiver: currentChatPartner,
                 text: text,
-                time: 'Gerade eben'
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             };
-            messages.push(msg);
-            localStorage.setItem('lensconnect_messages', JSON.stringify(messages));
+
+            if (supabaseClient) {
+                const { error } = await supabaseClient.from('messages').insert([msg]);
+                if(error) {
+                    alert('Fehler beim Senden: ' + error.message);
+                    return;
+                }
+                await loadDataFromSupabaseSilent();
+            } else {
+                msg.id = Date.now();
+                messages.push(msg);
+                localStorage.setItem('lensconnect_messages', JSON.stringify(messages));
+                renderChatMessages();
+            }
+
             input.value = '';
-            renderChatMessages();
             updateChatBadge();
         }
 
@@ -1599,7 +1621,7 @@
             if(!container) return;
             container.innerHTML = '';
             const myName = userProfile.name || currentUserEmail || '';
-            const filtered = messages.filter(m => currentChatPartner === 'Community' || m.sender === currentChatPartner || m.receiver === currentChatPartner);
+            const filtered = messages.filter(m => currentChatPartner === 'Community' || m.sender === currentChatPartner || m.receiver === currentChatPartner || m.receiver === 'Community');
             if(filtered.length === 0) {
                 container.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-6">Noch keine Nachrichten vorhanden. Starte die Unterhaltung!</p>';
                 return;
@@ -1613,7 +1635,7 @@
                         ${!isMe ? `<span class="text-[10px] text-brand-400 font-bold block mb-0.5">${m.sender}</span>` : ''}
                         <span>${m.text}</span>
                     </div>
-                    <span class="text-[9px] text-slate-500 mt-0.5 px-1">${m.time}</span>
+                    <span class="text-[9px] text-slate-500 mt-0.5 px-1">${m.time || ''}</span>
                 `;
                 container.appendChild(div);
             });
