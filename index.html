@@ -1742,17 +1742,44 @@
             document.getElementById('chatModal').style.display = 'flex';
         }
 
-        function openChatWithUser(partnerName, initialText = '') {
+        async function openChatWithUser(partnerName, initialText = '') {
             if(!currentUserEmail) { alert('Bitte zuerst anmelden, um Nachrichten zu senden.'); return; }
             if(!partnerName) return;
             const ppm = document.getElementById('publicProfileModal');
             if(ppm) ppm.style.display = 'none';
             
             showChatRoom(partnerName);
+
+            // Wenn ein initialer Text (vom Inserat) übergeben wird, senden wir diesen sofort als Nachricht,
+            // anstatt ihn unübersichtlich in das Eingabefeld zu schreiben!
             if (initialText) {
-                const input = document.getElementById('chatInputText');
-                if (input) input.value = initialText;
+                const myName = userProfile.name || currentUserEmail;
+                const existingChat = messages.filter(m => {
+                    if(m.id && deletedMessageIds.includes(m.id)) return false;
+                    return (m.sender === myName && m.receiver === partnerName) || 
+                           (m.sender === partnerName && m.receiver === myName);
+                });
+
+                // Sende den vorgefertigten Text nur automatisch, wenn noch keine Nachrichten im Chat vorhanden sind
+                if (existingChat.length === 0) {
+                    const msg = {
+                        sender: myName,
+                        receiver: partnerName,
+                        text: initialText,
+                        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    };
+                    if (supabaseClient) {
+                        await supabaseClient.from('messages').insert([msg]);
+                        await loadDataFromSupabaseSilent();
+                    } else {
+                        msg.id = Date.now();
+                        messages.push(msg);
+                        localStorage.setItem('lensconnect_messages', JSON.stringify(messages));
+                        renderChatMessages();
+                    }
+                }
             }
+
             history.pushState({ view: currentView, modal: 'chat' }, '', '');
             document.getElementById('chatModal').style.display = 'flex';
         }
