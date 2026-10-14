@@ -66,12 +66,12 @@
         }
 
         @keyframes pinBounce {
-            0% { transform: scale(0.5); opacity: 0; }
-            50% { transform: scale(1.2); opacity: 1; }
+            0% { transform: scale(0.4); opacity: 0; }
+            60% { transform: scale(1.15); opacity: 1; }
             100% { transform: scale(1); opacity: 1; }
         }
         .temp-placed-pin {
-            animation: pinBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation: pinBounce 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
         @media screen and (-webkit-min-device-pixel-ratio: 0) {
@@ -1504,7 +1504,6 @@
         }
 
         function switchView(viewName, push = true) {
-            closeSpotCreationChoiceModal();
             currentView = viewName;
             document.querySelectorAll('.view-panel').forEach(el => {
                 el.classList.add('hidden');
@@ -2476,24 +2475,19 @@
                 alert('Bitte melde dich an, um einen Spot hinzuzufügen.');
                 return;
             }
-            history.pushState({ view: currentView, modal: 'spotChoice' }, '', '');
             const m = document.getElementById('spotCreationChoiceModal');
             if(m) m.style.display = 'flex';
         }
 
         function closeSpotCreationChoiceModal() {
             const m = document.getElementById('spotCreationChoiceModal');
-            if(m && m.style.display === 'flex') {
-                m.style.display = 'none';
-                try { history.back(); } catch(e) {}
-            }
+            if(m) m.style.display = 'none';
         }
 
         async function selectSpotChoice(choice) {
-            // Sofort komplett schließen & Historie bereinigen, damit der Hintergrund frei wird
+            // Modal sofort komplett verstecken ohne history.back-Fehler
             const choiceModal = document.getElementById('spotCreationChoiceModal');
             if(choiceModal) choiceModal.style.display = 'none';
-            try { history.back(); } catch(e) {}
 
             if(choice === 'current') {
                 if(!userCoords) {
@@ -2511,13 +2505,17 @@
                     proceedWithCoordinates(userCoords.lat, userCoords.lng);
                 }
             } else if(choice === 'map') {
-                // Direkt auf Karte umschalten und sicherstellen, dass die Ansicht aktiv ist
+                // Ansicht direkt auf Karte wechseln
                 switchView('map');
                 
                 if(!map) initMap();
                 if(map) {
-                    // Kurzer Hinweis als Overlay / Alert
+                    setTimeout(() => {
+                        map.invalidateSize();
+                    }, 100);
+
                     alert('Bitte klicke nun auf die gewünschte Stelle auf der Karte.');
+                    
                     map.once('click', function(e) {
                         const lat = e.latlng.lat;
                         const lng = e.latlng.lng;
@@ -2525,7 +2523,9 @@
                         // Visuellen temporären Check-Pin anzeigen
                         showTempCheckPin(lat, lng);
 
-                        proceedWithCoordinates(lat, lng);
+                        setTimeout(() => {
+                            proceedWithCoordinates(lat, lng);
+                        }, 600);
                     });
                 }
             }
@@ -2536,9 +2536,9 @@
             const tempMarker = L.marker([lat, lng], {
                 icon: L.divIcon({
                     className: 'temp-placed-pin',
-                    html: '<div style="background-color: #22c55e; width: 24px; height: 24px; border-radius: 50%; border: 4px solid white; box-shadow: 0 0 16px rgba(34,197,94,0.9); display: flex; align-items: center; justify-content: center;"><div style="background-color: white; width: 6px; height: 6px; border-radius: 50%;"></div></div>',
-                    iconSize: [24, 24],
-                    iconAnchor: [12, 12]
+                    html: '<div style="background-color: #22c55e; width: 28px; height: 28px; border-radius: 50%; border: 4px solid white; box-shadow: 0 0 18px rgba(34,197,94,0.95); display: flex; align-items: center; justify-content: center;"><div style="background-color: white; width: 8px; height: 8px; border-radius: 50%;"></div></div>',
+                    iconSize: [28, 28],
+                    iconAnchor: [14, 14]
                 })
             }).addTo(map);
 
