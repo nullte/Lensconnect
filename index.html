@@ -65,6 +65,15 @@
             animation: highlightPulse 4s ease-out forwards;
         }
 
+        @keyframes pinBounce {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .temp-placed-pin {
+            animation: pinBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
         @media screen and (-webkit-min-device-pixel-ratio: 0) {
             #chatInputText, input[type="text"], input[type="password"], input[type="email"], textarea {
                 font-size: 16px !important;
@@ -2481,11 +2490,12 @@
         }
 
         async function selectSpotChoice(choice) {
+            // Sofort komplett schließen & Historie bereinigen, damit der Hintergrund frei wird
             const choiceModal = document.getElementById('spotCreationChoiceModal');
             if(choiceModal) choiceModal.style.display = 'none';
+            try { history.back(); } catch(e) {}
 
             if(choice === 'current') {
-                try { history.back(); } catch(e) {}
                 if(!userCoords) {
                     if(navigator.geolocation) {
                         navigator.geolocation.getCurrentPosition((pos) => {
@@ -2501,20 +2511,40 @@
                     proceedWithCoordinates(userCoords.lat, userCoords.lng);
                 }
             } else if(choice === 'map') {
-                try { history.back(); } catch(e) {}
-                // Hier wird jetzt direkt auf die Kartenansicht umgeschaltet!
+                // Direkt auf Karte umschalten und sicherstellen, dass die Ansicht aktiv ist
                 switchView('map');
                 
                 if(!map) initMap();
                 if(map) {
-                    alert('Bitte klicke nun auf die gewünschte Stelle auf der Karte, um den Spot zu platzieren.');
+                    // Kurzer Hinweis als Overlay / Alert
+                    alert('Bitte klicke nun auf die gewünschte Stelle auf der Karte.');
                     map.once('click', function(e) {
                         const lat = e.latlng.lat;
                         const lng = e.latlng.lng;
+                        
+                        // Visuellen temporären Check-Pin anzeigen
+                        showTempCheckPin(lat, lng);
+
                         proceedWithCoordinates(lat, lng);
                     });
                 }
             }
+        }
+
+        function showTempCheckPin(lat, lng) {
+            if (!map) return;
+            const tempMarker = L.marker([lat, lng], {
+                icon: L.divIcon({
+                    className: 'temp-placed-pin',
+                    html: '<div style="background-color: #22c55e; width: 24px; height: 24px; border-radius: 50%; border: 4px solid white; box-shadow: 0 0 16px rgba(34,197,94,0.9); display: flex; align-items: center; justify-content: center;"><div style="background-color: white; width: 6px; height: 6px; border-radius: 50%;"></div></div>',
+                    iconSize: [24, 24],
+                    iconAnchor: [12, 12]
+                })
+            }).addTo(map);
+
+            setTimeout(() => {
+                if (map) map.removeLayer(tempMarker);
+            }, 3000);
         }
 
         async function proceedWithCoordinates(lat, lng, forcedLocationName = '') {
