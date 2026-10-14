@@ -1885,7 +1885,6 @@
 
             const myName = userProfile.name || currentUserEmail;
 
-            // Falls über ein Inserat aufgerufen, wird der Inserat-Bezug sicher als Nachricht gesendet
             if (marketCode) {
                 const refTag = `[Bezug: Inserat ${marketCode}]`;
                 const fullMsgText = initialText ? `${initialText}\n${refTag}` : `Hallo, ich interessiere mich für dein Inserat!\n${refTag}`;
@@ -2191,7 +2190,6 @@
 
                 let highlightClass = isNewAndUnread ? 'unread-highlight border-2 border-brand-500 bg-brand-500/10' : '';
 
-                // Inserat-Bezug aus dem Nachrichtentext auslesen und dezent formatieren
                 let messageContentHtml = m.text;
                 if (m.text && m.text.includes('[Bezug: Inserat')) {
                     const codeMatch = m.text.match(/\[Bezug: Inserat (#LC-\d+)\]/);
@@ -2426,7 +2424,6 @@
                 }
 
                 map.on('click', async function(e) {
-                    // Suchfeld bei Kartenklick schließen
                     const searchContainer = document.getElementById('mapSearchContainer');
                     if(searchContainer) searchContainer.style.display = 'none';
 
@@ -3482,6 +3479,7 @@
                 card.className = `market-card bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg space-y-3 flex flex-col justify-between ${isCompletedStyle}`;
                 
                 const itemCode = getMarketItemCode(item.id);
+                const itemAuthor = item.author || 'Christian';
 
                 let badgeSub = '';
                 const displayPrice = item.price ? ` • ${item.price}` : '';
@@ -3525,7 +3523,6 @@
                 }
 
                 let chatButtonHtml = '';
-                const itemAuthor = item.author || 'Christian';
                 if (!currentUserEmail || itemAuthor !== (userProfile.name || currentUserEmail)) {
                     chatButtonHtml = `<button onclick="openChatWithUser('${itemAuthor}', '', '${itemCode}')" class="w-full bg-brand-500/15 hover:bg-brand-500/25 text-brand-400 border border-brand-500/30 text-xs py-2 px-3 rounded-xl flex items-center justify-center space-x-1.5 font-bold transition cursor-pointer"><i data-lucide="message-square" class="w-3.5 h-3.5"></i><span>Direktnachricht an ${itemAuthor}</span></button>`;
                 }
@@ -3565,7 +3562,13 @@
 
                 card.innerHTML = `
                     <div class="space-y-2">
-                        <div class="flex justify-between items-center">
+                        <!-- Ersteller ganz oben über dem BIETE/SUCHE Badge -->
+                        <div class="flex items-center justify-between text-xs pb-1 border-b border-slate-700/40">
+                            <span class="text-slate-300 text-[11px]">Von: <span onclick="openPublicProfile('${itemAuthor}')" class="text-brand-400 font-bold underline cursor-pointer">${itemAuthor}</span></span>
+                            <span class="text-slate-400 font-mono text-[10px] bg-slate-900 px-1.5 py-0.5 rounded border border-slate-700/60">${itemCode}</span>
+                        </div>
+
+                        <div class="flex justify-between items-center pt-1">
                             <div class="flex items-center space-x-2">
                                 <span class="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded ${item.type === 'biete' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">${item.type}</span>
                                 <button onclick="toggleMarketFavorite(${item.id})" class="text-slate-400 hover:text-red-500 transition cursor-pointer">
@@ -3585,14 +3588,8 @@
                     </div>
                     <div class="space-y-3 pt-3 border-t border-slate-700/50">
                         ${checkboxContainer}
-                        <div class="flex justify-between items-center text-xs text-slate-400 pt-1 border-t border-slate-700/30">
-                            <div class="flex items-center space-x-2 text-[11px]">
-                                <span>Von: <span onclick="openPublicProfile('${itemAuthor}')" class="text-brand-400 font-semibold underline cursor-pointer">${itemAuthor}</span></span>
-                                <span class="text-slate-500">•</span>
-                                <span class="text-slate-400 font-mono text-[10px] bg-slate-900 px-1.5 py-0.5 rounded border border-slate-700/60">${itemCode}</span>
-                                <span class="text-slate-500">•</span>
-                                <span class="text-slate-400 text-[10px]">📅 ${createdAtDateStr}</span>
-                            </div>
+                        <div class="flex justify-between items-center text-xs text-slate-400 pt-1">
+                            <span class="text-slate-400 text-[10px]">📅 Erstellt am ${createdAtDateStr}</span>
                             ${marketActions}
                         </div>
                     </div>
