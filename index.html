@@ -1883,23 +1883,23 @@
             
             showChatRoom(partnerName);
 
-            // Falls über ein Inserat geöffnet, Inserat-Bezug direkt an Nachricht anhängen
+            const myName = userProfile.name || currentUserEmail;
+
+            // Falls über ein Inserat aufgerufen, wird der Inserat-Bezug sicher als Nachricht gesendet
             if (marketCode) {
-                const myName = userProfile.name || currentUserEmail;
-                const refText = `[Bezug: Inserat ${marketCode}]`;
-                
-                const hasRefMessage = messages.some(m => {
+                const refTag = `[Bezug: Inserat ${marketCode}]`;
+                const fullMsgText = initialText ? `${initialText}\n${refTag}` : `Hallo, ich interessiere mich für dein Inserat!\n${refTag}`;
+
+                const hasAlreadySent = messages.some(m => {
                     if(m.id && deletedMessageIds.includes(m.id)) return false;
-                    return ((m.sender === myName && m.receiver === partnerName) || (m.sender === partnerName && m.receiver === myName)) && m.text.includes(refText);
+                    return ((m.sender === myName && m.receiver === partnerName) || (m.sender === partnerName && m.receiver === myName)) && m.text.includes(refTag);
                 });
 
-                if (!hasRefMessage) {
-                    const fullText = initialText ? `${initialText}\n${refText}` : `Hallo, ich habe eine Frage zu deinem Inserat.\n${refText}`;
+                if (!hasAlreadySent) {
                     const msg = {
                         sender: myName,
                         receiver: partnerName,
-                        text: fullText,
-                        market_code: marketCode,
+                        text: fullMsgText,
                         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                     };
                     if (supabaseClient) {
@@ -1913,7 +1913,6 @@
                     }
                 }
             } else if (initialText) {
-                const myName = userProfile.name || currentUserEmail;
                 const existingChat = messages.filter(m => {
                     if(m.id && deletedMessageIds.includes(m.id)) return false;
                     return (m.sender === myName && m.receiver === partnerName) || 
@@ -2057,13 +2056,15 @@
                 div.className = "bg-slate-800/80 border border-slate-700/80 rounded-xl p-3 flex items-center justify-between hover:border-brand-500/50 transition cursor-pointer relative";
                 div.onclick = () => showChatRoom(partner);
                 
+                let cleanLastText = lastMsg ? lastMsg.text.replace(/\[Bezug: Inserat #LC-\d+\]/, '').trim() : 'Noch keine Nachrichten';
+
                 div.innerHTML = `
                     <div class="space-y-0.5 overflow-hidden">
                         <div class="text-xs font-bold text-white flex items-center space-x-2">
                             <span>${partner}</span>
                             ${hasUnread ? '<span class="w-2.5 h-2.5 bg-brand-500 rounded-full inline-block animate-pulse" title="Ungelesene Nachricht"></span>' : ''}
                         </div>
-                        <div class="text-[11px] text-slate-300 truncate font-medium">${lastMsg ? lastMsg.text : 'Noch keine Nachrichten'}</div>
+                        <div class="text-[11px] text-slate-300 truncate font-medium">${cleanLastText}</div>
                         <div class="text-[9px] text-slate-400">${lastActiveText}</div>
                     </div>
                     <span class="text-xs text-brand-400 underline shrink-0 ml-2">Öffnen</span>
@@ -2190,16 +2191,16 @@
 
                 let highlightClass = isNewAndUnread ? 'unread-highlight border-2 border-brand-500 bg-brand-500/10' : '';
 
-                // Falls Nachricht einen Inserat-Bezug hat, diesen als kleinen dezenten Tag darstellen
+                // Inserat-Bezug aus dem Nachrichtentext auslesen und dezent formatieren
                 let messageContentHtml = m.text;
-                if (m.market_code || m.text.includes('[Bezug: Inserat')) {
+                if (m.text && m.text.includes('[Bezug: Inserat')) {
                     const codeMatch = m.text.match(/\[Bezug: Inserat (#LC-\d+)\]/);
-                    const code = m.market_code || (codeMatch ? codeMatch[1] : '');
+                    const code = codeMatch ? codeMatch[1] : '';
                     const cleanText = m.text.replace(/\[Bezug: Inserat #LC-\d+\]/, '').trim();
                     
                     messageContentHtml = `
                         <div>${cleanText}</div>
-                        ${code ? `<div class="mt-1 pt-1 border-t border-slate-700/50 text-[10px] text-brand-300 font-semibold opacity-90">📌 Bezug: Inserat ${code}</div>` : ''}
+                        ${code ? `<div class="mt-1.5 pt-1.5 border-t border-slate-700/60 text-[10px] text-brand-300 font-semibold flex items-center space-x-1"><span>📌 Bezug: Inserat ${code}</span></div>` : ''}
                     `;
                 }
 
