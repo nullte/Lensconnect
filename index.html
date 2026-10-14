@@ -280,7 +280,7 @@
                 </button>
             </div>
 
-            <!-- UNTEN MITTE: Spot Hinzufügen Button -->
+            <!-- UNTEN MITTE: Spot Hinzufügen Button (Öffnet Auswahl) -->
             <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] pointer-events-auto">
                 <button onclick="openSpotCreationChoiceModal()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold px-5 py-3 rounded-2xl shadow-2xl border border-brand-400/50 transition cursor-pointer flex items-center space-x-2 text-sm">
                     <i data-lucide="plus" class="w-5 h-5"></i>
@@ -308,7 +308,7 @@
                     </div>
                     <button onclick="openSpotCreationChoiceModal()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-medium px-4 py-2 rounded-xl text-sm flex items-center justify-center space-x-2 transition shadow cursor-pointer">
                         <i data-lucide="plus" class="w-4 h-4"></i>
-                        <span>Neuen Spot erstellen</span>
+                        <span>Spot hinzufügen</span>
                     </button>
                 </div>
 
@@ -2504,7 +2504,13 @@
                 try { history.back(); } catch(e) {}
                 switchView('map');
                 setTimeout(() => {
-                    toggleMapSearch();
+                    const searchContainer = document.getElementById('mapSearchContainer');
+                    if(searchContainer) searchContainer.style.display = 'flex';
+                    const input = document.getElementById('mapSearchInput');
+                    if(input) {
+                        input.value = '';
+                        input.focus();
+                    }
                 }, 200);
             }
         }
