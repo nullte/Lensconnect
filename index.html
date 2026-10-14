@@ -443,7 +443,7 @@
                 </button>
                 <button onclick="selectSpotChoice('map')" class="w-full bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-medium py-2.5 px-4 rounded-xl text-xs flex items-center justify-center space-x-2 transition cursor-pointer">
                     <i data-lucide="map" class="w-4 h-4 text-brand-400"></i>
-                    <span>Auf Karte suchen</span>
+                    <span>Auf Karte platzieren (Pin setzen)</span>
                 </button>
             </div>
         </div>
@@ -2503,15 +2503,17 @@
             } else if(choice === 'map') {
                 try { history.back(); } catch(e) {}
                 switchView('map');
-                setTimeout(() => {
-                    const searchContainer = document.getElementById('mapSearchContainer');
-                    if(searchContainer) searchContainer.style.display = 'flex';
-                    const input = document.getElementById('mapSearchInput');
-                    if(input) {
-                        input.value = '';
-                        input.focus();
-                    }
-                }, 200);
+                
+                // Einmaligen Klick-Listener auf die Karte legen, um den Pin zu setzen
+                if(!map) initMap();
+                if(map) {
+                    alert('Bitte klicke nun auf die gewünschte Stelle auf der Karte, um den Spot zu platzieren.');
+                    map.once('click', function(e) {
+                        const lat = e.latlng.lat;
+                        const lng = e.latlng.lng;
+                        proceedWithCoordinates(lat, lng);
+                    });
+                }
             }
         }
 
