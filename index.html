@@ -2502,9 +2502,9 @@
                 }
             } else if(choice === 'map') {
                 try { history.back(); } catch(e) {}
+                // Hier wird jetzt direkt auf die Kartenansicht umgeschaltet!
                 switchView('map');
                 
-                // Einmaligen Klick-Listener auf die Karte legen, um den Pin zu setzen
                 if(!map) initMap();
                 if(map) {
                     alert('Bitte klicke nun auf die gewünschte Stelle auf der Karte, um den Spot zu platzieren.');
@@ -3002,7 +3002,7 @@
                                 <span>⭐ Spot bewerten</span>
                                 <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400"></i>
                             </button>
-                            <div id="rating-drop-${spot.id}" class="hidden mt-2 p-2 bg-slate-900 border border-slate-700 rounded-xl max-w-xs space-y-1">
+                            <div id="rating-drop-${spot.id}" class="hidden mt-2 p-2 bg-slate-900 border border-slate-700 rounded-lg max-w-xs space-y-1">
                                 <label class="text-[11px] text-slate-400 block font-medium">Sterne auswählen:</label>
                                 <select onchange="submitDirectSpotRating(${spot.id}, this)" class="w-full text-xs bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-brand-400 focus:outline-none focus:border-brand-500">
                                     <option value="">Auswählen...</option>
