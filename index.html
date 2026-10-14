@@ -92,7 +92,7 @@
         }
     </script>
 </head>
-<body class="h-full bg-slate-900 text-slate-100 flex flex-col font-sans antialiased overflow-hidden" onclick="handleTabSwitchCleanup()">
+<body class="h-full bg-slate-900 text-slate-100 flex flex-col font-sans antialiased overflow-hidden">
 
     <!-- TOP NAVIGATION -->
     <header class="bg-slate-800 border-b border-slate-700 h-16 flex items-center justify-between px-4 lg:px-8 z-30 shrink-0">
@@ -280,6 +280,14 @@
                 </button>
             </div>
 
+            <!-- UNTEN MITTE: Spot Hinzufügen Button -->
+            <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] pointer-events-auto">
+                <button onclick="openSpotCreationChoiceModal()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-bold px-5 py-3 rounded-2xl shadow-2xl border border-brand-400/50 transition cursor-pointer flex items-center space-x-2 text-sm">
+                    <i data-lucide="plus" class="w-5 h-5"></i>
+                    <span>Spot hinzufügen</span>
+                </button>
+            </div>
+
             <!-- UNTEN RECHTS: Mein Standort -->
             <div class="absolute bottom-4 right-4 z-[1000] pointer-events-auto">
                 <button onclick="locateUserOnMap()" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-2xl shadow-2xl border border-slate-700 transition cursor-pointer flex items-center justify-center shrink-0" title="Mein Standort">
@@ -421,7 +429,7 @@
     </main>
 
     <!-- MODAL: SPOT CREATION CHOICE -->
-    <div id="spotCreationChoiceModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4" onclick="event.stopPropagation()">
+    <div id="spotCreationChoiceModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
             <div class="flex justify-between items-center">
                 <h3 class="text-base font-bold text-white">Fotospot hinzufügen</h3>
@@ -434,7 +442,7 @@
                     <span>An meinem aktuellen Standort</span>
                 </button>
                 <button onclick="selectSpotChoice('map')" class="w-full bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-medium py-2.5 px-4 rounded-xl text-xs flex items-center justify-center space-x-2 transition cursor-pointer">
-                    <i data-lucide="search" class="w-4 h-4 text-brand-400"></i>
+                    <i data-lucide="map" class="w-4 h-4 text-brand-400"></i>
                     <span>Auf Karte suchen</span>
                 </button>
             </div>
@@ -442,7 +450,7 @@
     </div>
 
     <!-- MODAL: NEW SPOT -->
-    <div id="newSpotModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4" onclick="event.stopPropagation()">
+    <div id="newSpotModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white" id="spotModalTitle">Neuen Fotospot hinzufügen</h3>
@@ -512,7 +520,7 @@
     </div>
 
     <!-- MODAL: SPOT CONTRIBUTION -->
-    <div id="spotContributionModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4" onclick="event.stopPropagation()">
+    <div id="spotContributionModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white" id="contribModalTitle">Bericht zum Spot erfassen</h3>
@@ -547,7 +555,7 @@
     </div>
 
     <!-- MODAL: NEW MARKET ENTRY -->
-    <div id="newMarketModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4" onclick="event.stopPropagation()">
+    <div id="newMarketModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white" id="marketModalTitle">Neues Inserat erstellen</h3>
@@ -630,7 +638,7 @@
     </div>
 
     <!-- MODAL: PROFILE & AUTH -->
-    <div id="profileModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4" onclick="event.stopPropagation()">
+    <div id="profileModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white">Profil & Anmelden</h3>
@@ -719,7 +727,7 @@
     </div>
 
     <!-- MODAL: PUBLIC PROFILE -->
-    <div id="publicProfileModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4" onclick="event.stopPropagation()">
+    <div id="publicProfileModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-3">
@@ -778,7 +786,7 @@
     </div>
 
     <!-- MODAL: DIREKTNACHRICHTEN / CHAT -->
-    <div id="chatModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-2 sm:p-4" onclick="event.stopPropagation()">
+    <div id="chatModal" style="display: none;" class="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-2 sm:p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-4 sm:p-6 space-y-4 shadow-2xl flex flex-col h-[80vh] sm:h-[550px] mb-2 sm:mb-0">
             <div class="flex justify-between items-center pb-3 border-b border-slate-800 shrink-0">
                 <div class="flex items-center space-x-2">
@@ -987,10 +995,6 @@
                 console.error("Init error:", err);
             }
         };
-
-        function handleTabSwitchCleanup() {
-            closeSpotCreationChoiceModal();
-        }
 
         async function requestPushPermission() {
             if (!('Notification' in window)) {
@@ -1491,6 +1495,7 @@
         }
 
         function switchView(viewName, push = true) {
+            closeSpotCreationChoiceModal();
             currentView = viewName;
             document.querySelectorAll('.view-panel').forEach(el => {
                 el.classList.add('hidden');
@@ -2471,7 +2476,7 @@
             const m = document.getElementById('spotCreationChoiceModal');
             if(m && m.style.display === 'flex') {
                 m.style.display = 'none';
-                history.back();
+                try { history.back(); } catch(e) {}
             }
         }
 
@@ -2480,7 +2485,7 @@
             if(choiceModal) choiceModal.style.display = 'none';
 
             if(choice === 'current') {
-                history.back();
+                try { history.back(); } catch(e) {}
                 if(!userCoords) {
                     if(navigator.geolocation) {
                         navigator.geolocation.getCurrentPosition((pos) => {
@@ -2496,7 +2501,7 @@
                     proceedWithCoordinates(userCoords.lat, userCoords.lng);
                 }
             } else if(choice === 'map') {
-                history.back();
+                try { history.back(); } catch(e) {}
                 switchView('map');
                 setTimeout(() => {
                     toggleMapSearch();
