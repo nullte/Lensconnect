@@ -805,6 +805,13 @@
                     <button onclick="clearCurrentChat()" class="text-[11px] bg-red-500/15 text-red-400 hover:bg-red-500/25 px-2.5 py-1 rounded-lg border border-red-500/30 font-medium transition cursor-pointer">🗑️ Chat für mich leeren</button>
                 </div>
                 <div id="chatMessagesList" class="flex-1 overflow-y-auto space-y-3 pr-2"></div>
+
+                <!-- HINWEIS-BANNER FÜR INSERAT-BEZUG ÜBER EINGABEFELD -->
+                <div id="activeMarketReferenceBanner" class="hidden shrink-0 bg-brand-500/15 border border-brand-500/40 px-3 py-1.5 rounded-xl flex items-center justify-between text-xs text-brand-300 font-medium">
+                    <span id="activeMarketReferenceText">📌 Bezug auf Inserat #LC-001</span>
+                    <button onclick="clearActiveMarketReference()" class="text-slate-400 hover:text-white font-bold ml-2 cursor-pointer">✕</button>
+                </div>
+
                 <div class="pt-2 border-t border-slate-800 flex space-x-2 shrink-0">
                     <input type="text" id="chatInputText" placeholder="Nachricht..." style="font-size: 16px !important;" class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-base focus:outline-none focus:border-brand-500" onkeydown="if(window.event && window.event.key==='Enter') sendChatMessage()">
                     <button id="chatSendBtn" onclick="sendChatMessage()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold px-4 py-2 rounded-xl text-sm transition cursor-pointer shrink-0 flex items-center justify-center space-x-1 min-w-[90px]">
@@ -924,6 +931,7 @@
         let currentMarketFilter = 'all';
         let isPickingLocation = false;
         let currentChatPartner = null;
+        let activeMarketRefCode = null; // Aktueller Bezugs-Code für den Chat
         let isSendingMessage = false;
 
         let spots = [];
@@ -1883,62 +1891,29 @@
             
             showChatRoom(partnerName);
 
-            const myName = userProfile.name || currentUserEmail;
-
+            // Inseratsbezug setzen (Banner anzeigen, statt Nachricht sofort unbemerkt zu senden)
             if (marketCode) {
-                const refTag = `[Bezug: Inserat ${marketCode}]`;
-                const fullMsgText = initialText ? `${initialText}\n${refTag}` : `Hallo, ich interessiere mich für dein Inserat!\n${refTag}`;
-
-                const hasAlreadySent = messages.some(m => {
-                    if(m.id && deletedMessageIds.includes(m.id)) return false;
-                    return ((m.sender === myName && m.receiver === partnerName) || (m.sender === partnerName && m.receiver === myName)) && m.text.includes(refTag);
-                });
-
-                if (!hasAlreadySent) {
-                    const msg = {
-                        sender: myName,
-                        receiver: partnerName,
-                        text: fullMsgText,
-                        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                    };
-                    if (supabaseClient) {
-                        await supabaseClient.from('messages').insert([msg]);
-                        await loadDataFromSupabaseSilent();
-                    } else {
-                        msg.id = Date.now();
-                        messages.push(msg);
-                        localStorage.setItem('lensconnect_messages', JSON.stringify(messages));
-                        renderChatMessages();
-                    }
-                }
-            } else if (initialText) {
-                const existingChat = messages.filter(m => {
-                    if(m.id && deletedMessageIds.includes(m.id)) return false;
-                    return (m.sender === myName && m.receiver === partnerName) || 
-                           (m.sender === partnerName && m.receiver === myName);
-                });
-
-                if (existingChat.length === 0) {
-                    const msg = {
-                        sender: myName,
-                        receiver: partnerName,
-                        text: initialText,
-                        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                    };
-                    if (supabaseClient) {
-                        await supabaseClient.from('messages').insert([msg]);
-                        await loadDataFromSupabaseSilent();
-                    } else {
-                        msg.id = Date.now();
-                        messages.push(msg);
-                        localStorage.setItem('lensconnect_messages', JSON.stringify(messages));
-                        renderChatMessages();
-                    }
-                }
+                setActiveMarketReference(marketCode);
             }
 
             history.pushState({ view: currentView, modal: 'chat' }, '', '');
             document.getElementById('chatModal').style.display = 'flex';
+        }
+
+        function setActiveMarketReference(code) {
+            activeMarketRefCode = code;
+            const banner = document.getElementById('activeMarketReferenceBanner');
+            const bannerText = document.getElementById('activeMarketReferenceText');
+            if (banner && bannerText) {
+                bannerText.textContent = `📌 Bezug auf Inserat ${code}`;
+                banner.classList.remove('hidden');
+            }
+        }
+
+        function clearActiveMarketReference() {
+            activeMarketRefCode = null;
+            const banner = document.getElementById('activeMarketReferenceBanner');
+            if (banner) banner.classList.add('hidden');
         }
 
         function closeChatModal() {
@@ -1947,6 +1922,7 @@
 
         function showChatInbox() {
             currentChatPartner = null;
+            clearActiveMarketReference();
             document.getElementById('chatBackBtn').classList.add('hidden');
             document.getElementById('chatTitle').textContent = 'Direktnachrichten';
             const activeStatusEl = document.getElementById('chatPartnerActiveStatus');
@@ -2078,8 +2054,13 @@
             const input = document.getElementById('chatInputText');
             if(!input || !input.value.trim()) return;
 
-            const text = input.value.trim();
+            let text = input.value.trim();
             const myName = userProfile.name || currentUserEmail;
+
+            // Inserats-Bezug an erste gesendete Nachricht anhängen, falls aktiv
+            if (activeMarketRefCode) {
+                text += `\n[Bezug: Inserat ${activeMarketRefCode}]`;
+            }
             
             isSendingMessage = true;
             const sendBtn = document.getElementById('chatSendBtn');
@@ -2108,6 +2089,7 @@
                     } else {
                         await loadDataFromSupabaseSilent();
                         input.value = '';
+                        clearActiveMarketReference(); // Bezug zurücksetzen nach dem Senden
                     }
                 } else {
                     msg.id = Date.now();
@@ -2115,6 +2097,7 @@
                     localStorage.setItem('lensconnect_messages', JSON.stringify(messages));
                     renderChatMessages();
                     input.value = '';
+                    clearActiveMarketReference();
                 }
             } catch(e) {
                 console.error("Send message error:", e);
@@ -2132,7 +2115,7 @@
                 if(sendBtnText) {
                     sendBtnText.textContent = 'Senden';
                 }
-            }, 3000);
+            }, 1000);
         }
 
         async function deleteChatMessageForMe(msgId) {
