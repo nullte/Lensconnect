@@ -286,15 +286,15 @@
                 </button>
             </div>
 
-            <!-- UNTEN RECHTS: Mein Standort -->
-            <div class="absolute bottom-20 right-4 z-[1000] pointer-events-auto">
+            <!-- UNTEN RECHTS: Mein Standort (weit unten positioniert) -->
+            <div class="absolute bottom-4 right-4 z-[1000] pointer-events-auto">
                 <button onclick="locateUserOnMap()" class="bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-2xl shadow-2xl border border-slate-700 transition cursor-pointer flex items-center justify-center shrink-0" title="Mein Standort">
                     <i data-lucide="crosshair" class="w-5 h-5 text-brand-400"></i>
                 </button>
             </div>
 
-            <!-- UNTEN MITTE: Spot hinzufügen (Pin mit +) -->
-            <div class="absolute bottom-20 left-1/2 -translate-x-1/2 z-[1000] pointer-events-auto">
+            <!-- UNTEN MITTE: Spot hinzufügen (Pin mit +) (ganz unten positioniert) -->
+            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000] pointer-events-auto">
                 <button onclick="enableMapPinMode()" class="bg-brand-500 hover:bg-brand-600 text-slate-900 font-semibold px-4 py-3 rounded-2xl text-sm flex items-center space-x-2 shadow-2xl transition cursor-pointer">
                     <div class="relative flex items-center justify-center">
                         <i data-lucide="map-pin" class="w-4 h-4"></i>
@@ -784,7 +784,10 @@
                             <i data-lucide="message-square" class="w-5 h-5 text-brand-400"></i>
                             <span id="chatTitle">Direktnachrichten</span>
                         </h3>
-                        <span id="chatPartnerActiveStatus" class="text-[10px] text-brand-400 font-medium hidden"></span>
+                        <div class="flex items-center space-x-2">
+                            <span id="chatPartnerActiveStatus" class="text-[10px] text-brand-400 font-medium hidden"></span>
+                            <span id="chatMarketItemBadge" class="text-[10px] bg-brand-500/15 text-brand-400 px-2 py-0.5 rounded border border-brand-500/30 font-semibold hidden"></span>
+                        </div>
                     </div>
                 </div>
                 <button onclick="closeChatModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -922,6 +925,7 @@
         let currentMarketFilter = 'all';
         let isPickingLocation = false;
         let currentChatPartner = null;
+        let currentChatMarketCode = null;
         let isSendingMessage = false;
 
         let spots = [];
@@ -1873,12 +1877,13 @@
             document.getElementById('chatModal').style.display = 'flex';
         }
 
-        async function openChatWithUser(partnerName, initialText = '') {
+        async function openChatWithUser(partnerName, initialText = '', marketCode = null) {
             if(!currentUserEmail) { alert('Bitte zuerst anmelden, um Nachrichten zu senden.'); return; }
             if(!partnerName) return;
             const ppm = document.getElementById('publicProfileModal');
             if(ppm) ppm.style.display = 'none';
             
+            currentChatMarketCode = marketCode;
             showChatRoom(partnerName);
 
             if (initialText) {
@@ -1918,10 +1923,13 @@
 
         function showChatInbox() {
             currentChatPartner = null;
+            currentChatMarketCode = null;
             document.getElementById('chatBackBtn').classList.add('hidden');
             document.getElementById('chatTitle').textContent = 'Direktnachrichten';
             const activeStatusEl = document.getElementById('chatPartnerActiveStatus');
             if(activeStatusEl) activeStatusEl.classList.add('hidden');
+            const marketBadgeEl = document.getElementById('chatMarketItemBadge');
+            if(marketBadgeEl) marketBadgeEl.classList.add('hidden');
 
             document.getElementById('chatInboxView').classList.remove('hidden');
             document.getElementById('chatRoomView').classList.add('hidden');
@@ -1934,6 +1942,16 @@
             document.getElementById('chatBackBtn').classList.remove('hidden');
             document.getElementById('chatTitle').textContent = `Chat mit ${partnerName}`;
             
+            const marketBadgeEl = document.getElementById('chatMarketItemBadge');
+            if(marketBadgeEl) {
+                if(currentChatMarketCode) {
+                    marketBadgeEl.textContent = `Bezug: Inserat ${currentChatMarketCode}`;
+                    marketBadgeEl.classList.remove('hidden');
+                } else {
+                    marketBadgeEl.classList.add('hidden');
+                }
+            }
+
             markChatAsRead();
             
             document.getElementById('chatInboxView').classList.add('hidden');
@@ -3482,7 +3500,7 @@
                 let chatButtonHtml = '';
                 const itemAuthor = item.author || 'Christian';
                 if (!currentUserEmail || itemAuthor !== (userProfile.name || currentUserEmail)) {
-                    chatButtonHtml = `<button onclick="openChatWithUser('${itemAuthor}')" class="w-full bg-brand-500/15 hover:bg-brand-500/25 text-brand-400 border border-brand-500/30 text-xs py-2 px-3 rounded-xl flex items-center justify-center space-x-1.5 font-bold transition cursor-pointer"><i data-lucide="message-square" class="w-3.5 h-3.5"></i><span>Direktnachricht an ${itemAuthor}</span></button>`;
+                    chatButtonHtml = `<button onclick="openChatWithUser('${itemAuthor}', '', '${itemCode}')" class="w-full bg-brand-500/15 hover:bg-brand-500/25 text-brand-400 border border-brand-500/30 text-xs py-2 px-3 rounded-xl flex items-center justify-center space-x-1.5 font-bold transition cursor-pointer"><i data-lucide="message-square" class="w-3.5 h-3.5"></i><span>Direktnachricht an ${itemAuthor}</span></button>`;
                 }
 
                 let marketActions = '';
