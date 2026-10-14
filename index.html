@@ -319,6 +319,7 @@
                             <button onclick="setCategoryFilter('Porträt')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition cursor-pointer">Porträt</button>
                             <button onclick="setCategoryFilter('familienfreundlich')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-brand-400 hover:bg-slate-700 transition cursor-pointer flex items-center space-x-1"><i data-lucide="baby" class="w-3.5 h-3.5"></i><span>Familienfreundlich</span></button>
                             <button onclick="setCategoryFilter('favorites')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-brand-400 hover:bg-slate-700 transition cursor-pointer flex items-center space-x-1"><i data-lucide="heart" class="w-3.5 h-3.5"></i><span>Favoriten</span></button>
+                            <button onclick="setCategoryFilter('my')" class="cat-pill px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-brand-400 hover:bg-slate-700 transition cursor-pointer flex items-center space-x-1"><i data-lucide="user" class="w-3.5 h-3.5"></i><span>Meine Spots</span></button>
                         </div>
                     </div>
                 </div>
@@ -360,6 +361,7 @@
                             <button onclick="filterMarket('anderes')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Anderes Shooting</button>
                             <button onclick="filterMarket('location')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 text-xs transition cursor-pointer">Locations / Studios</button>
                             <button onclick="filterMarket('favorites')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-brand-400 hover:bg-slate-700 text-xs transition cursor-pointer flex items-center space-x-1"><i data-lucide="heart" class="w-3.5 h-3.5"></i><span>Merkliste</span></button>
+                            <button onclick="filterMarket('my')" class="market-filter-btn px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-brand-400 hover:bg-slate-700 text-xs transition cursor-pointer flex items-center space-x-1"><i data-lucide="user" class="w-3.5 h-3.5"></i><span>Meine Inserate</span></button>
                         </div>
 
                         <div class="flex items-center space-x-3 shrink-0">
@@ -422,6 +424,10 @@
             </div>
             <div class="space-y-3">
                 <input type="text" id="newSpotTitle" placeholder="Spot Titel (z.B. Burgruine)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Ort / Region (optional)</label>
+                    <input type="text" id="newSpotLocationText" placeholder="z.B. Arnoldstein, Villach, Wörthersee..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
+                </div>
                 <div class="grid grid-cols-2 gap-2">
                     <select id="newSpotCategory" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
                         <option value="Landschaft">Landschaft</option>
@@ -1028,7 +1034,7 @@
             const userKey = `${spotId}_${currentUsername.toLowerCase()}`;
 
             if (userRatingsMap[userKey]) {
-                alert('Du hast diesen Spot bereits bewertet. Pro Nutzer ist nur eine Bewertung möglich.');
+                alert('Du diesen Spot bereits bewertet. Pro Nutzer ist nur eine Bewertung möglich.');
                 selectEl.value = "";
                 return;
             }
@@ -1096,6 +1102,7 @@
                         spots = spotsData.map(s => ({
                             ...s,
                             desc: s.desc,
+                            location_text: s.location_text || s.locationText || '',
                             contributions: s.spot_contributions || [],
                             status: s.status || 'frei',
                             family_friendly: s.family_friendly || false,
@@ -1183,6 +1190,7 @@
                     spots = spotsData.map(s => ({
                         ...s,
                         desc: s.desc,
+                        location_text: s.location_text || s.locationText || '',
                         contributions: s.spot_contributions || [],
                         status: s.status || 'frei',
                         family_friendly: s.family_friendly || false,
@@ -1224,8 +1232,8 @@
 
         function loadLocalFallback() {
             spots = JSON.parse(localStorage.getItem('lensconnect_spots')) || [
-                { id: 1, title: 'Burgruine Landskron', category: 'Urbex / Lost Place', status: 'frei', family_friendly: false, rating: 5, tags: 'Ruine, Aussicht, Drohne', lat: 46.621, lng: 13.904, desc: 'Toller Ausblick über den Villacher Raum, perfekt bei Sonnenuntergang.', author: 'Christian', image: '', contributions: [], ratings_list: [5, 4] },
-                { id: 2, title: 'Wörthersee Ostbucht', category: 'Landschaft', status: 'frei', family_friendly: true, rating: 4, tags: 'See, Spiegelung, Familie', lat: 46.622, lng: 14.286, desc: 'Spiegelungen und Stege zur blauen Stunde. Ideal auch mit Kindern.', author: 'Christian', image: '', contributions: [], ratings_list: [4] }
+                { id: 1, title: 'Burgruine Landskron', location_text: 'Villach', category: 'Urbex / Lost Place', status: 'frei', family_friendly: false, rating: 5, tags: 'Ruine, Aussicht, Drohne', lat: 46.621, lng: 13.904, desc: 'Toller Ausblick über den Villacher Raum, perfekt bei Sonnenuntergang.', author: 'Christian', image: '', contributions: [], ratings_list: [5, 4] },
+                { id: 2, title: 'Wörthersee Ostbucht', location_text: 'Klagenfurt', category: 'Landschaft', status: 'frei', family_friendly: true, rating: 4, tags: 'See, Spiegelung, Familie', lat: 46.622, lng: 14.286, desc: 'Spiegelungen und Stege zur blauen Stunde. Ideal auch mit Kindern.', author: 'Christian', image: '', contributions: [], ratings_list: [4] }
             ];
             marketItems = JSON.parse(localStorage.getItem('lensconnect_market')) || [
                 { id: 1, type: 'biete', category: 'einzel', title: 'Porträt-Shooting am See', level: 'Profi', price: 'TFP oder Spende', contact: 'christian@example.com', desc: 'Suche Model für ein entspanntes Outdoor-Shooting.', author: 'Christian', safe_shooting: true, date_text: '15.06.2026', location_text: 'Raum Villach / Wörthersee' },
@@ -1879,7 +1887,7 @@
         }
 
         async function sendChatMessage() {
-            if(isSendingMessage) return; // Blockade bei laufendem Sendeversuch
+            if(isSendingMessage) return;
             if(!currentChatPartner) return;
             const input = document.getElementById('chatInputText');
             if(!input || !input.value.trim()) return;
@@ -1887,7 +1895,6 @@
             const text = input.value.trim();
             const myName = userProfile.name || currentUserEmail;
             
-            // UI-Blockade aktivieren
             isSendingMessage = true;
             const sendBtn = document.getElementById('chatSendBtn');
             const sendBtnText = document.getElementById('chatSendBtnText');
@@ -1929,7 +1936,6 @@
 
             markChatAsRead();
 
-            // Sende-Button nach 3 Sekunden wieder freigeben
             setTimeout(() => {
                 isSendingMessage = false;
                 if(sendBtn) {
@@ -2317,6 +2323,7 @@
                     else statusBadge = '<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold">🟢 Frei zugänglich</span>';
 
                     let familyBadge = spot.family_friendly ? '<span class="text-[10px] bg-brand-500/20 text-brand-400 px-2 py-0.5 rounded font-bold">Familienfreundlich</span>' : '';
+                    let spotLocationTextHtml = spot.location_text ? `<div class="text-[11px] text-brand-700 font-semibold">📍 ${spot.location_text}</div>` : '';
 
                     const ratingData = getSpotAverageRating(spot);
 
@@ -2335,6 +2342,7 @@
                             <div class="flex justify-between items-start">
                                 <b class="text-sm text-slate-900">${spot.title}</b>
                             </div>
+                            ${spotLocationTextHtml}
                             <div class="flex flex-wrap items-center gap-1">
                                 <span class="inline-block text-[10px] bg-brand-500/15 text-brand-700 px-2 py-0.5 rounded font-semibold">${spot.category}</span>
                                 <span class="text-[10px] text-amber-600 font-bold">${ratingData.stars} (${ratingData.avg})</span>
@@ -2635,19 +2643,28 @@
             if(!container) return;
             container.innerHTML = '';
             const searchInput = document.getElementById('spotSearchInput');
-            const searchVal = searchInput ? searchInput.value.toLowerCase() : '';
+            const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
             const radiusFilter = document.getElementById('spotRadiusFilter') ? document.getElementById('spotRadiusFilter').value : 'all';
 
             spots.forEach(spot => {
+                const myName = userProfile.name || currentUserEmail || '';
                 if(currentCategoryFilter === 'favorites') {
                     if(!favorites.spots.includes(spot.id)) return;
                 } else if(currentCategoryFilter === 'familienfreundlich') {
                     if(!spot.family_friendly) return;
+                } else if(currentCategoryFilter === 'my') {
+                    if(!spot.author || spot.author !== myName) return;
                 } else if(currentCategoryFilter !== 'all' && spot.category !== currentCategoryFilter) {
                     return;
                 }
                 
-                if(searchVal && !spot.title.toLowerCase().includes(searchVal) && !spot.desc?.toLowerCase().includes(searchVal) && !spot.tags?.toLowerCase().includes(searchVal)) return;
+                if(searchVal) {
+                    const matchTitle = spot.title && spot.title.toLowerCase().includes(searchVal);
+                    const matchDesc = spot.desc && spot.desc.toLowerCase().includes(searchVal);
+                    const matchTags = spot.tags && spot.tags.toLowerCase().includes(searchVal);
+                    const matchLocation = spot.location_text && spot.location_text.toLowerCase().includes(searchVal);
+                    if(!matchTitle && !matchDesc && !matchTags && !matchLocation) return;
+                }
 
                 if(radiusFilter !== 'all' && spot.lat && spot.lng) {
                     if(userCoords) {
@@ -2670,6 +2687,7 @@
                 else statusBadge = '<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold">🟢 Frei zugänglich</span>';
 
                 let familyBadge = spot.family_friendly ? '<span class="text-[10px] bg-brand-500/20 text-brand-400 px-2 py-0.5 rounded font-bold">Familienfreundlich</span>' : '';
+                let spotLocationTextHtml = spot.location_text ? `<div class="text-xs text-brand-400 font-medium flex items-center space-x-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0 text-brand-400"></i><span>Ort / Region: <strong>${spot.location_text}</strong></span></div>` : '';
 
                 const ratingData = getSpotAverageRating(spot);
 
@@ -2742,6 +2760,7 @@
                                 ${distText}
                             </div>
                         </div>
+                        ${spotLocationTextHtml}
                         <div class="flex flex-wrap items-center gap-2">
                             ${statusBadge}
                             ${familyBadge}
@@ -2804,6 +2823,7 @@
                 let match = false;
                 if(cat === 'favorites' && text.includes('favoriten')) match = true;
                 else if(cat === 'familienfreundlich' && text.includes('familienfreundlich')) match = true;
+                else if(cat === 'my' && text.includes('meine spots')) match = true;
                 else if(text === cat.toLowerCase() || (cat === 'all' && text === 'alle')) match = true;
 
                 if(match) {
@@ -2828,6 +2848,7 @@
             if(modalTitle) modalTitle.textContent = 'Neuen Fotospot hinzufügen';
             
             document.getElementById('newSpotTitle').value = '';
+            document.getElementById('newSpotLocationText').value = '';
             document.getElementById('newSpotTags').value = '';
             document.getElementById('newSpotDesc').value = '';
             document.getElementById('newSpotStatus').value = 'frei';
@@ -2857,6 +2878,7 @@
             if(modalTitle) modalTitle.textContent = 'Fotospot bearbeiten';
 
             document.getElementById('newSpotTitle').value = spot.title;
+            document.getElementById('newSpotLocationText').value = spot.location_text || '';
             document.getElementById('newSpotCategory').value = spot.category;
             document.getElementById('newSpotStatus').value = spot.status || 'frei';
             document.getElementById('newSpotFamily').checked = spot.family_friendly || false;
@@ -2903,6 +2925,7 @@
 
                 const updateData = {
                     title: titleEl.value,
+                    location_text: document.getElementById('newSpotLocationText').value.trim(),
                     category: document.getElementById('newSpotCategory').value,
                     status: document.getElementById('newSpotStatus').value,
                     family_friendly: document.getElementById('newSpotFamily').checked,
@@ -2927,6 +2950,7 @@
             } else {
                 const spotData = {
                     title: titleEl.value,
+                    location_text: document.getElementById('newSpotLocationText').value.trim(),
                     category: document.getElementById('newSpotCategory').value,
                     status: document.getElementById('newSpotStatus').value,
                     family_friendly: document.getElementById('newSpotFamily').checked,
@@ -3137,6 +3161,7 @@
                 const text = btn.textContent.trim().toLowerCase();
                 let match = false;
                 if(filter === 'favorites' && text.includes('merkliste')) match = true;
+                else if(filter === 'my' && text.includes('meine inserate')) match = true;
                 else if(filter === 'all' && (text.includes('alle') || text.includes('anzeigen'))) match = true;
                 else if(filter === 'biete' && text === 'biete') match = true;
                 else if(filter === 'suche' && text === 'suche') match = true;
@@ -3169,6 +3194,7 @@
 
             const THREE_DAYS = 3 * 24 * 60 * 60 * 1000;
             const now = Date.now();
+            const myName = userProfile.name || currentUserEmail || '';
 
             let filteredItems = marketItems.filter(item => {
                 if(item.completed) {
@@ -3189,6 +3215,8 @@
 
                 if(currentMarketFilter === 'favorites') {
                     if(!favorites.market.includes(item.id)) return false;
+                } else if(currentMarketFilter === 'my') {
+                    if(!item.author || item.author !== myName) return false;
                 } else {
                     if(currentMarketFilter === 'biete' && item.type !== 'biete') return false;
                     if(currentMarketFilter === 'suche' && item.type !== 'suche') return false;
