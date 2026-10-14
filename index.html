@@ -2530,7 +2530,6 @@
             }
         }
 
-        // NEU: Auswahl-Modal beim Klick auf "Neuen Spot erstellen"
         function openSpotCreationChoiceModal() {
             if(!currentUserEmail) {
                 alert('Bitte melde dich an, um einen Spot hinzuzufügen.');
@@ -2542,12 +2541,19 @@
         }
 
         function closeSpotCreationChoiceModal() {
-            history.back();
+            const m = document.getElementById('spotCreationChoiceModal');
+            if(m && m.style.display === 'flex') {
+                m.style.display = 'none';
+                history.back();
+            }
         }
 
         async function selectSpotChoice(choice) {
-            closeSpotCreationChoiceModal();
+            const choiceModal = document.getElementById('spotCreationChoiceModal');
+            if(choiceModal) choiceModal.style.display = 'none';
+
             if(choice === 'current') {
+                history.back(); // Entfernt den History-State des Choice-Modals
                 if(!userCoords) {
                     if(navigator.geolocation) {
                         navigator.geolocation.getCurrentPosition((pos) => {
@@ -2563,21 +2569,29 @@
                     proceedWithCoordinates(userCoords.lat, userCoords.lng);
                 }
             } else if(choice === 'search') {
-                history.pushState({ view: currentView, modal: 'spotSearchCity' }, '', '');
-                const m = document.getElementById('spotSearchCityModal');
-                if(m) m.style.display = 'flex';
+                // Choice-Modal State im Verlauf lassen, aber direkt das Such-Modal öffnen
+                const searchModal = document.getElementById('spotSearchCityModal');
+                if(searchModal) searchModal.style.display = 'flex';
                 setTimeout(() => {
                     const inp = document.getElementById('spotCitySearchInput');
-                    if(inp) inp.focus();
+                    if(inp) {
+                        inp.value = '';
+                        inp.focus();
+                    }
                 }, 100);
             } else if(choice === 'map') {
+                history.back(); // Entfernt den History-State des Choice-Modals
                 switchView('map');
                 enableMapPinMode();
             }
         }
 
         function closeSpotSearchCityModal() {
-            history.back();
+            const m = document.getElementById('spotSearchCityModal');
+            if(m && m.style.display === 'flex') {
+                m.style.display = 'none';
+                history.back();
+            }
         }
 
         async function executeSpotCitySearch() {
@@ -2596,7 +2610,12 @@
                 if(results && results.length > 0) {
                     const lat = parseFloat(results[0].lat);
                     const lon = parseFloat(results[0].lon);
-                    history.back(); // Schließt das Such-Modal
+                    
+                    // Beide Modals direkt schließen & History bereinigen
+                    const searchModal = document.getElementById('spotSearchCityModal');
+                    if(searchModal) searchModal.style.display = 'none';
+                    history.back(); // Schließt das Choice-Modal aus der History
+                    
                     proceedWithCoordinates(lat, lon, results[0].display_name);
                 } else {
                     alert(`Der Ort "${query}" wurde nicht gefunden.`);
@@ -2616,7 +2635,6 @@
             openNewSpotModal();
 
             if (forcedLocationName) {
-                // Kurzen Namen extrahieren (erster Teil vor dem Komma)
                 const shortName = forcedLocationName.split(',')[0];
                 document.getElementById('newSpotLocationText').value = shortName;
             } else {
