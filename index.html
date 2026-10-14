@@ -786,7 +786,6 @@
                         </h3>
                         <div class="flex items-center space-x-2">
                             <span id="chatPartnerActiveStatus" class="text-[10px] text-brand-400 font-medium hidden"></span>
-                            <span id="chatMarketItemBadge" class="text-[10px] bg-brand-500/15 text-brand-400 px-2 py-0.5 rounded border border-brand-500/30 font-semibold hidden"></span>
                         </div>
                     </div>
                 </div>
@@ -925,7 +924,6 @@
         let currentMarketFilter = 'all';
         let isPickingLocation = false;
         let currentChatPartner = null;
-        let currentChatMarketCode = null;
         let isSendingMessage = false;
 
         let spots = [];
@@ -1883,10 +1881,38 @@
             const ppm = document.getElementById('publicProfileModal');
             if(ppm) ppm.style.display = 'none';
             
-            currentChatMarketCode = marketCode;
             showChatRoom(partnerName);
 
-            if (initialText) {
+            // Falls über ein Inserat geöffnet, Inserat-Bezug direkt an Nachricht anhängen
+            if (marketCode) {
+                const myName = userProfile.name || currentUserEmail;
+                const refText = `[Bezug: Inserat ${marketCode}]`;
+                
+                const hasRefMessage = messages.some(m => {
+                    if(m.id && deletedMessageIds.includes(m.id)) return false;
+                    return ((m.sender === myName && m.receiver === partnerName) || (m.sender === partnerName && m.receiver === myName)) && m.text.includes(refText);
+                });
+
+                if (!hasRefMessage) {
+                    const fullText = initialText ? `${initialText}\n${refText}` : `Hallo, ich habe eine Frage zu deinem Inserat.\n${refText}`;
+                    const msg = {
+                        sender: myName,
+                        receiver: partnerName,
+                        text: fullText,
+                        market_code: marketCode,
+                        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    };
+                    if (supabaseClient) {
+                        await supabaseClient.from('messages').insert([msg]);
+                        await loadDataFromSupabaseSilent();
+                    } else {
+                        msg.id = Date.now();
+                        messages.push(msg);
+                        localStorage.setItem('lensconnect_messages', JSON.stringify(messages));
+                        renderChatMessages();
+                    }
+                }
+            } else if (initialText) {
                 const myName = userProfile.name || currentUserEmail;
                 const existingChat = messages.filter(m => {
                     if(m.id && deletedMessageIds.includes(m.id)) return false;
@@ -1923,13 +1949,10 @@
 
         function showChatInbox() {
             currentChatPartner = null;
-            currentChatMarketCode = null;
             document.getElementById('chatBackBtn').classList.add('hidden');
             document.getElementById('chatTitle').textContent = 'Direktnachrichten';
             const activeStatusEl = document.getElementById('chatPartnerActiveStatus');
             if(activeStatusEl) activeStatusEl.classList.add('hidden');
-            const marketBadgeEl = document.getElementById('chatMarketItemBadge');
-            if(marketBadgeEl) marketBadgeEl.classList.add('hidden');
 
             document.getElementById('chatInboxView').classList.remove('hidden');
             document.getElementById('chatRoomView').classList.add('hidden');
@@ -1941,16 +1964,6 @@
             currentChatPartner = partnerName;
             document.getElementById('chatBackBtn').classList.remove('hidden');
             document.getElementById('chatTitle').textContent = `Chat mit ${partnerName}`;
-            
-            const marketBadgeEl = document.getElementById('chatMarketItemBadge');
-            if(marketBadgeEl) {
-                if(currentChatMarketCode) {
-                    marketBadgeEl.textContent = `Bezug: Inserat ${currentChatMarketCode}`;
-                    marketBadgeEl.classList.remove('hidden');
-                } else {
-                    marketBadgeEl.classList.add('hidden');
-                }
-            }
 
             markChatAsRead();
             
@@ -2177,9 +2190,22 @@
 
                 let highlightClass = isNewAndUnread ? 'unread-highlight border-2 border-brand-500 bg-brand-500/10' : '';
 
+                // Falls Nachricht einen Inserat-Bezug hat, diesen als kleinen dezenten Tag darstellen
+                let messageContentHtml = m.text;
+                if (m.market_code || m.text.includes('[Bezug: Inserat')) {
+                    const codeMatch = m.text.match(/\[Bezug: Inserat (#LC-\d+)\]/);
+                    const code = m.market_code || (codeMatch ? codeMatch[1] : '');
+                    const cleanText = m.text.replace(/\[Bezug: Inserat #LC-\d+\]/, '').trim();
+                    
+                    messageContentHtml = `
+                        <div>${cleanText}</div>
+                        ${code ? `<div class="mt-1 pt-1 border-t border-slate-700/50 text-[10px] text-brand-300 font-semibold opacity-90">📌 Bezug: Inserat ${code}</div>` : ''}
+                    `;
+                }
+
                 div.innerHTML = `
                     <div class="max-w-[80%] rounded-2xl px-3.5 py-2 text-xs transition-all ${highlightClass} ${isMe ? 'bg-brand-500 text-slate-900 font-medium' : 'bg-slate-800 text-slate-200 border border-slate-700'}">
-                        <span>${m.text}</span>
+                        ${messageContentHtml}
                     </div>
                     <div class="flex items-center space-x-2 mt-0.5 px-1">
                         <span class="text-[9px] text-slate-500">${m.time || ''}</span>
