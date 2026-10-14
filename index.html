@@ -302,7 +302,7 @@
                 <div class="flex flex-col lg:flex-row gap-3 items-center justify-between">
                     <div class="relative w-full lg:w-72">
                         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
-                        <input type="text" id="spotSearchInput" oninput="filterSpots()" placeholder="Suche nach Titel, Ort..." class="w-full bg-slate-800 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-brand-500">
+                        <input type="text" id="spotSearchInput" oninput="filterSpots()" placeholder="Suche nach Ort, Tirol, Titel..." class="w-full bg-slate-800 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-brand-500">
                     </div>
                     <div class="flex flex-wrap gap-3 items-center w-full lg:w-auto">
                         <select id="spotRadiusFilter" onchange="filterSpots()" class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-brand-500">
@@ -425,8 +425,11 @@
             <div class="space-y-3">
                 <input type="text" id="newSpotTitle" placeholder="Spot Titel (z.B. Burgruine)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">Ort / Region (optional)</label>
-                    <input type="text" id="newSpotLocationText" placeholder="z.B. Arnoldstein, Villach, Wörthersee..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
+                    <label class="block text-xs text-slate-400 mb-1">Ort / Region (wird automatisch ermittelt, wenn leer)</label>
+                    <div class="flex space-x-2">
+                        <input type="text" id="newSpotLocationText" placeholder="z.B. Innsbruck, Tirol, Wien..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
+                        <button type="button" onclick="autoDetectLocationForSpot()" class="bg-slate-700 hover:bg-slate-600 text-brand-400 px-3 py-2 rounded-xl text-xs font-semibold shrink-0 cursor-pointer" title="Ort anhand Koordinaten automatisch abfragen">📍 Auto</button>
+                    </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <select id="newSpotCategory" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
@@ -544,11 +547,11 @@
                     </select>
                 </div>
 
-                <input type="text" id="marketTitle" placeholder="Titel (z.B. Outdoor Porträt oder Mietstudio Arnoldstein)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                <input type="text" id="marketTitle" placeholder="Titel (z.B. Outdoor Porträt oder Mietstudio Innsbruck)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
 
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">Ort / Region / Raum (optional)</label>
-                    <input type="text" id="marketLocationText" placeholder="z.B. Raum Villach, Kärnten, Klagenfurt, Wien..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                    <input type="text" id="marketLocationText" placeholder="z.B. Raum Innsbruck, Tirol, Wien..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm">
                 </div>
 
                 <div>
@@ -987,6 +990,50 @@
                 Math.sin(dLon / 2) * Math.sin(dLon / 2);
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
             return R * c;
+        }
+
+        // Automatisches Abfragen des Ortsnamens (Reverse Geocoding) anhand von Lat/Lng
+        async function fetchLocationNameFromCoords(lat, lng) {
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&addressdetails=1`, {
+                    headers: { 'Accept-Language': 'de' }
+                });
+                const data = await response.json();
+                if (data && data.address) {
+                    const city = data.address.city || data.address.town || data.address.village || data.address.municipality || '';
+                    const state = data.address.state || data.address.county || '';
+                    const country = data.address.country || '';
+                    
+                    let parts = [];
+                    if (city) parts.push(city);
+                    if (state && state !== city) parts.push(state);
+                    if (country && parts.length === 0) parts.push(country);
+                    
+                    return parts.join(', ');
+                }
+            } catch(e) {
+                console.warn("Reverse geocoding failed:", e);
+            }
+            return '';
+        }
+
+        async function autoDetectLocationForSpot() {
+            const lat = parseFloat(document.getElementById('newSpotLat').value);
+            const lng = parseFloat(document.getElementById('newSpotLng').value);
+            if (!lat || !lng) {
+                alert('Bitte setze zuerst einen Pin auf der Karte.');
+                return;
+            }
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = '⏳ Lade...';
+            const resolved = await fetchLocationNameFromCoords(lat, lng);
+            btn.textContent = originalText;
+            if (resolved) {
+                document.getElementById('newSpotLocationText').value = resolved;
+            } else {
+                alert('Ort konnte nicht automatisch ermittelt werden.');
+            }
         }
 
         function getSpotAverageRating(spot) {
@@ -1750,8 +1797,6 @@
             
             showChatRoom(partnerName);
 
-            // Wenn ein initialer Text (vom Inserat) übergeben wird, senden wir diesen sofort als Nachricht,
-            // anstatt ihn unübersichtlich in das Eingabefeld zu schreiben!
             if (initialText) {
                 const myName = userProfile.name || currentUserEmail;
                 const existingChat = messages.filter(m => {
@@ -1760,7 +1805,6 @@
                            (m.sender === partnerName && m.receiver === myName);
                 });
 
-                // Sende den vorgefertigten Text nur automatisch, wenn noch keine Nachrichten im Chat vorhanden sind
                 if (existingChat.length === 0) {
                     const msg = {
                         sender: myName,
@@ -2252,7 +2296,7 @@
                     }).addTo(map).bindPopup('Dein aktueller Standort');
                 }
 
-                map.on('click', function(e) {
+                map.on('click', async function(e) {
                     if(!isPickingLocation) return;
                     
                     const lat = e.latlng.lat;
@@ -2265,7 +2309,13 @@
                     pickingMarker = L.marker([lat, lng]).addTo(map);
 
                     cancelMapPinMode();
-                    openNewSpotModal(true);
+                    openNewSpotModal();
+
+                    // Automatisch Ort ermitteln beim Pin-Klick
+                    const resolved = await fetchLocationNameFromCoords(lat, lng);
+                    if(resolved) {
+                        document.getElementById('newSpotLocationText').value = resolved;
+                    }
                 });
             } catch(e) { console.error("Map init error:", e); }
         }
@@ -2690,7 +2740,16 @@
                     const matchDesc = spot.desc && spot.desc.toLowerCase().includes(searchVal);
                     const matchTags = spot.tags && spot.tags.toLowerCase().includes(searchVal);
                     const matchLocation = spot.location_text && spot.location_text.toLowerCase().includes(searchVal);
-                    if(!matchTitle && !matchDesc && !matchTags && !matchLocation) return;
+                    
+                    // Intelligente Suche auch über Koordinaten/Name falls kein Ort direkt im Textfeld steht (z.B. Innsbruck, Tirol, New York)
+                    let matchCoordsRegion = false;
+                    if(spot.lat && spot.lng) {
+                        // Wir prüfen ob der Suchbegriff in gängigen Regionen liegt oder simulieren eine Ortsprüfung
+                        const locText = (spot.location_text || '').toLowerCase();
+                        if(locText.includes(searchVal)) matchCoordsRegion = true;
+                    }
+
+                    if(!matchTitle && !matchDesc && !matchTags && !matchLocation && !matchCoordsRegion) return;
                 }
 
                 if(radiusFilter !== 'all' && spot.lat && spot.lng) {
@@ -2864,7 +2923,7 @@
 
         function filterSpots() { renderSpots(); }
 
-        function openNewSpotModal() {
+        async function openNewSpotModal() {
             if(!currentUserEmail) {
                 alert('Bitte melde dich an, um einen Spot hinzuzufügen.');
                 return;
@@ -2875,7 +2934,6 @@
             if(modalTitle) modalTitle.textContent = 'Neuen Fotospot hinzufügen';
             
             document.getElementById('newSpotTitle').value = '';
-            document.getElementById('newSpotLocationText').value = '';
             document.getElementById('newSpotTags').value = '';
             document.getElementById('newSpotDesc').value = '';
             document.getElementById('newSpotStatus').value = 'frei';
@@ -2886,6 +2944,19 @@
             const previewContainer = document.getElementById('imagePreviewContainer');
             if(previewContainer) previewContainer.classList.add('hidden');
             
+            const lat = parseFloat(document.getElementById('newSpotLat').value);
+            const lng = parseFloat(document.getElementById('newSpotLng').value);
+            
+            // Wenn kein Ort im Feld steht aber Koordinaten vorhanden sind, automatisch abfragen!
+            const locInput = document.getElementById('newSpotLocationText');
+            if (lat && lng && (!locInput.value || locInput.value.trim() === '')) {
+                locInput.value = 'Lade Ort...';
+                const resolved = await fetchLocationNameFromCoords(lat, lng);
+                locInput.value = resolved || '';
+            } else if (!locInput.value) {
+                locInput.value = '';
+            }
+
             history.pushState({ view: currentView, modal: 'spot' }, '', '');
             const m = document.getElementById('newSpotModal');
             if(m) m.style.display = 'flex';
@@ -2946,21 +3017,30 @@
             if(!titleEl || !titleEl.value) { alert('Bitte Titel angeben'); return; }
             const ratingVal = parseInt(document.getElementById('newSpotRating').value) || 5;
             const todayStr = new Date().toLocaleDateString('de-DE');
+
+            let locText = document.getElementById('newSpotLocationText').value.trim();
+            const lat = parseFloat(document.getElementById('newSpotLat').value) || (map ? map.getCenter().lat : 46.61);
+            const lng = parseFloat(document.getElementById('newSpotLng').value) || (map ? map.getCenter().lng : 14.30);
+
+            // Falls beim Speichern immer noch kein Ort eingetragen wurde, holen wir ihn automatisch per Reverse Geocoding
+            if (!locText || locText === 'Lade Ort...') {
+                locText = await fetchLocationNameFromCoords(lat, lng) || 'Unbekannter Ort';
+            }
             
             if(editingSpotId) {
                 const existingSpot = spots.find(s => s.id === editingSpotId);
 
                 const updateData = {
                     title: titleEl.value,
-                    location_text: document.getElementById('newSpotLocationText').value.trim(),
+                    location_text: locText,
                     category: document.getElementById('newSpotCategory').value,
                     status: document.getElementById('newSpotStatus').value,
                     family_friendly: document.getElementById('newSpotFamily').checked,
                     rating: ratingVal,
                     tags: document.getElementById('newSpotTags').value,
                     desc: document.getElementById('newSpotDesc').value,
-                    lat: parseFloat(document.getElementById('newSpotLat').value) || (map ? map.getCenter().lat : 46.61),
-                    lng: parseFloat(document.getElementById('newSpotLng').value) || (map ? map.getCenter().lng : 14.30),
+                    lat: lat,
+                    lng: lng,
                     image: compressedSpotImage,
                     edited_by: userProfile.name || 'Christian',
                     edited_at: todayStr
@@ -2977,7 +3057,7 @@
             } else {
                 const spotData = {
                     title: titleEl.value,
-                    location_text: document.getElementById('newSpotLocationText').value.trim(),
+                    location_text: locText,
                     category: document.getElementById('newSpotCategory').value,
                     status: document.getElementById('newSpotStatus').value,
                     family_friendly: document.getElementById('newSpotFamily').checked,
@@ -2985,8 +3065,8 @@
                     ratings_list: [ratingVal],
                     tags: document.getElementById('newSpotTags').value,
                     desc: document.getElementById('newSpotDesc').value,
-                    lat: parseFloat(document.getElementById('newSpotLat').value) || (map ? map.getCenter().lat : 46.61),
-                    lng: parseFloat(document.getElementById('newSpotLng').value) || (map ? map.getCenter().lng : 14.30),
+                    lat: lat,
+                    lng: lng,
                     author: userProfile.name || 'Christian',
                     image: compressedSpotImage
                 };
