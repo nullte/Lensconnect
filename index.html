@@ -2143,7 +2143,8 @@
         }
 
         function jumpToMarketItemByCode(code) {
-            closeChatModal();
+            const chatModal = document.getElementById('chatModal');
+            if(chatModal) chatModal.style.display = 'none';
             switchView('market');
             setTimeout(() => {
                 const searchInput = document.getElementById('marketSearchInput');
@@ -2485,7 +2486,6 @@
         }
 
         async function selectSpotChoice(choice) {
-            // Modal sofort komplett verstecken ohne history.back-Fehler
             const choiceModal = document.getElementById('spotCreationChoiceModal');
             if(choiceModal) choiceModal.style.display = 'none';
 
@@ -2505,7 +2505,6 @@
                     proceedWithCoordinates(userCoords.lat, userCoords.lng);
                 }
             } else if(choice === 'map') {
-                // Ansicht direkt auf Karte wechseln
                 switchView('map');
                 
                 if(!map) initMap();
@@ -2520,7 +2519,6 @@
                         const lat = e.latlng.lat;
                         const lng = e.latlng.lng;
                         
-                        // Visuellen temporären Check-Pin anzeigen
                         showTempCheckPin(lat, lng);
 
                         setTimeout(() => {
