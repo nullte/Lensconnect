@@ -945,15 +945,18 @@
         let markersLayer = null;
         let userLocationMarker = null;
         let userCoords = null;
-        let compressedSpotImage = '';
+        
+        // Storage Blobs
+        let spotImageBlob = null;
+        let contribImageBlob = null;
+        let portfolioImageBlob = null;
+        let profileAvatarBlob = null;
+
         let editingSpotId = null;
         let editingMarketId = null;
         let activeContribSpotId = null;
         let editingContribSpotId = null;
         let editingContribId = null;
-        let compressedContribImage = '';
-        let compressedPortfolioImage = '';
-        let compressedProfileAvatar = '';
         let currentCategoryFilter = 'all';
         let currentMarketFilter = 'all';
         let currentChatPartner = null;
@@ -978,6 +981,27 @@
         function getMarketItemCode(id) {
             const num = parseInt(id) || 1;
             return `#LC-${String(num).padStart(3, '0')}`;
+        }
+
+        async function uploadImageToStorage(fileOrBlob, folder = 'uploads') {
+            if (!supabaseClient || !fileOrBlob) return '';
+            try {
+                const fileName = `${folder}/${Date.now()}_${Math.random().toString(36).substring(2, 9)}.jpg`;
+                const { data, error } = await supabaseClient.storage
+                    .from('media')
+                    .upload(fileName, fileOrBlob, { upsert: true });
+                if (error) {
+                    console.error("Storage upload error:", error);
+                    return '';
+                }
+                const { data: { publicUrl } } = supabaseClient.storage
+                    .from('media')
+                    .getPublicUrl(fileName);
+                return publicUrl;
+            } catch (e) {
+                console.error("Storage upload exception:", e);
+                return '';
+            }
         }
 
         window.onload = async function() {
@@ -1641,13 +1665,15 @@
                     canvas.width = w; canvas.height = h;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, w, h);
-                    compressedProfileAvatar = canvas.toDataURL('image/jpeg', 0.8);
-                    const prev = document.getElementById('profileAvatarPreview');
-                    const prevCont = document.getElementById('profileAvatarPreviewContainer');
-                    if(prev && prevCont) {
-                        prev.src = compressedProfileAvatar;
-                        prevCont.classList.remove('hidden');
-                    }
+                    canvas.toBlob((blob) => {
+                        profileAvatarBlob = blob;
+                        const prev = document.getElementById('profileAvatarPreview');
+                        const prevCont = document.getElementById('profileAvatarPreviewContainer');
+                        if(prev && prevCont) {
+                            prev.src = URL.createObjectURL(blob);
+                            prevCont.classList.remove('hidden');
+                        }
+                    }, 'image/jpeg', 0.8);
                 };
                 img.src = e.target.result;
             };
@@ -1669,15 +1695,26 @@
                     canvas.width = w; canvas.height = h;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, w, h);
-                    compressedPortfolioImage = canvas.toDataURL('image/jpeg', 0.8);
+                    canvas.toBlob((blob) => {
+                        portfolioImageBlob = blob;
+                    }, 'image/jpeg', 0.8);
                 };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        function addPortfolioItem() {
-            if(!compressedPortfolioImage) { alert('Bitte ein Foto auswählen.'); return; }
+        async function addPortfolioItem() {
+            if(!portfolioImageBlob && !userProfile.portfolio) { alert('Bitte ein Foto auswählen.'); return; }
+            let imageUrl = '';
+            if (portfolioImageBlob) {
+                imageUrl = await uploadImageToStorage(portfolioImageBlob, 'portfolio');
+            }
+            if(!imageUrl) {
+                alert('Fehler beim Hochladen des Bildes.');
+                return;
+            }
+
             if(!userProfile.portfolio) userProfile.portfolio = [];
             userProfile.portfolio.push({
                 id: Date.now(),
@@ -1685,14 +1722,14 @@
                 camera: document.getElementById('portCameraInput').value || '',
                 lens: document.getElementById('portLensInput').value || '',
                 settings: document.getElementById('portSettingsInput').value || '',
-                image: compressedPortfolioImage
+                image: imageUrl
             });
             document.getElementById('portTitleInput').value = '';
             document.getElementById('portCameraInput').value = '';
             document.getElementById('portLensInput').value = '';
             document.getElementById('portSettingsInput').value = '';
             document.getElementById('portImageFile').value = '';
-            compressedPortfolioImage = '';
+            portfolioImageBlob = null;
             localStorage.setItem('lensconnect_user', JSON.stringify(userProfile));
             renderMyPortfolio();
         }
@@ -1746,8 +1783,10 @@
             const socialInput = document.getElementById('profileSocialInput');
             if(socialInput) userProfile.social = socialInput.value.trim();
 
-            if(compressedProfileAvatar) {
-                userProfile.avatar = compressedProfileAvatar;
+            if(profileAvatarBlob) {
+                const avatarUrl = await uploadImageToStorage(profileAvatarBlob, 'avatars');
+                if(avatarUrl) userProfile.avatar = avatarUrl;
+                profileAvatarBlob = null;
             }
 
             userProfile.email = currentUserEmail || userProfile.email || '';
@@ -2700,14 +2739,15 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    compressedSpotImage = canvas.toDataURL('image/jpeg', 0.8);
-
-                    const preview = document.getElementById('imagePreview');
-                    const previewContainer = document.getElementById('imagePreviewContainer');
-                    if(preview && previewContainer) {
-                        preview.src = compressedSpotImage;
-                        previewContainer.classList.remove('hidden');
-                    }
+                    canvas.toBlob((blob) => {
+                        spotImageBlob = blob;
+                        const preview = document.getElementById('imagePreview');
+                        const previewContainer = document.getElementById('imagePreviewContainer');
+                        if(preview && previewContainer) {
+                            preview.src = URL.createObjectURL(blob);
+                            previewContainer.classList.remove('hidden');
+                        }
+                    }, 'image/jpeg', 0.8);
                 };
                 img.src = e.target.result;
             };
@@ -2744,14 +2784,15 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    compressedContribImage = canvas.toDataURL('image/jpeg', 0.8);
-
-                    const preview = document.getElementById('contribImagePreview');
-                    const previewContainer = document.getElementById('contribImagePreviewContainer');
-                    if(preview && previewContainer) {
-                        preview.src = compressedContribImage;
-                        previewContainer.classList.remove('hidden');
-                    }
+                    canvas.toBlob((blob) => {
+                        contribImageBlob = blob;
+                        const preview = document.getElementById('contribImagePreview');
+                        const previewContainer = document.getElementById('contribImagePreviewContainer');
+                        if(preview && previewContainer) {
+                            preview.src = URL.createObjectURL(blob);
+                            previewContainer.classList.remove('hidden');
+                        }
+                    }, 'image/jpeg', 0.8);
                 };
                 img.src = e.target.result;
             };
@@ -2767,7 +2808,7 @@
             editingContribSpotId = null;
             editingContribId = null;
             document.getElementById('contribModalTitle').textContent = 'Bericht zum Spot erfassen';
-            compressedContribImage = '';
+            contribImageBlob = null;
             const fileInput = document.getElementById('contribImageFile');
             if(fileInput) fileInput.value = '';
             const previewContainer = document.getElementById('contribImagePreviewContainer');
@@ -2798,7 +2839,7 @@
             document.getElementById('contribModalTitle').textContent = 'Bericht bearbeiten';
             document.getElementById('contribText').value = contrib.text;
             if (contrib.rating) document.getElementById('contribRating').value = String(contrib.rating);
-            compressedContribImage = contrib.image || '';
+            contribImageBlob = null;
 
             if(contrib.image) {
                 const preview = document.getElementById('contribImagePreview');
@@ -2830,12 +2871,17 @@
             if(!textEl || !textEl.value) { alert('Bitte Text eingeben'); return; }
             const ratingVal = parseInt(document.getElementById('contribRating').value) || 5;
 
+            let imageUrl = '';
+            if (contribImageBlob) {
+                imageUrl = await uploadImageToStorage(contribImageBlob, 'contributions');
+            }
+
             if(editingContribSpotId && editingContribId) {
                 const spot = spots.find(s => s.id === editingContribSpotId);
                 const contrib = spot?.contributions.find(c => c.id === editingContribId);
                 if(contrib) {
                     contrib.text = textEl.value;
-                    contrib.image = compressedContribImage;
+                    if (imageUrl) contrib.image = imageUrl;
                     contrib.rating = ratingVal;
                     if(supabaseClient) {
                         await supabaseClient.from('spot_contributions').update({ text: contrib.text, image: contrib.image, rating: contrib.rating }).eq('id', editingContribId);
@@ -2849,7 +2895,7 @@
                         spot_id: spot.id,
                         author: userProfile.name || 'Christian',
                         text: textEl.value,
-                        image: compressedContribImage,
+                        image: imageUrl,
                         rating: ratingVal,
                         time: 'Gerade eben'
                     };
@@ -3127,7 +3173,7 @@
                 return;
             }
             editingSpotId = null;
-            compressedSpotImage = '';
+            spotImageBlob = null;
             const modalTitle = document.getElementById('spotModalTitle');
             if(modalTitle) modalTitle.textContent = 'Neuen Fotospot hinzufügen';
             
@@ -3182,7 +3228,7 @@
             document.getElementById('newSpotDesc').value = spot.desc || '';
             document.getElementById('newSpotLat').value = spot.lat || '';
             document.getElementById('newSpotLng').value = spot.lng || '';
-            compressedSpotImage = spot.image || '';
+            spotImageBlob = null;
 
             if(spot.image) {
                 const preview = document.getElementById('imagePreview');
@@ -3222,6 +3268,14 @@
             if (!locText || locText === 'Lade Ort...') {
                 locText = await fetchLocationNameFromCoords(lat, lng) || 'Unbekannter Ort';
             }
+
+            let imageUrl = '';
+            if (spotImageBlob) {
+                imageUrl = await uploadImageToStorage(spotImageBlob, 'spots');
+            } else if (editingSpotId) {
+                const existing = spots.find(s => s.id === editingSpotId);
+                if (existing) imageUrl = existing.image;
+            }
             
             if(editingSpotId) {
                 const existingSpot = spots.find(s => s.id === editingSpotId);
@@ -3237,7 +3291,7 @@
                     desc: document.getElementById('newSpotDesc').value,
                     lat: lat,
                     lng: lng,
-                    image: compressedSpotImage,
+                    image: imageUrl,
                     edited_by: userProfile.name || 'Christian',
                     edited_at: todayStr
                 };
@@ -3264,7 +3318,7 @@
                     lat: lat,
                     lng: lng,
                     author: userProfile.name || 'Christian',
-                    image: compressedSpotImage
+                    image: imageUrl
                 };
 
                 if(supabaseClient) {
