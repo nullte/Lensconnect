@@ -274,7 +274,14 @@
         </div>
 
         <!-- VIEW 1: MAP -->
-        <div id="view-map" class="view-panel w-full flex-1 relative hidden flex-col">
+        <div id="view-map" class="view-panel w-full h-full relative hidden flex-col">
+            <!-- DEZENTES BANNER FÜR KARTEN-MODUS -->
+            <div id="mapPickingBanner" style="display: none;" class="absolute top-4 left-1/2 -translate-x-1/2 z-[1100] pointer-events-auto bg-slate-800/95 backdrop-blur border border-brand-500/50 px-4 py-2 rounded-2xl shadow-2xl flex items-center space-x-3">
+                <div class="w-2.5 h-2.5 rounded-full bg-brand-500 animate-ping"></div>
+                <span class="text-xs font-semibold text-white">Klicke auf die gewünschte Stelle auf der Karte...</span>
+                <button onclick="cancelMapSpotPicking()" class="text-slate-400 hover:text-white text-xs font-bold ml-2 cursor-pointer bg-slate-700/50 hover:bg-slate-700 px-2 py-0.5 rounded-lg border border-slate-600">Abbrechen</button>
+            </div>
+
             <!-- OBEN RECHTS: Aufklappbare Ort-Suche (Lupe) -->
             <div class="absolute top-4 right-4 z-[1000] pointer-events-auto flex items-center space-x-2">
                 <div id="mapSearchContainer" class="hidden items-center space-x-2 bg-slate-800/95 backdrop-blur border border-slate-700 p-1.5 rounded-2xl shadow-2xl max-w-[200px] sm:max-w-xs w-full">
@@ -920,7 +927,7 @@
         } catch(e) { console.warn("PWA setup notice:", e); }
 
         const SUPABASE_URL = 'https://ygzazikwcngwclvmhbbb.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlnemF6aWt3Y25nd2Nsdm1oYmJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0NjA1OTgsImV4cCI6MjEwNzAzNjU5OH0.30RNloWiRhtOIq3QVsQcJmvuOw4xU2_4vSzra6NKeUg';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlnemF6aWt3Y25nd2Nsdm1oYmJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0NjA1OTgsImV4cCI6MjEwNzAzльникиhOH0.30RNloWiRhtOIq3QVsQcJmvuOw4xU2_4vSzra6NKeUg';
         let supabaseClient = null;
         let realtimeChannel = null;
 
@@ -952,6 +959,8 @@
         let currentChatPartner = null;
         let activeMarketRefCode = null;
         let isSendingMessage = false;
+        let isPickingSpotOnMap = false;
+        let mapPickHandler = null;
 
         let spots = [];
         let marketItems = [];
@@ -1478,6 +1487,7 @@
 
         window.addEventListener('popstate', (event) => {
             hideAllModals();
+            cancelMapSpotPicking();
             const state = event.state;
             if (state && state.view && state.view !== currentView) {
                 switchView(state.view, false);
@@ -1505,6 +1515,7 @@
 
         function switchView(viewName, push = true) {
             currentView = viewName;
+            cancelMapSpotPicking();
             document.querySelectorAll('.view-panel').forEach(el => {
                 el.classList.add('hidden');
                 el.classList.remove('flex');
@@ -2485,6 +2496,16 @@
             if(m) m.style.display = 'none';
         }
 
+        function cancelMapSpotPicking() {
+            isPickingSpotOnMap = false;
+            if (map && mapPickHandler) {
+                map.off('click', mapPickHandler);
+                mapPickHandler = null;
+            }
+            const banner = document.getElementById('mapPickingBanner');
+            if(banner) banner.style.display = 'none';
+        }
+
         async function selectSpotChoice(choice) {
             const choiceModal = document.getElementById('spotCreationChoiceModal');
             if(choiceModal) choiceModal.style.display = 'none';
@@ -2513,9 +2534,14 @@
                         map.invalidateSize();
                     }, 100);
 
-                    alert('Bitte klicke nun auf die gewünschte Stelle auf der Karte.');
+                    cancelMapSpotPicking();
+                    isPickingSpotOnMap = true;
+                    const banner = document.getElementById('mapPickingBanner');
+                    if(banner) banner.style.display = 'flex';
                     
-                    map.once('click', function(e) {
+                    mapPickHandler = function(e) {
+                        if (!isPickingSpotOnMap) return;
+                        cancelMapSpotPicking();
                         const lat = e.latlng.lat;
                         const lng = e.latlng.lng;
                         
@@ -2523,8 +2549,9 @@
 
                         setTimeout(() => {
                             proceedWithCoordinates(lat, lng);
-                        }, 600);
-                    });
+                        }, 400);
+                    };
+                    map.on('click', mapPickHandler);
                 }
             }
         }
